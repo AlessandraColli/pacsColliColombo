@@ -6,7 +6,11 @@ New features wrt CRAN: smooth regression for manifold and volumetric domains, al
 
 Bugs in fPCA, boundary conditions and space-varying regression have been fixed. Issues about areal data and 2.5 mesh are still under study.
 
-Compiled in Win RStudio using g++ compiler.
+Compiled in both Win RStudio and Ubuntu 18.04 using g++ compiler. If using a Linux machine, it is advisable to install rgl, plot3D and plot3Drgl before fdaPDE.
+
+Subfolder structure
+/src contains all C++ code and a special file named Makevars necessary to build and install the R package
+/R contains the R functions that wrap the C++ calls
 
 Remarks:
 
@@ -15,12 +19,12 @@ Remarks:
    data(meshName)
 
    vertici <- matrix(data=meshName$nodes,ncol=3,byrow=T)
-   triangoli <- matrix(data=meshName$triangles, ncol=3, byrow=T)
+   triangoli <- matrix(data=meshName$triangles, ncol=3, byrow=T) # tetrahedrons with 4 columns in 3D
 
    mesh <- fdaPDE::create.MESH.2.5D(nodes = vertici,triangles = triangoli)
    
-2) the test scripts in /tests are outdated, and will be updated as soon as possible
+2) the test scripts in /tests are outdated, and will be updated as soon as possible. Scripts in /RScripts have not been verified yet.
 
 3) the shift of indexes from R to C++ is done within the R functions smooth.FEM.basis and smooth.FEM.FPCA. Do not use C++ scripts directly on the R mesh objects, unless you take care of shifing indexes by yourself.
 
-
+4) in order to plot 2D meshes, use the extended name plot.MESH.2D() instead of plot(). This is due to the fact that 2D meshes are object of class "MESH2D" instead of "MESH.2D" so automatic plot conversion is disabled. This will be fixed soon. 
