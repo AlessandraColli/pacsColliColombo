@@ -700,7 +700,7 @@ void MixedFEFPCAGCV<Integrator,ORDER, mydim, ndim>::computeIterationsGCV(MatrixX
     #endif
 	MixedFEFPCABase<Integrator,ORDER, mydim, ndim>::computeIterations(this->datamatrixResiduals_,FPCAinput,best_GCV,this->mesh_.num_nodes());
 	
-//	if(this->fpcaData_.isLocationsByNodes())  è già dentro compute_iterations
+//	if(this->fpcaData_.isLocationsByNodes())  Ã¨ giÃ  dentro compute_iterations
 //	{
 //		UInt nlocations=nnodes;
 //		FPCAinput.finalizeLoadings(this->fpcaData_.getObservationsIndices(),nlocations);
