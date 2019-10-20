@@ -1,3 +1,11 @@
+This repository implements ADTree search algorithm on finite element mesh.
+It forks with the development version of fdaPDE package (future 2.0 version) and will be updated periodically with recent version.
+
+ADtree search algorithm has been implemented over 2D mesh but needed to be verified as well.
+
+The goal is to implement ADTree search algorithm over 2.5D, 3D domain.
+==========================================================================
+Below is README.md of forked repository.
 #fdaPDE_dev
 
 This repository contains the development version of fdaPDE package (future 2.0 version).
