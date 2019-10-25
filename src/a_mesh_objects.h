@@ -38,11 +38,10 @@ public:
 //!  This class implements a 3D point, the default is z=0 => 2D point
 class Point: public Identifier{
 public:
-	//physical dimension of the point
+
 	UInt ndim;
 
-	Point(): Identifier(NVAL, NVAL){coord_.resize(3);
-			ndim=3;}
+	Point(): Identifier(NVAL, NVAL){coord_.resize(3);};
    	Point(Real x, Real y):Identifier(NVAL, NVAL)
 		{coord_.resize(3);coord_[0]=x; coord_[1]=y; coord_[2]=0;
 			ndim=2;}
@@ -57,15 +56,9 @@ public:
 			ndim=3;}
 	void print(std::ostream & out) const;
 	Real operator[](UInt i) const {return coord_[i];}
-	// Returns the number of physical space dimension.
-	int dp() { return ndim; }
-	// Returns the number of dimensions used for the search (equal to physical space dimension).
-	int dt() { return ndim; }
-	/// Returns the size of coordinate array.
-	int coordsize() { return ndim; }
-
 private:
 	std::vector<Real> coord_;
+	//std::array<Real, 2> coord_;
 };
 
 
