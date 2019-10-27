@@ -103,10 +103,10 @@ int Element<NNODES,2,2>::getPointDirection(const Point& point) const
 template <UInt NNODES>
 void Element<NNODES,2,2>::print(std::ostream & out) const
 {
-	out<<"Triangle -"<< id_ <<"- ";
+	out<<"Triangle Id -"<< id_ <<"- " <<"< ";
 	for (UInt i=0; i<NNODES; ++i)
 		out<<points_[i].getId()<<"  ";
-	out<<std::endl;
+	out << ">" << std::endl;
 }
 
 
@@ -283,10 +283,10 @@ int Triangle<NNODES,2,3>::getPointDirection(const Point& point) const
 template <UInt NNODES>
 void Element<NNODES,2,3>::print(std::ostream & out) const
 {
-	out<<"Triangle -"<< id_ <<"- ";
+	out<<"Triangle Id -"<< id_ <<"- " <<"< ";
 	for (UInt i=0; i<NNODES; ++i)
 		out<<points_[i].getId()<<"  ";
-	out<<std::endl;
+	out << ">" << std::endl;
 }
 
 
@@ -450,10 +450,10 @@ bool Element<NNODES,3,3>::isPointInside(const Point& point) const
 template <UInt NNODES>
 void Element<NNODES,3,3>::print(std::ostream & out) const
 {
-	out<<"Tetrahedron -"<< id_ <<"- ";
+	out<<"Tetrahedron Id -"<< id_ <<"- "<<"< ";
 	for (UInt i=0; i<NNODES; ++i)
 		out<<points_[i].getId()<<"  ";
-	out<<std::endl;
+	out << ">" << std::endl;
 }
 
 

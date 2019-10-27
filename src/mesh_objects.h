@@ -39,7 +39,7 @@ public:
 class Point: public Identifier{
 public:
 	//physical dimension of the point
-	UInt ndim;
+	static UInt ndim; //****************
 
 	Point(): Identifier(NVAL, NVAL){coord_.resize(3);
 			ndim=3;}
@@ -58,16 +58,17 @@ public:
 	void print(std::ostream & out) const;
 	Real operator[](UInt i) const {return coord_[i];}
 	// Returns the number of physical space dimension.
-	int dp() { return ndim; }
+	inline static int dp() { return ndim; } //**********************888
 	// Returns the number of dimensions used for the search (equal to physical space dimension).
-	int dt() { return ndim; }
+	inline static int dt() { return ndim; }
 	/// Returns the size of coordinate array.
-	int coordsize() { return ndim; }
+	inline static int coordsize() { return ndim; }
 
 private:
 	std::vector<Real> coord_;
 };
 
+UInt Point::ndim = 2;
 
 //!  This class implements an Edge, as an objects composed by two 2D points.
 class Edge: public Identifier{
@@ -147,6 +148,16 @@ public:
       \return the Point object
     */
 	Point operator[](UInt i) const {return points_[i];}
+
+	// Returns the number of physical space dimension.
+	inline static constexpr int dp() { return myDim; }
+	
+	// Returns the number of dimensions used for the search (2*2)
+	inline static constexpr int dt() { return myDim*2; }
+
+	// Returns the size of coordinate array. (3*2)
+	inline static constexpr int coordsize() { return numVertices*myDim; }
+
 
 	//! A member that computes the barycentric coordinates.
     /*!
@@ -235,7 +246,7 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     static const UInt numVertices=3;
     static const UInt numSides=3;
-	static const UInt myDim=2;
+	static const UInt myDim=3;
 
     //! This constructor creates an "empty" Element, with an Id Not Valid
 	Element():Identifier(NVAL){points_.resize(NNODES);}
@@ -251,6 +262,15 @@ public:
       \return the Point object
     */
 	Point operator[](UInt i) const {return points_[i];}
+
+	// Returns the number of physical space dimension.
+	inline static constexpr int dp() { return myDim; }
+	
+	// Returns the number of dimensions used for the search (3*2)
+	inline static constexpr int dt() { return myDim*2; }
+
+	// Returns the size of coordinate array. (3*3)
+	inline static constexpr int coordsize() { return numVertices*myDim; }
 
 	//! A member that computes the barycentric coordinates.
     /*!
@@ -291,14 +311,16 @@ private:
 
 //fine implementazione triangolo 3d
 
-//!  This class implements a Tetrahedron as an objects composed by four or ten nodes, embedded in a 3-dimensional space. Currently, only the 4 nodes version is implemented. The tetrahedron is an Element with mydim=3 and ndim=3
+//!  This class implements a Tetrahedron as an objects composed by four or ten nodes, embedded in a 3-dimensional space. 
+// Currently, only the 4 nodes version is implemented. 
+// The tetrahedron is an Element with mydim=3 and ndim=3
 
 template <UInt NNODES>
 class Element<NNODES,3,3> : public Identifier {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     static const UInt numVertices=4;
-    static const UInt numSides=3;
+    static const UInt numSides=6;
     static const UInt myDim=3;
 
     //! This constructor creates an "empty" Tetrahedron, with an Id Not Valid
@@ -315,6 +337,15 @@ public:
       \return the Point object
     */
 	Point operator[](UInt i) const {return points_[i];}
+
+	// Returns the number of physical space dimension.
+	inline static constexpr int dp() { return myDim; }
+	
+	// Returns the number of dimensions used for the search (3*2)
+	inline static constexpr int dt() { return myDim*2; }
+
+	// Returns the size of coordinate array. (4*3)
+	inline static constexpr int coordsize() { return numVertices*myDim; }
 
 	//! A member that computes the barycentric coordinates.
     /*!
