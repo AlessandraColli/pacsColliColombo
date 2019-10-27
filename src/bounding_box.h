@@ -10,12 +10,9 @@
  * 	\brief Policy used when boxes have to be stored in the tree.
  */
 /**
- *	\template parameter 
-	NDIME is the pysical dimension of Element: 2 if Triangle, 3 if Tetrahedron
- 	NDIMP is the physical dimension: 2 -> 2D, 3 -> 3D
- 	3 cases: Box<2,2>, Box<2,3>, Box<3,3>
+ *	\template parameter NDIMP is the physical dimension of Box: 2 -> 2D, 3 -> 3D
 */
-template<int NDIME, int NDIMP>
+template<int NDIMP>
 class Box {
 protected:
 	/** A vector of rectangle corner coordinates.
@@ -41,10 +38,11 @@ public:
 
 	/**	Another constructor.
 		 *
-		 *	\param[in] Element<NNODES,NDIME,NDIMP>
+		 *	\param[in] Element<NNODES,NDIME,NDIMPP>, NDIME: dimension of Element, NDIMPP: physical dimension
+		 *											 NDIMPP has same dimension as NDIMP
 	 */
-	template <UInt NNODES>
-	Box(Element<NNODES,NDIME,NDIMP> const & element);
+	template <UInt NNODES,int NDIME,int NDIMPP>
+	Box(Element<NNODES,NDIME,NDIMPP> const & element);
 
 	/// Returns the i-th coordinate value.
 	inline Real operator[](int const & i) { return x_[i]; }

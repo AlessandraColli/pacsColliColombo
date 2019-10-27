@@ -39,8 +39,10 @@ public:
 class Point: public Identifier{
 public:
 	//physical dimension of the point
-	static UInt ndim; //****************
-
+	UInt ndim;
+	static const UInt myDim=3; //set as default 3
+							   //myDim setting is used when calling T::dp() as template (used in domain_imp.h)
+	
 	Point(): Identifier(NVAL, NVAL){coord_.resize(3);
 			ndim=3;}
    	Point(Real x, Real y):Identifier(NVAL, NVAL)
@@ -58,17 +60,16 @@ public:
 	void print(std::ostream & out) const;
 	Real operator[](UInt i) const {return coord_[i];}
 	// Returns the number of physical space dimension.
-	inline static int dp() { return ndim; } //**********************888
+	inline static int dp() { return myDim; }
 	// Returns the number of dimensions used for the search (equal to physical space dimension).
-	inline static int dt() { return ndim; }
+	inline static int dt() { return myDim; }
 	/// Returns the size of coordinate array.
-	inline static int coordsize() { return ndim; }
+	inline static int coordsize() { return myDim; }
 
 private:
 	std::vector<Real> coord_;
 };
 
-UInt Point::ndim = 2;
 
 //!  This class implements an Edge, as an objects composed by two 2D points.
 class Edge: public Identifier{
