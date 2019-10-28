@@ -3,8 +3,13 @@
 
 #include "fdaPDE.h"
 #include "mesh_objects.h"
+#include "bounding_box.h"
+#include "tree_header.h"
+#include "domain.h"
+#include "treenode.h"
+#include "exception_handling.h"
+#include "adtree.h"
 #include <math.h>
-
 
 using std::vector;
 
@@ -29,8 +34,18 @@ public:
       * constructed with the TriLibrary (our R wrapper for the Triangle library)
     */
 
-    MeshHandler(Real* points, UInt* edges, UInt* triangles, UInt* neighbors, UInt num_nodes, UInt num_edges, UInt num_triangles):
-			points_(points), edges_(edges), elements_(triangles), neighbors_(neighbors), num_nodes_(num_nodes), num_edges_(num_edges), num_elements_(num_triangles) {};
+    MeshHandler(Real* points, UInt* edges, UInt* triangles, UInt* neighbors, UInt num_nodes, UInt num_edges, UInt num_triangles, bool flag):
+			points_(points), edges_(edges), elements_(triangles), neighbors_(neighbors), num_nodes_(num_nodes), num_edges_(num_edges), num_elements_(num_triangles), flag_(flag) 
+    {
+      if(flag_ == 1)
+      {
+        ADTree<Element<3*ORDER,2,2>> tmp(points_, elements_, num_nodes_, num_elements_);
+        tree_ = tmp;
+      }else{
+        ADTree<Element<3*ORDER,2,2>> tmp;
+        tree_ = tmp;
+      }
+    };
 
     #ifdef R_VERSION_
 	MeshHandler(SEXP Rmesh);
@@ -94,10 +109,18 @@ public:
     */
     Element<3*ORDER,2,2> getNeighbors(Id id_element, UInt number) const;
 
+    //! A normal member returning the ADTree
+    /*!
+     *  \return The ADTree, the nodes contain the index of the triangle in the mesh
+    */ 
+    const ADTree<Element<3*ORDER,2,2>> &  getTree() const {return tree_;};
+
+
     void printPoints(std::ostream & out);
     void printEdges(std::ostream & out);
     void printElements(std::ostream & out);
     void printNeighbors(std::ostream & out);
+    void printTree(std::ostream & out);
 
      //! A normal member returning the element on which a point is located
     /*!
@@ -116,6 +139,15 @@ public:
       \return The element that contains the point
     */
     Element<3*ORDER,2,2> findLocationWalking(const Point& point, const Element<3*ORDER,2,2>& starting_element) const;
+
+
+     //! A normal member returning the triangle on which a point is located
+    /*!
+     * This method implements a ADTree algorithm
+     * \param point the point we want to locate
+      \return The triangle that contains the point
+    */ 
+    Element<3*ORDER,2,2> findLocationTree(const Point& point) const;
 
     //! A normal member returning the area of an Element
     /*!
@@ -138,6 +170,10 @@ private:
 
 	UInt *border_edges; //contiene lista id_edges al bordo
 	UInt num_nodes_, num_edges_, num_elements_;
+  /// flag_ = 1 -> adtree is built, flag_ = 0 -> adtree is empty
+  bool flag_;  //se flag_=1 l'adtree contiene tutte le info della mesh
+  /// is the adtree associated to the mesh
+  ADTree<Element<3*ORDER,2,2>> tree_; //contiene l'albero, se inizializzato si può usare per Point_Location
 
 };
 

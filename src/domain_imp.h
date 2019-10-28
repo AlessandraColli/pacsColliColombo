@@ -1,5 +1,5 @@
-#ifndef DOMAIN__IMP_HPP_
-#define DOMAIN__IMP_HPP_
+#ifndef DOMAIN__IMP_H_
+#define DOMAIN__IMP_H_
 
 template<class T>
 Real Domain<T>::tolerance_ = 1.e-3;
@@ -143,4 +143,4 @@ std::ostream & operator<<(std::ostream & ostr, Domain<T> const & d) {
 
 
 
-#endif /* DOMAIN_IMP_HPP_ */
+#endif /* DOMAIN_IMP_H_ */

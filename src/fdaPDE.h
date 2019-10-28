@@ -16,19 +16,21 @@
 //#include <iomanip>
 #include <limits>
 #include <vector>
+#include <stack>
+#include <set>
 
 // For debugging purposes
 //#include <Eigen/StdVector>
-//#include "Eigen/Eigen/Sparse"
-//#include "Eigen/Eigen/Dense"
+#include "Eigen/Eigen/Sparse"
+#include "Eigen/Eigen/Dense"
 //#define  EIGEN_MPL2_ONLY
 
 //Take the code from the linked RcppEigen
-#include <Eigen/StdVector>
-#include <Eigen/Sparse>
-#include <Eigen/Dense>
-#include <Eigen/IterativeLinearSolvers>
-#define  EIGEN_MPL2_ONLY
+// #include <Eigen/StdVector>
+// #include <Eigen/Sparse>
+// #include <Eigen/Dense>
+// #include <Eigen/IterativeLinearSolvers>
+// #define  EIGEN_MPL2_ONLY
 
 typedef double Real;
 typedef int UInt;

@@ -1,6 +1,6 @@
 
-#ifndef BOUNDING_BOX_HPP_
-#define BOUNDING_BOX_HPP_
+#ifndef BOUNDING_BOX_H_
+#define BOUNDING_BOX_H_
 
 
 #include "fdaPDE.h"
@@ -67,4 +67,4 @@ public:
 
 #include "bounding_box_imp.h"
 
-#endif /* BOUNDING_BOX_HPP_ */
+#endif /* BOUNDING_BOX_H_ */

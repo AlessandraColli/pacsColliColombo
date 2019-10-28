@@ -101,6 +101,39 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationWalking(const Point& po
 	return current_element;
 }
 
+
+template <UInt ORDER>
+Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationTree(const Point& point) const
+{
+	if(flag_ == 1){
+		std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
+		std::vector<Real> region(4);
+		bool result;
+		std::set<int> found;
+		int index;
+		Element<3*ORDER,2,2> tmp;
+		region[0] = point[0];	
+		region[1] = point[1];
+		region[2] = point[0];
+		region[3] = point[1];
+	
+		result = tree_.search(region, found);
+		if(result == 0)
+			return Element<3*ORDER,2,2>();
+		for (std::set<int>::iterator i = found.begin(); i != found.end(); i++) {
+			index = *i;
+			index = this -> tree_.pointId(index);
+	  		tmp = this -> getElement(index);
+			result = tmp.isPointInside(point);
+			if(result == 1)
+				return tmp;
+		}
+	}
+	std::cout << std::endl;
+	std::cout << " you need to create the tree to use this algorithm, put flag = 1 " <<std::endl;
+	return Element<3*ORDER,2,2>();
+}
+
 template <UInt ORDER>
 Real MeshHandler<ORDER,2,2>::elementMeasure(Id id) const
 {
@@ -192,6 +225,16 @@ void MeshHandler<ORDER,2,2>::printNeighbors(std::ostream & out)
 		out<<std::endl;
 	}
 
+}
+
+
+template <UInt ORDER>
+void MeshHandler<ORDER,2,2>::printTree(std::ostream & out)
+{
+	
+	out << "# Tree characteristic: " <<std::endl;
+	out << tree_ << std::endl;
+	
 }
 
 //////////////////////////////////////////////////////////

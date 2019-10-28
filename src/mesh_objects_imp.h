@@ -1,6 +1,6 @@
 //#include "mesh_objects.hpp"
-#ifndef __MESH_OBJECTS_IMP_HPP__
-#define __MESH_OBJECTS_IMP_HPP__
+#ifndef __MESH_OBJECTS_IMP_H__
+#define __MESH_OBJECTS_IMP_H__
 
 
 template <UInt NNODES>

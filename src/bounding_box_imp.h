@@ -1,5 +1,5 @@
-#ifndef __BOUNDING_BOX_IMP_HPP__
-#define __BOUNDING_BOX_IMP_HPP__
+#ifndef __BOUNDING_BOX_IMP_H__
+#define __BOUNDING_BOX_IMP_H__
 
 
 template<int NDIMP>
@@ -75,6 +75,6 @@ void Box<NDIMP>::print(std::ostream & out) const {
 	out<<std::endl;
 }
 
-#endif //__BOUNDING_BOX_IMP_HPP__
+#endif //__BOUNDING_BOX_IMP_H__
 
 

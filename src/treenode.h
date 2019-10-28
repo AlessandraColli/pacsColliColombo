@@ -5,8 +5,8 @@
  *  \author Prada Daniele
  */
 
-#ifndef TREENODE_HPP_
-#define TREENODE_HPP_
+#ifndef TREENODE_H_
+#define TREENODE_H_
 
 #include "fdaPDE.h"
 //#include "mesh_objects.h"
@@ -115,4 +115,4 @@ public:
 
 #include "treenode_imp.h"
 
-#endif /* TREENODE_HPP_ */
+#endif /* TREENODE_H_ */

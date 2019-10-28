@@ -1,5 +1,5 @@
-#ifndef __MESH_OBJECTS_HPP__
-#define __MESH_OBJECTS_HPP__
+#ifndef __MESH_OBJECTS_H__
+#define __MESH_OBJECTS_H__
 
 
 #include "fdaPDE.h"
@@ -142,6 +142,18 @@ public:
     Element(Id id, const std::vector<Point>& points) : Identifier(id),points_(points)
 	{ this->computeProperties(); }
 
+	//! This constructor creates an Element, given its a std::vector that will define the Element, it's necessary for communicate with ADTree structure
+    Element(const std::vector<Real> & points) : Identifier(NVAL) {
+    //need to reconstruct vector<Real> points to vector<Point> points_
+    std::vector<Point> tmp;
+	tmp.resize(NNODES);
+	tmp[0]=(Point(points[0],points[1]));
+	tmp[1]=(Point(points[2],points[3]));
+	tmp[2]=(Point(points[4],points[5]));
+	points_ = tmp;
+	this->computeProperties();
+	}
+
 	//! Overloading of the operator [],  taking the Node number and returning a node as Point object.
     /*!
      * For node numbering convention see:
@@ -256,6 +268,18 @@ public:
     Element(Id id, const std::vector<Point> points) : Identifier(id),points_(points)
 	{ this->computeProperties(); }
 
+	//! This constructor creates an Element, given its a std::vector that will define the Element, it's necessary for communicate with ADTree structure
+    Element(const std::vector<Real> & points) : Identifier(NVAL) {
+    //need to reconstruct vector<Real> points to vector<Point> points_
+    std::vector<Point> tmp;
+	tmp.resize(NNODES);
+	tmp[0]=(Point(points[0],points[1],points[2]));
+	tmp[1]=(Point(points[3],points[4],points[5]));
+	tmp[2]=(Point(points[6],points[7],points[8]));
+	points_ = tmp;
+	this->computeProperties();
+	}
+
 	//! Overloading of the operator [],  taking the Node number and returning a node as Point object.
     /*!
      * For node numbering convention see:
@@ -330,6 +354,19 @@ public:
 	//! This constructor creates a Tetrahedron, given its Id and an std array with the three object Point the will define the Tetrahedron
     Element(Id id, const std::vector<Point> points) : Identifier(id),points_(points)
 	{ this->computeProperties(); }
+
+	//! This constructor creates an Element, given its a std::vector that will define the Element, it's necessary for communicate with ADTree structure
+    Element(const std::vector<Real> & points) : Identifier(NVAL) {
+    //need to reconstruct vector<Real> points to vector<Point> points_
+    std::vector<Point> tmp;
+	tmp.resize(NNODES);
+	tmp[0]=(Point(points[0],points[1],points[2]));
+	tmp[1]=(Point(points[3],points[4],points[5]));
+	tmp[2]=(Point(points[6],points[7],points[8]));
+	tmp[3]=(Point(points[9],points[10],points[11]));
+	points_ = tmp;
+	this->computeProperties();
+	}	
 
 	//! Overloading of the operator [],  taking the Node number and returning a node as Point object.
     /*!

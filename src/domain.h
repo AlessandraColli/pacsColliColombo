@@ -5,8 +5,8 @@
  *  \author Prada Daniele
  */
 
-#ifndef DOMAIN_HPP_
-#define DOMAIN_HPP_
+#ifndef DOMAIN_H_
+#define DOMAIN_H_
 
 #include "fdaPDE.h"
 
@@ -70,4 +70,4 @@ public:
 
 #include "domain_imp.h"
 
-#endif /* DOMAIN_HPP_ */
+#endif /* DOMAIN_H_ */
