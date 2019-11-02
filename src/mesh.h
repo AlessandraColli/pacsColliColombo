@@ -34,20 +34,14 @@ public:
       * constructed with the TriLibrary (our R wrapper for the Triangle library)
     */
 
-    MeshHandler(Real* points, UInt* edges, UInt* triangles, UInt* neighbors, UInt num_nodes, UInt num_edges, UInt num_triangles, bool flag):
-			points_(points), edges_(edges), elements_(triangles), neighbors_(neighbors), num_nodes_(num_nodes), num_edges_(num_edges), num_elements_(num_triangles), flag_(flag) 
+  MeshHandler(Real* points, UInt* edges, UInt* triangles, UInt* neighbors, UInt num_nodes, UInt num_edges, UInt num_triangles):
+		points_(points), edges_(edges), elements_(triangles), neighbors_(neighbors), num_nodes_(num_nodes), num_edges_(num_edges), num_elements_(num_triangles) 
     {
-      if(flag_ == 1)
-      {
-        ADTree<Element<3*ORDER,2,2>> tmp(points_, elements_, num_nodes_, num_elements_);
-        tree_ = tmp;
-      }else{
-        ADTree<Element<3*ORDER,2,2>> tmp;
-        tree_ = tmp;
-      }
+      ADTree<Element<3*ORDER,2,2>> tmp(points_, elements_, num_nodes_, num_elements_);
+      tree_ = tmp;  
     };
 
-    #ifdef R_VERSION_
+  #ifdef R_VERSION_
 	MeshHandler(SEXP Rmesh);
 	#endif
 
@@ -171,7 +165,7 @@ private:
 	UInt *border_edges; //contiene lista id_edges al bordo
 	UInt num_nodes_, num_edges_, num_elements_;
   /// flag_ = 1 -> adtree is built, flag_ = 0 -> adtree is empty
-  bool flag_;  //se flag_=1 l'adtree contiene tutte le info della mesh
+  // bool flag_;  //se flag_=1 l'adtree contiene tutte le info della mesh
   /// is the adtree associated to the mesh
   ADTree<Element<3*ORDER,2,2>> tree_; //contiene l'albero, se inizializzato si può usare per Point_Location
 
@@ -192,7 +186,10 @@ public:
 	//! A constructor.
     
     MeshHandler(Real* points, UInt* triangles, UInt num_nodes, UInt num_triangles):
-			points_(points), elements_(triangles), num_nodes_(num_nodes), num_elements_(num_triangles) {};
+			points_(points), elements_(triangles), num_nodes_(num_nodes), num_elements_(num_triangles) {
+        ADTree<Element<3*ORDER,2,3>> tmp(points_, elements_, num_nodes_, num_elements_);
+        tree_ = tmp;  
+      };
 	
 	//! A constructor.
     /*!
@@ -258,6 +255,14 @@ public:
     */
     Element<3*ORDER,2,3> findLocationNaive(Point point) const;
 
+     //! A normal member returning the triangle on which a point is located
+    /*!
+     * This method implements a ADTree algorithm
+     * \param point the point we want to locate
+      \return The triangle that contains the point
+    */ 
+    Element<3*ORDER,2,3> findLocationTree(const Point& point) const;
+
     //! A normal member returning the area of an Element
     /*!
      * \param id an Id argument
@@ -271,11 +276,17 @@ private:
 	SEXP mesh_;
 	#endif
 
-	std::vector<Real> points_;
-	std::vector<UInt> elements_;
-
+	// std::vector<Real> points_;
+	// std::vector<UInt> elements_;
+    Real *points_;
+    UInt *elements_;
+    
 
 	UInt num_nodes_, num_elements_;
+  /// flag_ = 1 -> adtree is built, flag_ = 0 -> adtree is empty
+  // bool flag_;  //se flag_=1 l'adtree contiene tutte le info della mesh
+  /// is the adtree associated to the mesh
+  ADTree<Element<3*ORDER,2,3>> tree_; //contiene l'albero, se inizializzato si può usare per Point_Location
 
 };
 
@@ -294,7 +305,10 @@ public:
 	//! A constructor.
     
     MeshHandler(Real* points, UInt* tetrahedrons, UInt num_nodes, UInt num_tetrahedrons):
-			points_(points), elements_(tetrahedrons), num_nodes_(num_nodes), num_elements_(num_tetrahedrons) {};
+			points_(points), elements_(tetrahedrons), num_nodes_(num_nodes), num_elements_(num_tetrahedrons) {
+        ADTree<Element<6*ORDER-2,3,3>> tmp(points_, elements_, num_nodes_, num_elements_);
+        tree_ = tmp;  
+       };
 	
 	//! A constructor.
     /*!
@@ -344,6 +358,14 @@ public:
     */
     Element<6*ORDER-2,3,3> findLocationNaive(Point point) const;
 
+ 	//! A normal member returning the triangle on which a point is located
+    /*!
+     * This method implements a ADTree algorithm
+     * \param point the point we want to locate
+      \return The triangle that contains the point
+    */ 
+    Element<6*ORDER-2,3,3> findLocationTree(const Point& point) const;
+
     //! A normal member returning the volume of an Element
     /*!
      * \param id an Id argument
@@ -357,11 +379,17 @@ private:
 	SEXP mesh_;
 	#endif
 
-	std::vector<Real> points_;
-	std::vector<UInt> elements_;
+	// std::vector<Real> points_;
+	// std::vector<UInt> elements_;
+  Real *points_;
+  UInt *elements_;
 
 
 	UInt num_nodes_, num_elements_;
+  /// flag_ = 1 -> adtree is built, flag_ = 0 -> adtree is empty
+  // bool flag_;  //se flag_=1 l'adtree contiene tutte le info della mesh
+  /// is the adtree associated to the mesh
+  ADTree<Element<6*ORDER-2,3,3>> tree_; //contiene l'albero, se inizializzato si può usare per Point_Location
 
 };
 

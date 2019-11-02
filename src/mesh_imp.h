@@ -19,6 +19,9 @@ MeshHandler<ORDER,2,2>::MeshHandler(SEXP mesh)
 	num_edges_ = INTEGER(Rf_getAttrib(VECTOR_ELT(mesh_, 6), R_DimSymbol))[0];
 	num_elements_ = INTEGER(Rf_getAttrib(VECTOR_ELT(mesh_, 3), R_DimSymbol))[0];
 
+	ADTree<Element<3*ORDER,2,2>> tmp(points_, elements_, num_nodes_, num_elements_);
+    tree_ = tmp;  
+
 }
 #endif
 
@@ -103,9 +106,8 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationWalking(const Point& po
 
 
 template <UInt ORDER>
-Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationTree(const Point& point) const
-{
-	if(flag_ == 1){
+Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationTree(const Point& point) const {
+	// if(flag_ == 1){
 		std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
 		std::vector<Real> region(4);
 		bool result;
@@ -118,21 +120,27 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationTree(const Point& point
 		region[3] = point[1];
 	
 		result = tree_.search(region, found);
-		if(result == 0)
+		if(result == 0) {
+			std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
 			return Element<3*ORDER,2,2>();
+		}
 		for (std::set<int>::iterator i = found.begin(); i != found.end(); i++) {
 			index = *i;
 			index = this -> tree_.pointId(index);
 	  		tmp = this -> getElement(index);
 			result = tmp.isPointInside(point);
-			if(result == 1)
+			if(result == 1) {
+				std::cout << "findLocationTree returns the right Element!" <<std::endl;
 				return tmp;
+			}
 		}
-	}
-	std::cout << std::endl;
-	std::cout << " you need to create the tree to use this algorithm, put flag = 1 " <<std::endl;
+	// }
+	// std::cout << std::endl;
+	// std::cout << " you need to create the tree to use this algorithm, put flag = 1 " <<std::endl;
+	std::cout << "findLocationTree returns 0!" <<std::endl;
 	return Element<3*ORDER,2,2>();
 }
+
 
 template <UInt ORDER>
 Real MeshHandler<ORDER,2,2>::elementMeasure(Id id) const
@@ -246,12 +254,19 @@ void MeshHandler<ORDER,2,2>::printTree(std::ostream & out)
 template <UInt ORDER>
 MeshHandler<ORDER,2,3>::MeshHandler(SEXP mesh)
 {
+
 	mesh_ = mesh;
+	points_ = REAL(VECTOR_ELT(mesh_, 2));
+	elements_ = INTEGER(VECTOR_ELT(mesh_, 3));
+	
 	num_nodes_ = INTEGER(VECTOR_ELT(mesh_,0))[0];
 	num_elements_ = INTEGER(VECTOR_ELT(mesh_,1))[0];
-	points_.assign(REAL(VECTOR_ELT(mesh_, 2)) , REAL(VECTOR_ELT(mesh_, 2)) + 3*num_nodes_);
-	elements_.assign(INTEGER(VECTOR_ELT(mesh_, 3)), INTEGER(VECTOR_ELT(mesh_, 3))+ 3*ORDER*num_elements_);
-//	std::for_each(elements_.begin(), elements_.end(), [](int& i){i-=1;});
+	ADTree<Element<3*ORDER,2,3>> tmp(points_, elements_, num_nodes_, num_elements_);
+    tree_ = tmp;
+
+    // points_.assign(REAL(VECTOR_ELT(mesh_, 2)) , REAL(VECTOR_ELT(mesh_, 2)) + 3*num_nodes_);
+	// elements_.assign(INTEGER(VECTOR_ELT(mesh_, 3)), INTEGER(VECTOR_ELT(mesh_, 3))+ 3*ORDER*num_elements_);
+	//	std::for_each(elements_.begin(), elements_.end(), [](int& i){i-=1;});
 }
 #endif
 
@@ -278,7 +293,7 @@ void MeshHandler<ORDER,2,3>::importfromCSV(std::string &filename){
 	ss >> nnodes;
 
 	num_nodes_ = nnodes;
-	points_.resize(3*nnodes);
+	// points_.resize(3*nnodes); //************changed points_ to pointer type
 
 	// Read the number of points
 	getline(file,line);
@@ -288,7 +303,7 @@ void MeshHandler<ORDER,2,3>::importfromCSV(std::string &filename){
 	ss2 >> ntriangles;
 
 	num_elements_ = ntriangles;
-	elements_.resize(3*ORDER*ntriangles);
+	// elements_.resize(3*ORDER*ntriangles); //************changed elements_ to pointer type
 
 
 	getline(file,line); //skip a white line
@@ -364,6 +379,44 @@ Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationNaive(Point point) cons
 }
 
 template <UInt ORDER>
+Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationTree(const Point& point) const {
+	// if(flag_ == 1){
+	std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
+	std::vector<Real> region(6);
+	bool result;
+	std::set<int> found;
+	int index;
+	Element<3*ORDER,2,3> tmp;
+	region[0] = point[0];	
+	region[1] = point[1];
+	region[2] = point[2];
+	region[3] = point[0];
+	region[4] = point[1];
+	region[5] =	point[2];
+
+	result = tree_.search(region, found);
+	if(result == 0) {
+		std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
+		return Element<3*ORDER,2,3>();
+	}
+	for (std::set<int>::iterator i = found.begin(); i != found.end(); i++) {
+		index = *i;
+		index = this -> tree_.pointId(index);
+  		tmp = this -> getElement(index);
+		result = tmp.isPointInside(point);
+		if(result == 1) {
+			std::cout << "findLocationTree returns the right Element!" <<std::endl;
+			return tmp;
+		}
+	}
+	// }
+	// std::cout << std::endl;
+	// std::cout << " you need to create the tree to use this algorithm, put flag = 1 " <<std::endl;
+	std::cout << "findLocationTree returns 0!" <<std::endl;
+	return Element<3*ORDER,2,3>();
+}
+
+template <UInt ORDER>
 Real MeshHandler<ORDER,2,3>::elementMeasure(Id id) const
 {
 	std::vector<Point> p;
@@ -417,11 +470,21 @@ void MeshHandler<ORDER,2,3>::printElements(std::ostream & out)
 template <UInt ORDER>
 MeshHandler<ORDER,3,3>::MeshHandler(SEXP mesh)
 {
+
 	mesh_ = mesh;
+	points_ = REAL(VECTOR_ELT(mesh_, 2));
+	elements_ = INTEGER(VECTOR_ELT(mesh_, 3));
 	num_nodes_ = INTEGER(VECTOR_ELT(mesh_,0))[0];
 	num_elements_ = INTEGER(VECTOR_ELT(mesh_,1))[0];
-	points_.assign(REAL(VECTOR_ELT(mesh_, 2)) , REAL(VECTOR_ELT(mesh_, 2)) + 3*num_nodes_);
-	elements_.assign(INTEGER(VECTOR_ELT(mesh_, 3)), INTEGER(VECTOR_ELT(mesh_, 3))+ (6*ORDER-2)*num_elements_);
+	
+	ADTree<Element<6*ORDER-2,3,3>> tmp(points_, elements_, num_nodes_, num_elements_);
+    tree_ = tmp;
+
+	// mesh_ = mesh;
+	// num_nodes_ = INTEGER(VECTOR_ELT(mesh_,0))[0];
+	// num_elements_ = INTEGER(VECTOR_ELT(mesh_,1))[0];
+	// points_.assign(REAL(VECTOR_ELT(mesh_, 2)) , REAL(VECTOR_ELT(mesh_, 2)) + 3*num_nodes_);
+	// elements_.assign(INTEGER(VECTOR_ELT(mesh_, 3)), INTEGER(VECTOR_ELT(mesh_, 3))+ (6*ORDER-2)*num_elements_);
 //	std::for_each(elements_.begin(), elements_.end(), [](int& i){i-=1;});
 }
 #endif
@@ -461,6 +524,44 @@ Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::findLocationNaive(Point point) co
 	}
 	//std::cout<<"Point not found \n";
 	return Element<6*ORDER-2,3,3>(); //default element with NVAL ID
+}
+
+template <UInt ORDER>
+Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::findLocationTree(const Point& point) const {
+	// if(flag_ == 1){
+	std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
+	std::vector<Real> region(6);
+	bool result;
+	std::set<int> found;
+	int index;
+	Element<6*ORDER-2,3,3> tmp;
+	region[0] = point[0];	
+	region[1] = point[1];
+	region[2] = point[2];
+	region[3] = point[0];
+	region[4] = point[1];
+	region[5] =	point[2];
+
+	result = tree_.search(region, found);
+	if(result == 0) {
+		std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
+		return Element<6*ORDER-2,3,3>();
+	}
+	for (std::set<int>::iterator i = found.begin(); i != found.end(); i++) {
+		index = *i;
+		index = this -> tree_.pointId(index);
+  		tmp = this -> getElement(index);
+		result = tmp.isPointInside(point);
+		if(result == 1) {
+			std::cout << "findLocationTree returns the right Element!" <<std::endl;
+			return tmp;
+		}
+	}
+	// }
+	// std::cout << std::endl;
+	// std::cout << " you need to create the tree to use this algorithm, put flag = 1 " <<std::endl;
+	std::cout << "findLocationTree returns 0!" <<std::endl;
+	return Element<6*ORDER-2,3,3>();
 }
 
 template <UInt ORDER>
