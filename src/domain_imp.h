@@ -25,14 +25,9 @@ Domain<T>::Domain(std::vector<std::vector<Real> > const & coord) {
 	 * If loops are put outside for loops in order to improve performance.
 	 */
 	if(ndimp == int(coord.size())) {
-		//*************added
-		std::cout << "Domain Constructor: ndimp == coord.size() " << std::endl;
-		// T is equal to Point<NDIMP>, Triangle<NDIMP> or Tetrahedron.
-		//**************Why do you write <NDIMP> at end of Point and Triangle?
-		//*********** should be Point, Triangle<NNODES>, Box<2>, Box<3>
+		// T is equal to Point<3>, Element<mydim, ndim>, Box<NDIMP>
 		if(T::dp() == T::dt()) {
-			// T is equal to Point<NDIMP>
-			//*********** T is equal to Point
+			// T is equal to Point<3>
 			for(int i = 0; i < ndimp; ++i) {
 				origin_[i] = *(std::min_element(coord[i].begin(), coord[i].end()));
 				scalingfactors_[i] = *(std::max_element(coord[i].begin(), coord[i].end()));
@@ -46,8 +41,7 @@ Domain<T>::Domain(std::vector<std::vector<Real> > const & coord) {
 				scalingfactors_[i] = 1./std::max(delta, getmindiff());
 			}
 		} else {
-			// T is equal to Triangle<NDIMP> or Tetrahedron.
-			//********* T is equal to Triangle<NNODES>, Box<2>, Box<3>
+			// T is equal to Element<mydim, ndim>, Box<NDIMP>
 			for(int i = 0; i < ndimp; ++i) {
 				origin_[i] = *(std::min_element(coord[i].begin(), coord[i].end()));
 				scalingfactors_[i] = *(std::max_element(coord[i].begin(), coord[i].end()));
@@ -68,10 +62,7 @@ Domain<T>::Domain(std::vector<std::vector<Real> > const & coord) {
 			}
 		}
 	} else {
-		//*************added
-		std::cout << "Domain Constructor: ndimp != coord.size() " << std::endl;
-		// *********T is equal to Box<NDIMP>.
-		//Special case of Point in 2-dimen
+		//Special case of Point<2> because Point has default myDim=3
 		if(T::dp() == T::dt()) {
 			int realndimp = int(coord.size()); // in case of 2-dimen Point (default dimension is 3 and real dimension is 2)
 			//need to resize the vectors of origin_, scalingfactors_
@@ -92,7 +83,6 @@ Domain<T>::Domain(std::vector<std::vector<Real> > const & coord) {
 			}
 		}
 
-		// ******************* still don't know purpose of this original code
 		// for(int i = 0; i < ndimp; ++i) {
 		// 	origin_[i] = *(std::min_element(coord[i].begin(), coord[i].end()));
 
@@ -127,8 +117,7 @@ std::ostream & operator<<(std::ostream & ostr, Domain<T> const & d) {
 	ostr << "Domain" << std::endl;
 	ostr << "------" << std::endl;
 
-	int dimp = d.origin_.size(); //not recommended to use T::dp() because of 2-dimen Point
-						// ******************T::dp() => d.getoriginsize() changed
+	int dimp = d.origin_.size(); //not recommended to use T::dp() because of exception case of Point<2>
 	for(int i = 0; i < dimp; ++i)
 		ostr << "x" << i+1 << "_min = " << d.origin_[i] << std::endl;
 	ostr << std::endl;

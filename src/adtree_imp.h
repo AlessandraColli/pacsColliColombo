@@ -20,8 +20,7 @@ ADTree<Shape>::ADTree(Tree_Header<Shape> const & header): header_(header) {
 }
 
 
-//*************using Triangle<NNODES> as shape. So directly used 2 as dimension inside the logic
-// *********at this point, it is inserting the point in the tree
+//Shape is given as Element<NNODES,myDim,nDim> from mesh.h
 template<class Shape>
 ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, const UInt num_nodes, const UInt num_triangle) {
   // if(typeid(Shape) != typeid(Triangle<3>) && typeid(Shape) != typeid(Triangle<6>)) {
@@ -39,13 +38,31 @@ ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, co
     // step1: Construct Tree_Header
     std::vector<std::vector<Real> > vcoord;
     vcoord.resize(ndimp);
-    for (int i = 0; i < ndimp; i++) {
-      vcoord[i].resize(num_nodes);
-      for(int j = 0; j < num_nodes; j++) {
-      vcoord[i][j] = points[i*num_nodes + j];	
-	     }
+
+    if (ndimp == 2)  { //when ndimp==2, existing logic
+      for (int i = 0; i < ndimp; i++) {
+        vcoord[i].resize(num_nodes);
+        for(int j = 0; j < num_nodes; j++) {
+        vcoord[i][j] = points[i*num_nodes + j]; 
+         }
+      }
+    } else { //when ndimp ==3
+      //else clause to be deleted after integrating mesh structure of 2D vs 2.5,3D
+      for (int i = 0; i < ndimp; i++) {
+        vcoord[i].resize(num_nodes);
+        for(int j = 0; j < num_nodes; j++) {
+        vcoord[i][j] = points[i + ndimp*j]; 
+         }
+      }
     }
-	
+
+    // for (int i = 0; i < ndimp; i++) {
+    //   vcoord[i].resize(num_nodes);
+    //   for(int j = 0; j < num_nodes; j++) {
+    //   vcoord[i][j] = points[i*num_nodes + j]; 
+    //    }
+    // }
+  
     Domain<Shape> mydom(vcoord);
     
     //expect to have 'num_triangle' number of TreeNode
@@ -71,15 +88,29 @@ ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, co
 
     // Fill the tree.
     UInt idpt;
+
     //point is single Element, composed of vector of points
-    std::vector<Real> point(nvertex*ndimp); //*******replaced 6
+    std::vector<Real> point(nvertex*ndimp); //6
     for ( int i = 0; i < num_triangle; i++ ) {
-      for (int j = 0; j < nvertex ; j++) {
-        for (int l = 0; l < ndimp ; l++) {
-          idpt = triangle[j*num_triangle + i];
-          point[j*ndimp + l] =  points[idpt + l*num_nodes];
+
+
+      if (ndimp == 2) { //when ndimp==2, existing logic
+        for (int j = 0; j < nvertex ; j++) {
+          for (int l = 0; l < ndimp ; l++) {
+            idpt = triangle[j*num_triangle + i];
+            point[j*ndimp + l] =  points[idpt + l*num_nodes];
+          }
+        }
+      }else { //when ndimp==3
+        //else clause to be deleted after integrating mesh structure of 2D vs 2.5,3D
+        for (int j=0; j< nvertex; j++) {
+          for (int l=0; l < ndimp; l++) {
+            idpt = triangle[j + i*nvertex];
+            point[j*ndimp + l] =  points[idpt*ndimp + l];
+          }
         }
       }
+
       // idpt = triangle[0*num_triangle + i];
       // point[0] = points[idpt];
       // point[1] = points[idpt+num_nodes];
@@ -95,8 +126,8 @@ ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, co
 
       //insert Element into tree
       this -> addtreenode(i ,point, key);
-     }
-     //***************different from the paper, it is not inserting the point but the triangle??
+     } //end of for loop
+     
   }
 
 
@@ -118,14 +149,6 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords, std::vect
   int iava = header_.getiava();
   int iend = header_.getiend();
   int dimt = header_.getndimt();
-  // std:: cout << "==================================================" << std::endl;
-  // // std:: cout << "Number of logical locations currently used in the tree" << std::endl;
-  // // std:: cout << nele << std::endl;
-  // std:: cout << "Next available location in the stack" << std::endl;
-  // std:: cout << iava << std::endl;
-  // std:: cout << "Next available location in the yet not allocated part of the tree " << std::endl;
-  // std:: cout << iend << std::endl;
-  
 
   std::vector<Real> x;
   x.reserve(dimt);
@@ -151,12 +174,6 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords, std::vect
     x.push_back(val);
   }
 
-  std:: cout << "Triangle Id :" << shapeid << std::endl;  
-  std:: cout << "Scaled Coordinate of the bounding box" << std::endl;
-  for (size_t i = 0; i < x.size(); i++) {
-        std:: cout << x[i] << ", ";
-  }
-  std:: cout << std::endl;  
 
   /* x now stores the scaled coordinates of the object's bounding box: x_i \in (0,1)
    * If Shape = Point<NDIMP> or Box<NDIMP>, the object and its bounding box coincide.
@@ -169,8 +186,6 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords, std::vect
   int currentlev = 0;
   short int edge = 0;
   
-
-  std:: cout << "************" << std::endl;
   while(ipoi != 0) { // finish while when ipoi == 0
     // Get the current dimension.
     int id = searchdim(currentlev, dimt);
@@ -183,25 +198,14 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords, std::vect
 
     x[id] *= 2.;
     ifth = ipoi;
-    std:: cout << "Get the current dimension : " << id << std::endl;
-
-    std:: cout << "multipled x vector" << std::endl;
-    for (size_t i = 0; i < x.size(); i++) {
-          std:: cout << x[i] << ", ";
-    }
-    std:: cout << std::endl;  
-
-
+    
     if(x[id] < 1.) {
-      std:: cout << "GO LEFT" << std::endl;      
       // Go to the left.
       edge = 0;
     } else {
       // Go to the right.
-      std:: cout << "GO RIGHT" << std::endl;      
       edge = 1;
-      --x[id];
-      std:: cout << x[id] << std::endl;      
+      --x[id];    
     }
     // Next level.
     ++currentlev;
@@ -209,11 +213,6 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords, std::vect
     // If reached to terminal node, the getchild will always be 0 (i.e. ipoi will be 0)
     // Goal: update ifth which will be the terminal node
   }
-  std:: cout << "************" << std::endl;
-
-
-  std:: cout << "Current level : " << std::endl;
-  std:: cout << currentlev << std::endl;
 
   if( iava == iend ) {// before any deletion
     /*
@@ -229,7 +228,7 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords, std::vect
 
   int neletmp = nele;
   // Add the node in the next available location.
-  int ipoitmp = iava; //**********************why is ipoitmp is used instead of iava???
+  int ipoitmp = iava;
   // iava is the next available location.
   int iavatmp = data_[ipoitmp].getchild(0); //should return the position of left child
   ++neletmp;
@@ -249,10 +248,7 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords, std::vect
 
   // iava is the next available location.
   iava = data_[ipoi].getchild(0); //should return the position of left child
-  //*******but it should be always empty right??
-  std:: cout << "iava should be always empty" << std::endl;
-  std:: cout << iava << std::endl;
-
+  
   ++nele;
   if(iava == 0) {
     if( iend > header_.gettreeloc() ) {
@@ -296,8 +292,8 @@ int ADTree<Shape>::handledomerr(Id shapeid, std::vector<Real> const & coords, st
   }
   catch(TreeDomainError<Shape> de) {
     // Handle a TreeDomainError exception.
-    std::cout << "error!	" << de.getnelep1() << "-th object which is to be inserted into the tree is out of domain"
-	      << std::endl;
+    std::cout << "error!  " << de.getnelep1() << "-th object which is to be inserted into the tree is out of domain"
+        << std::endl;
     std::cout << "Coordinates" << std::endl;
     std::cout << "-----------" << std::endl;
     std::cout << de;
@@ -387,18 +383,16 @@ bool ADTree<Shape>::search(std::vector<Real> const & region, std::set<int> & fou
   for(int i = 0; i < dimp; ++i) {
     double orig = header_.domainorig(i);
     double scal = header_.domainscal(i);
-    if(region[i] > orig+(1./scal)) { // ********** region[i] should be min of what we are searching for, 
-                                      // *********** orig + (1./scal) should be max of our domain
+    if(region[i] > orig+(1./scal)) { //region[i]: min of what we are searching for, orig+(1./scal): max of our domain
       return 0;
     }
-    if(region[i+dimp] < orig) {  // ********** region[i+dimp] should be max of what we are searching for, 
-                                // *********** orig should be min of our domain
+    if(region[i+dimp] < orig) {  // region[i+dimp]:max of what we are searching for, orig: min of our domain
       return 0;
     }
   }
 
   // Rescale the region.
-  // *********** box is rescaled region
+  // box is rescaled region
   for(int i = 0; i < dimp; ++i) {
     Real orig = header_.domainorig(i);
     Real scal = header_.domainscal(i);
@@ -415,19 +409,19 @@ bool ADTree<Shape>::search(std::vector<Real> const & region, std::set<int> & fou
    */
   while(ipoi != 0) {
     do {
-      //*******xel is rescaled data_[ipoi]
+      //xel is rescaled data_[ipoi]
       for(int i = 0; i < dimt; ++i) {
-      	Real orig = header_.domainorig(i);
-      	Real scal = header_.domainscal(i);
-      	xel[i] = (data_[ipoi].getcoord(i)-orig)*scal;
+        Real orig = header_.domainorig(i);
+        Real scal = header_.domainscal(i);
+        xel[i] = (data_[ipoi].getcoord(i)-orig)*scal;
       }
 
-      //*************well when we have boxes, it is NOT dimp == dimt?!?!
       if(dimp == dimt) {
-    	/*
-    	 * This function works when we have either points or boxes.
-    	 * In the first case we have to repeat the object's coordinates.
-    	 */
+        std::cout << "when dimp == dimt but in our case, there shouldn't be this case" << std::endl;
+      /*
+       * This function works when we have either points or boxes.
+       * In the first case we have to repeat the object's coordinates.
+       */
         for(int i = 0; i < dimp; ++i) xel[i+dimp] = xel[i];
       }
 
@@ -436,53 +430,50 @@ bool ADTree<Shape>::search(std::vector<Real> const & region, std::set<int> & fou
       for(int i = 0; i < dimp; ++i) {
         if(box[i] > xel[i+dimp]) { flag = 1; }
         if(box[i+dimp] < xel[i]) { flag = 1; }
-        //**********Changed the order to be consistent as above 
-      	// if(xel[i] > box[i+dimp]) { flag = 1; }
-      	// if(xel[i+dimp] < box[i]) { flag = 1; }
       }
 
       if(flag == 0) {
-      	found.insert(ipoi); //insert the first node that if found and then go on with the sub-tree
-      	/*
-      	 * Put here all the action needed when an element is found which
-      	 * intersects the box.
-      	 */
+        found.insert(ipoi); //insert the first node that if found and then go on with the sub-tree
+        /*
+         * Put here all the action needed when an element is found which
+         * intersects the box.
+         */
       }
 
       // Traverse left subtree.
       ipoiNext = data_[ipoi].getchild(0);
-		    
+        
       // Check if subtree intersects box.
       if(ipoiNext != 0) {
-    	  int id = searchdim(lev, dimt);
-    	  double amov = delta(lev, dimt);
-    			
-    	  if (id < dimp) {
-    	      if(xl[id] > box[id+dimp]) {
-    		      ipoiNext = 0;
-    		    }
-  	    } else {
-    	    if(xl[id]+amov < box[id-dimp]) {
-    	      ipoiNext = 0;
-    	    }
-    	  }
-    	}
-		    
+        int id = searchdim(lev, dimt);
+        double amov = delta(lev, dimt);
+          
+        if (id < dimp) {
+            if(xl[id] > box[id+dimp]) {
+              ipoiNext = 0;
+            }
+        } else {
+          if(xl[id]+amov < box[id-dimp]) {
+            ipoiNext = 0;
+          }
+        }
+      }
+        
       /*
        * Left subtree is neither null nor 'external'.
        * Push ipoi onto the stack.
        */
       if (ipoiNext != 0) {
-      	std::vector<Real> stackele;
-      	stackele.reserve(dimt+2);
-      	stackele.push_back(ipoi);
-      	for (int i = 0; i < dimt; ++i) {
-      	  stackele.push_back(xl[i]);
-      	}
-      	stackele.push_back(lev);
-      	_stack.push(stackele);
-      	ipoi = ipoiNext;
-      	++lev;
+        std::vector<Real> stackele;
+        stackele.reserve(dimt+2);
+        stackele.push_back(ipoi);
+        for (int i = 0; i < dimt; ++i) {
+          stackele.push_back(xl[i]);
+        }
+        stackele.push_back(lev);
+        _stack.push(stackele);
+        ipoi = ipoiNext;
+        ++lev;
       }
 
     } while(ipoiNext != 0);
@@ -491,18 +482,18 @@ bool ADTree<Shape>::search(std::vector<Real> const & region, std::set<int> & fou
     ++lev;
     ipoi = data_[ipoi].getchild(1);
     do {
+      // If right_link is null we have to get the point from the stack.
       while (ipoi == 0) {
-      	// If right_link is null we have to get the point from the stack.
-      	if(_stack.empty()) {
-      	  return !found.empty();
-      	}
-      	std::vector<Real> stackele(_stack.top());
-      	_stack.pop();
-      	ipoi = data_[stackele[0]].getchild(1);
-      	for(int i = 0; i < dimt; ++i) {
-      	  xl[i] = stackele[i+1];
-      	}
-      	lev = stackele[dimt+1]+1;
+        if(_stack.empty()) { //when reached last right_link,
+          return !found.empty(); //searching finished
+        }
+        std::vector<Real> stackele(_stack.top());
+        _stack.pop();
+        ipoi = data_[stackele[0]].getchild(1);
+        for(int i = 0; i < dimt; ++i) {
+          xl[i] = stackele[i+1];
+        }
+        lev = stackele[dimt+1]+1;
       }
 
       /*
@@ -521,13 +512,13 @@ bool ADTree<Shape>::search(std::vector<Real> const & region, std::set<int> & fou
       Real x1 = xl[id];
       Real x2 = xl[id]+amov;
       if(id < dimp) {
-      	if(x1 > box[id+dimp]) {
-      	  ipoi=0;
-      	}
+        if(x1 > box[id+dimp]) {
+          ipoi=0;
+        }
       } else {
-      	if(x2 < box[id-dimp]) {
-      	  ipoi=0;
-      	}
+        if(x2 < box[id-dimp]) {
+          ipoi=0;
+        }
       }
     } while(ipoi == 0);
 
@@ -565,15 +556,15 @@ void ADTree<Shape>::deltreenode(int const & index) {
         int ir = data_[ipoiNext].getchild(1);
         // Traverse the tree to find an empty leaf.
         while( (il != 0) || (ir != 0) ) {
-        	il = data_[ipoiNext].getchild(0);
-        	ir = data_[ipoiNext].getchild(1);
-        	if(il != 0) {
-        	  flag = 0;
-        	  ipoiNext = il;
-        	} else if(ir != 0) {
-        	  flag = 1;
-        	  ipoiNext = ir;
-        	}
+          il = data_[ipoiNext].getchild(0);
+          ir = data_[ipoiNext].getchild(1);
+          if(il != 0) {
+            flag = 0;
+            ipoiNext = il;
+          } else if(ir != 0) {
+            flag = 1;
+            ipoiNext = ir;
+          }
         }
 
         data_[ifth].setchild(whichchild, ipoiNext);
@@ -581,12 +572,12 @@ void ADTree<Shape>::deltreenode(int const & index) {
         data_[foo_f].setchild(flag, 0);
         data_[ipoiNext].setfather(ifth);
         if(ipoiNext != lchild) {
-        	data_[ipoiNext].setchild(0, lchild);
-        	data_[lchild].setfather(ipoiNext);
+          data_[ipoiNext].setchild(0, lchild);
+          data_[lchild].setfather(ipoiNext);
         }
         if(ipoiNext != rchild) {
-        	data_[ipoiNext].setchild(1, rchild);
-        	data_[rchild].setfather(ipoiNext);
+          data_[ipoiNext].setchild(1, rchild);
+          data_[rchild].setfather(ipoiNext);
         }
       }
 

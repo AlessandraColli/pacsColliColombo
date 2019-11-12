@@ -52,6 +52,9 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::getElement(Id id) const
 	{
 		id_current_point = elements_[i*num_elements_ + id];
 		element_points[i]= Point(id_current_point, Identifier::NVAL, points_[id_current_point],points_[num_nodes_+id_current_point]);
+						  
+								  
+												
 	}
 	return Element<3*ORDER,2,2>(id, element_points);
 }
@@ -293,7 +296,7 @@ void MeshHandler<ORDER,2,3>::importfromCSV(std::string &filename){
 	ss >> nnodes;
 
 	num_nodes_ = nnodes;
-	// points_.resize(3*nnodes); //************changed points_ to pointer type
+	// points_.resize(3*nnodes);
 
 	// Read the number of points
 	getline(file,line);
@@ -303,7 +306,7 @@ void MeshHandler<ORDER,2,3>::importfromCSV(std::string &filename){
 	ss2 >> ntriangles;
 
 	num_elements_ = ntriangles;
-	// elements_.resize(3*ORDER*ntriangles); //************changed elements_ to pointer type
+	// elements_.resize(3*ORDER*ntriangles);
 
 
 	getline(file,line); //skip a white line
@@ -359,8 +362,12 @@ Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::getElement(Id id) const
 	{
 		id_current_point = elements_[3*ORDER * id + i];
 		element_points[i]= Point(id_current_point, Identifier::NVAL, points_[3*id_current_point],points_[3*id_current_point+1],points_[3*id_current_point+2]);
+						  
+									
+									  
+									   
 	}
-	return Element<3*ORDER,2,3>(id, element_points);
+	return Element<3*ORDER,2,3>(id, element_points);	 													
 }
 
 template <UInt ORDER>
@@ -426,6 +433,10 @@ Real MeshHandler<ORDER,2,3>::elementMeasure(Id id) const
 	{
 		id_current_point = elements_[3*ORDER * id + i];
 		p[i]= Point(id_current_point, Identifier::NVAL, points_[3*id_current_point],points_[3*id_current_point+1],points_[3*id_current_point+2]);
+					   
+								 
+								   
+									
 	}
 	Real a2 = std::pow(p[1][0]-p[2][0],2)+std::pow(p[1][1]-p[2][1],2)+std::pow(p[1][2]-p[2][2],2);
 	Real b2 = std::pow(p[0][0]-p[2][0],2)+std::pow(p[0][1]-p[2][1],2)+std::pow(p[0][2]-p[2][2],2);
@@ -507,8 +518,12 @@ Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::getElement(Id id) const
 	{
 		id_current_point = elements_[(6*ORDER-2) * id + i];
 		element_points[i]= Point(id_current_point, Identifier::NVAL, points_[3*id_current_point],points_[3*id_current_point+1],points_[3*id_current_point+2]);
+						  
+									
+									  
+									   
 	}
-	return Element<6*ORDER-2,3,3>(id, element_points);
+	return Element<6*ORDER-2,3,3>(id, element_points);													  
 }
 
 template <UInt ORDER>
@@ -574,6 +589,10 @@ Real MeshHandler<ORDER,3,3>::elementMeasure(Id id) const
 	{
 		id_current_point = elements_[(6*ORDER-2) * id + i];
 		p[i]= Point(id_current_point, Identifier::NVAL, points_[3*id_current_point],points_[3*id_current_point+1],points_[3*id_current_point+2]);
+					   
+								 
+								   
+									
 	}
 	Real volume = std::abs((p[1][0]-p[0][0])*((p[2][1]-p[0][1])*(p[3][2]-p[0][2])-(p[3][1]-p[0][1])*(p[2][2]-p[0][2]))-(p[2][0]-p[0][0])*((p[1][1]-p[0][1])*(p[3][2]-p[0][2])-(p[3][1]-p[0][1])*(p[1][2]-p[0][2]))+(p[3][0]-p[0][0])*((p[1][1]-p[0][1])*(p[2][2]-p[0][2])-(p[2][1]-p[0][1])*(p[1][2]-p[0][2])))/6;
 	return volume;

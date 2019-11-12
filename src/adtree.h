@@ -92,14 +92,8 @@ public:
    */
   ADTree(Tree_Header<Shape> const & header);
   
-  //******************** I should make it compatible with 3D mesh, Element<3,2,2 / 3,2,3 / 3,3,3 / 6,2,2 / 6,2,3 /6,3,3>
-  
-  /** A constructor especially designed for building the tree associated to 2D mesh object, the mesh is formed by Triangle<3/6>.
-   *
-   *	It fills all the locations of the tree. Object's coordinates are stored to perform
-   *	searching operations. 
-   *	Template parameter must be equal to Triangle<3>
-   * 	see mesh_handler to verify what points and triangle must contatin
+  /** It fills all the locations of the tree. Object's coordinates are stored to perform searching operations. 
+   * 	See mesh_handler to verify what points and triangle must contain.
    */
   ADTree(Real const * const points, UInt const * const triangle, UInt num_nodes, UInt num_triangle);
 

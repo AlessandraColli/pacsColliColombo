@@ -16,9 +16,6 @@
 #include "exception_handling.h"
 
 
-//***************If Point is Shape, Domain will always say T::dp() =3.
-//***************check whether this will not be the problem!!
-//********* I recommmed to create the point from Box, not from Domain
 
 /**	\class Header
  * 	\brief It contains general information about the tree.

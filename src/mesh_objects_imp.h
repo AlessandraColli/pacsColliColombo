@@ -1,4 +1,4 @@
-//#include "mesh_objects.hpp"
+//#include "mesh_objects.h"
 #ifndef __MESH_OBJECTS_IMP_H__
 #define __MESH_OBJECTS_IMP_H__
 
@@ -274,7 +274,6 @@ bool Element<NNODES,2,3>::isPointInside(const Point& point) const
 template <UInt NNODES>
 int Triangle<NNODES,2,3>::getPointDirection(const Point& point) const
 {
-
 	//da implementare
 	std::cerr<<"ancora da implementare";
 }

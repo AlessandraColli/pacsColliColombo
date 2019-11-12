@@ -38,10 +38,10 @@ public:
 //!  This class implements a 3D point, the default is z=0 => 2D point
 class Point: public Identifier{
 public:
-	//physical dimension of the point
-	UInt ndim;
-	static const UInt myDim=3; //set as default 3
-							   //myDim setting is used when calling T::dp() as template (used in domain_imp.h)
+	UInt ndim; //ndim is the dimension of the space in which the object is embedded
+	static const UInt myDim=3;  //mydim is the dimension of the object
+	//set as default 3
+   //myDim setting is used when calling T::dp() as template (used in domain_imp.h)
 	
 	Point(): Identifier(NVAL, NVAL){coord_.resize(3);
 			ndim=3;}
@@ -68,6 +68,7 @@ public:
 
 private:
 	std::vector<Real> coord_;
+							  
 };
 
 
@@ -133,7 +134,8 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     static const UInt numVertices=3;
     static const UInt numSides=3;
-	static const UInt myDim=2;
+	static const UInt myDim=2; //mydim is the dimension of the object
+	static const UInt nDim=2; //ndim is the dimension of the space in which the object is embedded
 
     //! This constructor creates an "empty" Element, with an Id Not Valid
 	Element():Identifier(NVAL){points_.resize(NNODES);}
@@ -142,7 +144,8 @@ public:
     Element(Id id, const std::vector<Point>& points) : Identifier(id),points_(points)
 	{ this->computeProperties(); }
 
-	//! This constructor creates an Element, given its a std::vector that will define the Element, it's necessary for communicate with ADTree structure
+	//! This constructor creates an Element, given its a std::vector that will define the Element.
+	// It's necessary for communicate with ADTree structure
     Element(const std::vector<Real> & points) : Identifier(NVAL) {
     //need to reconstruct vector<Real> points to vector<Point> points_
     std::vector<Point> tmp;
@@ -163,13 +166,13 @@ public:
 	Point operator[](UInt i) const {return points_[i];}
 
 	// Returns the number of physical space dimension.
-	inline static constexpr int dp() { return myDim; }
+	inline static constexpr int dp() { return nDim; }
 	
 	// Returns the number of dimensions used for the search (2*2)
-	inline static constexpr int dt() { return myDim*2; }
+	inline static constexpr int dt() { return nDim*2; }
 
 	// Returns the size of coordinate array. (3*2)
-	inline static constexpr int coordsize() { return numVertices*myDim; }
+	inline static constexpr int coordsize() { return numVertices*nDim; }
 
 
 	//! A member that computes the barycentric coordinates.
@@ -259,7 +262,8 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     static const UInt numVertices=3;
     static const UInt numSides=3;
-	static const UInt myDim=3;
+	static const UInt myDim=2; //mydim is the dimension of the object
+	static const UInt nDim=3; //ndim is the dimension of the space in which the object is embedded
 
     //! This constructor creates an "empty" Element, with an Id Not Valid
 	Element():Identifier(NVAL){points_.resize(NNODES);}
@@ -289,13 +293,13 @@ public:
 	Point operator[](UInt i) const {return points_[i];}
 
 	// Returns the number of physical space dimension.
-	inline static constexpr int dp() { return myDim; }
+	inline static constexpr int dp() { return nDim; }
 	
 	// Returns the number of dimensions used for the search (3*2)
-	inline static constexpr int dt() { return myDim*2; }
+	inline static constexpr int dt() { return nDim*2; }
 
 	// Returns the size of coordinate array. (3*3)
-	inline static constexpr int coordsize() { return numVertices*myDim; }
+	inline static constexpr int coordsize() { return numVertices*nDim; }
 
 	//! A member that computes the barycentric coordinates.
     /*!
@@ -345,8 +349,9 @@ class Element<NNODES,3,3> : public Identifier {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     static const UInt numVertices=4;
-    static const UInt numSides=6;
-    static const UInt myDim=3;
+    static const UInt numSides=3; //to be validated
+    static const UInt myDim=3; //mydim is the dimension of the object
+	static const UInt nDim=3; //ndim is the dimension of the space in which the object is embedded
 
     //! This constructor creates an "empty" Tetrahedron, with an Id Not Valid
 	Element():Identifier(NVAL){points_.resize(NNODES);}
@@ -377,13 +382,13 @@ public:
 	Point operator[](UInt i) const {return points_[i];}
 
 	// Returns the number of physical space dimension.
-	inline static constexpr int dp() { return myDim; }
+	inline static constexpr int dp() { return nDim; }
 	
 	// Returns the number of dimensions used for the search (3*2)
-	inline static constexpr int dt() { return myDim*2; }
+	inline static constexpr int dt() { return nDim*2; }
 
 	// Returns the size of coordinate array. (4*3)
-	inline static constexpr int coordsize() { return numVertices*myDim; }
+	inline static constexpr int coordsize() { return numVertices*nDim; }
 
 	//! A member that computes the barycentric coordinates.
     /*!
