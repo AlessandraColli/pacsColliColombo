@@ -85,12 +85,12 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 	Element<Nodes,2,3> current_element;
 	Point current_point;
 
-	Eigen::Matrix<Real,Nodes,1> coefficients;;
+	Eigen::Matrix<Real,Nodes,1> coefficients;
 	for (int i = 0; i<length; ++i)
-	{
+	{	
 		current_point = Point(X[i],Y[i],Z[i]);
 		current_element = mesh_.findLocationTree(current_point);
-
+		
 		if(current_element.getId() == Identifier::NVAL)
 		{
 			isinside[i]=false;
@@ -102,6 +102,7 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 			{
 				coefficients[j] = coef[current_element[j].getId()];
 			}
+			
 			result[i] = evaluate_point<Nodes,2,3>(current_element, current_point, coefficients);
 		}
 	}

@@ -223,10 +223,9 @@ Eigen::Matrix<Real,3,1> Element<NNODES,2,3>::getBaryCoordinates(const Point& poi
 template <UInt NNODES>
 bool Element<NNODES,2,3>::isPointInside(const Point& point) const
 {
-	//Real eps = 2.2204e-016;
-		 //tolerance = 10 * eps;
-// First: check consistency trough Rouchè-Capelli theorem
-
+	Real eps = 2.2204e-016;
+	Real tolerance = 10 * eps;
+	// First: check consistency trough Rouchè-Capelli theorem
 	Element<NNODES,2,3> t=*this;
 
 	Eigen::Matrix<Real,3,2> A;
@@ -254,19 +253,21 @@ bool Element<NNODES,2,3>::isPointInside(const Point& point) const
 //		#endif
 //	}
 	
-	
-	err = A*sol-b;
-	
-	Real tolerance = (A(0,0)*A(0,0) + A(1,0)*A(1,0) + A(2,0)*A(2,0) + A(0,1)*A(0,1) + A(1,1)*A(1,1) + A(2,1)*A(2,1))/4;
-	
-	#ifdef R_VERSION_
-	Rprintf("err: %d , tolerance= %d \n",err(0)*err(0) + err(1)*err(1) + err(2)*err(2), tolerance);
-	#endif
+	// #ifdef R_VERSION_
+	// Rprintf("err: %d , tolerance= %d \n",err(0)*err(0) + err(1)*err(1) + err(2)*err(2), tolerance);
+	// #endif
 
-	if((err(0)*err(0) + err(1)*err(1) + err(2)*err(2)) < tolerance ){
+	err = A*sol-b;
+
+	if(err(0)*err(0) < tolerance && err(1)*err(1) < tolerance && err(2)*err(2) < tolerance){
 		return((sol(0)+sol(1)<=1) && (sol(0)>=0) && (sol(1)>=0));
 	}else{
 		return 0;}
+
+	// if((err(0)*err(0) + err(1)*err(1) + err(2)*err(2)) < tolerance ){
+	// 	return((sol(0)+sol(1)<=1) && (sol(0)>=0) && (sol(1)>=0));
+	// }else{
+	// 	return 0;}
 }
 
 
