@@ -26,7 +26,7 @@ in the triangulation, when the domain has holes.}
 \item{triangles}{A #triangles-by-3 (when \code{order} = 1) or #triangles-by-6 (when \code{order} = 2) matrix.
 This option is used when a triangulation is already available. It specifies the triangles giving the row's indices in \code{nodes} of the triangles' vertices and (when \code{nodes} = 2) also if the triangles' edges midpoints. The triangles' vertices and midpoints are ordered as described 
 at \cr https://www.cs.cmu.edu/~quake/triangle.highorder.html.
-In this case the function \code{create.MESH.2D} is used to produce a complete MESH2D object.}
+In this case the function \code{create.MESH.2D} is used to produce a complete MESH.2D object.}
 
 \item{order}{Either '1' or '2'. It specifies wether each mesh triangle should be represented by 3 nodes (the triangle' vertices) or by 6 nodes (the triangle's vertices and midpoints). 
 These are
@@ -37,7 +37,7 @@ during the triangulation. When \code{verbosity} = 2 the triangulation process is
 Default is \code{verbosity} = 0.}
 }
 \value{
-An object of the class MESH2D with the following output:
+An object of the class MESH.2D with the following output:
 \item{\code{nodes}}{A #nodes-by-2 matrix containing the x and y coordinates of the mesh nodes.}
 \item{\code{nodesmarkers}}{A vector of length #nodes, with entries either '1' or '0'. An entry '1' indicates that the corresponding node is a boundary node; an entry '0' indicates that the corresponding node is not a boundary node.}
 \item{\code{nodesattributes}}{nodesattributes A matrix with #nodes rows containing nodes' attributes. 
