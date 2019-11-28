@@ -68,7 +68,7 @@
 
 smooth.FEM.FPCA<-function(locations = NULL, datamatrix, FEMbasis, incidence_matrix = NULL, lambda, nPC = 1, validation = NULL, NFolds = 5, GCVmethod = "Stochastic", nrealizations = 100)
 {
- if(class(FEMbasis$mesh) == "MESH2D"){
+ if(class(FEMbasis$mesh) == "MESH.2D"){
  	ndim = 2
  	mydim = 2
  }else if(class(FEMbasis$mesh) == "MESH.2.5D"){
@@ -104,7 +104,7 @@ smooth.FEM.FPCA<-function(locations = NULL, datamatrix, FEMbasis, incidence_matr
 	  ################## End checking parameters, sizes and conversion #############################
   
   bigsol = NULL
-  if(class(FEMbasis$mesh) == 'MESH2D'){
+  if(class(FEMbasis$mesh) == 'MESH.2D'){
 	  print('C++ Code Execution')
 	  bigsol = CPP_smooth.FEM.FPCA(locations, datamatrix, FEMbasis, incidence_matrix,
 	  								lambda, ndim, mydim, nPC, validation, NFolds, 

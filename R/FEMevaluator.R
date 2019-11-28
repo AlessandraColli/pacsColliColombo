@@ -1,12 +1,13 @@
 #' Evaluate a FEM object at a set of point locations
 #' 
 #' @param FEM A \code{FEM} object to be evaluated.
-#' @param locations A 2-colums(in case of planar mesh) or 3-columns(in case of 2D manifold in a 3D space or a 3D volume) matrix with the spatial locations where the FEM object should be evaluated.
+#' @param locations A 2-columns(in case of planar mesh) or 3-columns(in case of 2D manifold in a 3D space or a 3D volume) matrix with the spatial locations where the FEM object should be evaluated.
+#' @param incidence_matrix In case of areal data, the #regions x #elements incidence matrix defining the regions
 #' @return 
 #' A matrix of numeric evaluations of the \code{FEM} object. Each row indicates the location where the evaluation has been taken, the column indicates the 
 #' function evaluated.
-#' @description It evaluates a FEM object the specified set of locations.  
-#' @usage eval.FEM(FEM, locations, CPP_CODE = TRUE)
+#' @description It evaluates a FEM object the specified set of locations or regions. Locations and incidence_matrix parameters cannot be both null or both provided.  
+#' @usage eval.FEM(FEM, locations, incidence_matrix=NULL)
 #' @references 
 #'  Devillers, O. et al. 2001. Walking in a Triangulation, Proceedings of the Seventeenth Annual Symposium on Computational Geometry
 
@@ -22,7 +23,8 @@ eval.FEM <- function(FEM, locations, incidence_matrix = NULL)
   if (!is.null(locations) && !is.null(incidence_matrix))
     stop("'locations' NOR 'incidence_matrix' required; both are given.")
   
-  if(dim(locations)[1]==dim(FEM$FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEM$FEMbasis$mesh$nodes)[2])
+  if(!is.null(locations))
+   if(dim(locations)[1]==dim(FEM$FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEM$FEMbasis$mesh$nodes)[2])
     warning("The locations matrix has the same dimensions as the mesh nodes. If you want to get the FEM object evaluation
             at the mesh nodes, use FEM$coeff instead")
   
@@ -33,7 +35,7 @@ eval.FEM <- function(FEM, locations, incidence_matrix = NULL)
   
   res <- NULL
   
-  if(class(FEM$FEMbasis$mesh)=='MESH2D'){
+  if(class(FEM$FEMbasis$mesh)=='MESH.2D'){
     ndim = 2
     mydim = 2
     res = CPP_eval.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim)

@@ -281,7 +281,7 @@ CPP_get_evaluations_points = function(mesh, order)
   #here we do not shift indices since this function is called inside CPP_smooth.FEM.PDE.sv.basis
   
   # Imposing types, this is necessary for correct reading from C++
-  if(class(mesh)=="MESH2D"){
+  if(class(mesh)=="MESH.2D"){
     ndim=2
     mydim=2
   }else if(class(mesh) == "MESH.2.5D" || class(mesh) == "MESH.3D"){
@@ -308,7 +308,7 @@ CPP_get_evaluations_points = function(mesh, order)
 
 CPP_get.FEM.Mass.Matrix<-function(FEMbasis)
 {
-  if(class(FEMbasis$mesh) == "MESH2D"){
+  if(class(FEMbasis$mesh) == "MESH.2D"){
     ndim = 2
     mydim = 2
   }else if(class(FEMbasis$mesh) == "MESH.2.5D" || class(mesh) == "MESH.3D"){
@@ -345,7 +345,7 @@ CPP_get.FEM.Mass.Matrix<-function(FEMbasis)
 
 CPP_get.FEM.Stiff.Matrix<-function(FEMbasis)
 {
-  if(class(FEMbasis$mesh) == "MESH2D"){
+  if(class(FEMbasis$mesh) == "MESH.2D"){
     ndim = 2
     mydim = 2
   }else if(class(FEMbasis$mesh) == "MESH.2.5D" || class(mesh) == "MESH.3D"){
@@ -381,7 +381,7 @@ CPP_get.FEM.Stiff.Matrix<-function(FEMbasis)
 
 CPP_get.FEM.PDE.Matrix<-function(FEMbasis, PDE_parameters)
 {
-  if(class(FEMbasis$mesh) == "MESH2D"){
+  if(class(FEMbasis$mesh) == "MESH.2D"){
     ndim = 2
     mydim = 2
   }else if(class(FEMbasis$mesh) == "MESH.2.5D" || class(mesh) == "MESH.3D"){
@@ -446,7 +446,7 @@ CPP_get.FEM.PDE.Matrix<-function(FEMbasis, PDE_parameters)
 CPP_get.FEM.PDE.sv.Matrix<-function(FEMbasis, PDE_parameters)
 {
   
-  if(class(FEMbasis$mesh) == "MESH2D"){
+  if(class(FEMbasis$mesh) == "MESH.2D"){
     ndim = 2
     mydim = 2
   }else if(class(FEMbasis$mesh) == "MESH.2.5D" || class(mesh) == "MESH.3D"){

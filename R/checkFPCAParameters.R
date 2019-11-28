@@ -47,7 +47,7 @@ checkSmoothingParametersSizeFPCA<-function(locations = NULL, datamatrix, FEMbasi
     stop("'datamatrix' must contain at least one element")
   if(is.null(locations))
   {
-    if(class(FEMbasis$mesh) == "MESH2D"){
+    if(class(FEMbasis$mesh) == "MESH.2D"){
     	if(ncol(datamatrix) > nrow(FEMbasis$mesh$nodes))
      	 stop("Size of 'datamatrix' is larger then the size of 'nodes' in the mesh")
     }else if(class(FEMbasis$mesh) == "MESH.2.5D" || class(FEMbasis$mesh) == "MESH.3D"){
@@ -70,7 +70,7 @@ checkSmoothingParametersSizeFPCA<-function(locations = NULL, datamatrix, FEMbasi
   {
     if (nrow(incidence_matrix) != ncol(datamatrix))
       stop("'incidence_matrix' and 'datamatrix' have incompatible size;")
-    if (class(FEMbasis$mesh) == 'MESH2D' && ncol(incidence_matrix) != nrow(FEMbasis$mesh$triangles))
+    if (class(FEMbasis$mesh) == 'MESH.2D' && ncol(incidence_matrix) != nrow(FEMbasis$mesh$triangles))
       stop("'incidence_matrix' must be a ntriangles-columns matrix;")
     else if (class(FEMbasis$mesh) == 'MESH.2.5D' && ncol(incidence_matrix) != FEMbasis$mesh$ntriangles)
       stop("'incidence_matrix' must be a ntriangles-columns matrix;")

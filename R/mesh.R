@@ -50,7 +50,7 @@ triangulate_native <- function(P, PB, PA, S, SB,H, TR, flags) {
 #' @param triangles A #triangles-by-3 (when \code{order} = 1) or #triangles-by-6 (when \code{order} = 2) matrix.
 #' This option is used when a triangulation is already available. It specifies the triangles giving the row's indices in \code{nodes} of the triangles' vertices and (when \code{nodes} = 2) also if the triangles' edges midpoints. The triangles' vertices and midpoints are ordered as described 
 #' at \cr https://www.cs.cmu.edu/~quake/triangle.highorder.html.
-#' In this case the function \code{create.MESH.2D} is used to produce a complete MESH2D object. 
+#' In this case the function \code{create.MESH.2D} is used to produce a complete MESH.2D object. 
 #' @param order Either '1' or '2'. It specifies wether each mesh triangle should be represented by 3 nodes (the triangle' vertices) or by 6 nodes (the triangle's vertices and midpoints). 
 #' These are
 #' respectively used for linear (order = 1) and quadratic (order = 2) Finite Elements. Default is \code{order} = 1.
@@ -65,7 +65,7 @@ triangulate_native <- function(P, PB, PA, S, SB,H, TR, flags) {
 #' @usage create.MESH.2D(nodes, nodesattributes = NA, segments = NA, holes = NA, 
 #'                      triangles = NA, order = 1, verbosity = 0)
 #' @seealso \code{\link{refine.MESH.2D}}, \code{\link{create.FEM.basis}}
-#' @return An object of the class MESH2D with the following output:
+#' @return An object of the class MESH.2D with the following output:
 #' \item{\code{nodes}}{A #nodes-by-2 matrix containing the x and y coordinates of the mesh nodes.}
 #' \item{\code{nodesmarkers}}{A vector of length #nodes, with entries either '1' or '0'. An entry '1' indicates that the corresponding node is a boundary node; an entry '0' indicates that the corresponding node is not a boundary node.}
 #' \item{\code{nodesattributes}}{nodesattributes A matrix with #nodes rows containing nodes' attributes. 
@@ -228,14 +228,14 @@ create.MESH.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
   names(out)[11]<-"order"
 
   
-  class(out)<-"MESH2D"
+  class(out)<-"MESH.2D"
   
   return(out)
 }
 
 #' Refine a 2D triangular mesh
 #' 
-#' @param mesh A MESH2D object representing the triangular mesh, created by \link{create.MESH.2D}.
+#' @param mesh A MESH.2D object representing the triangular mesh, created by \link{create.MESH.2D}.
 #' @param minimum_angle A scalar specifying a minimun value for the triangles angles.
 #' @param maximum_area A scalar specifying a maximum value for the triangles areas.
 #' @param delaunay A boolean parameter indicating whether or not the output mesh should satisfy the Delaunay condition.
@@ -245,7 +245,7 @@ create.MESH.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
 #' in order to meet the imposed refinement conditions.
 #' @usage refine.MESH.2D(mesh, minimum_angle, maximum_area, delaunay, verbosity)
 #' @seealso \code{\link{create.MESH.2D}}, \code{\link{create.FEM.basis}}
-#' @return A MESH2D object representing the refined triangular mesh,  with the following output:
+#' @return A MESH.2D object representing the refined triangular mesh,  with the following output:
 #' \item{\code{nodes}}{A #nodes-by-2 matrix containing the x and y coordinates of the mesh nodes.}
 #' \item{\code{nodesmarkers}}{A vector of length #nodes, with entries either '1' or '0'. An entry '1' indicates that the corresponding node is a boundary node; an entry '0' indicates that the corresponding node is not a boundary node.}
 #' \item{\code{nodesattributes}}{nodesattributes A matrix with #nodes rows containing nodes' attributes. 
@@ -278,8 +278,8 @@ create.MESH.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
 
 refine.MESH.2D<-function(mesh, minimum_angle = NA, maximum_area = NA, delaunay = FALSE, verbosity = 0)
 { 
-  if(class(mesh) !="MESH2D")
-    stop("Sorry, this function is implemented just for MESH2D class ")
+  if(class(mesh) !="MESH.2D")
+    stop("Sorry, this function is implemented just for MESH.2D class ")
   
   flags="rpven" 
   
@@ -347,7 +347,7 @@ refine.MESH.2D<-function(mesh, minimum_angle = NA, maximum_area = NA, delaunay =
   out[[11]] = mesh$order
   names(out)[11]<-"order"
   
-  class(out)<-"MESH2D"
+  class(out)<-"MESH.2D"
   
   return(out)
 }

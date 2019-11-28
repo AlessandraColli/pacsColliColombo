@@ -7,11 +7,11 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
   if(class(FEMbasis)!= "FEMbasis")
     stop("'FEMbasis' is not class 'FEMbasis'")
   
-  if(class(FEMbasis$mesh)!='MESH2D' & class(FEMbasis$mesh) != "MESH.2.5D" & class(FEMbasis$mesh) != "MESH.3D")
+  if(class(FEMbasis$mesh)!='MESH.2D' & class(FEMbasis$mesh) != "MESH.2.5D" & class(FEMbasis$mesh) != "MESH.3D")
     stop('Unknown mesh class')
   
   if((class(FEMbasis$mesh) == "MESH.2.5D" || class(FEMbasis$mesh) == "MESH.3D") & !is.null(PDE_parameters) )
-    stop('For mesh classes different from MESH2D, anysotropic regularization is not yet implemented. 
+    stop('For mesh classes different from MESH.2D, anysotropic regularization is not yet implemented. 
          Use Laplacian regularization instead')
   
   
@@ -106,7 +106,7 @@ checkSmoothingParametersSize<-function(locations = NULL, observations, FEMbasis,
     stop("'observations' must contain at least one element")
   if(is.null(locations))
   {
-    if(class(FEMbasis$mesh) == "MESH2D"){
+    if(class(FEMbasis$mesh) == "MESH.2D"){
       if(nrow(observations) > nrow(FEMbasis$mesh$nodes))
         stop("Size of 'observations' is larger then the size of 'nodes' in the mesh")
     }else if(class(FEMbasis$mesh) == "MESH.2.5D" || class(FEMbasis$mesh) == "MESH.3D"){
@@ -138,7 +138,7 @@ checkSmoothingParametersSize<-function(locations = NULL, observations, FEMbasis,
   {
     if (nrow(incidence_matrix) != nrow(observations))
       stop("'incidence_matrix' and 'observations' have incompatible size;")
-    if (class(FEMbasis$mesh) == 'MESH2D' && ncol(incidence_matrix) != nrow(FEMbasis$mesh$triangles))
+    if (class(FEMbasis$mesh) == 'MESH.2D' && ncol(incidence_matrix) != nrow(FEMbasis$mesh$triangles))
       stop("'incidence_matrix' must be a ntriangles-columns matrix;")
     else if (class(FEMbasis$mesh) == 'MESH.2.5D' && ncol(incidence_matrix) != FEMbasis$mesh$ntriangles)
       stop("'incidence_matrix' must be a ntriangles-columns matrix;")
@@ -154,7 +154,7 @@ checkSmoothingParametersSize<-function(locations = NULL, observations, FEMbasis,
       stop("'BC_values' must be a column vector")
     if(nrow(BC$BC_indices) != nrow(BC$BC_values))
       stop("'BC_indices' and 'BC_values' have incompatible size;")
-    if(class(FEMbasis$mesh) == "MESH2D"){
+    if(class(FEMbasis$mesh) == "MESH.2D"){
       if(sum(BC$BC_indices>nrow(nrow(FEMbasis$mesh$nodes))) > 0)
         stop("At least one index in 'BC_indices' larger then the number of 'nodes' in the mesh;")
     }else if((class(FEMbasis$mesh) == "MESH.2.5D" || class(FEMbasis$mesh) == "MESH.3D")){

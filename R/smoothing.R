@@ -82,7 +82,7 @@
 
 smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, PDE_parameters=NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100)
 {
-  if(class(FEMbasis$mesh) == "MESH2D"){
+  if(class(FEMbasis$mesh) == "MESH.2D"){
     ndim = 2
     mydim = 2
   }else if(class(FEMbasis$mesh) == "MESH.2.5D"){
@@ -135,7 +135,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
   
   ################## End checking parameters, sizes and conversion #############################
   
-  if(class(FEMbasis$mesh) == 'MESH2D' & is.null(PDE_parameters)){	
+  if(class(FEMbasis$mesh) == 'MESH.2D' & is.null(PDE_parameters)){	
     
     bigsol = NULL
     print('C++ Code Execution')
@@ -145,7 +145,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
   
     numnodes = nrow(FEMbasis$mesh$nodes)
     
-  } else if(class(FEMbasis$mesh) == 'MESH2D' & !is.null(PDE_parameters) & space_varying==FALSE){
+  } else if(class(FEMbasis$mesh) == 'MESH.2D' & !is.null(PDE_parameters) & space_varying==FALSE){
     
     bigsol = NULL
     print('C++ Code Execution')
@@ -156,7 +156,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
     
     numnodes = nrow(FEMbasis$mesh$nodes)
 
-  } else if(class(FEMbasis$mesh) == 'MESH2D' & !is.null(PDE_parameters) & space_varying==TRUE){	
+  } else if(class(FEMbasis$mesh) == 'MESH.2D' & !is.null(PDE_parameters) & space_varying==TRUE){	
     
     bigsol = NULL
     print('C++ Code Execution')
