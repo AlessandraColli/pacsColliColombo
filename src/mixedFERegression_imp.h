@@ -32,15 +32,15 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::addDiric
 			id1=bc_indices[i];
 			id3=id1+nnodes;
 
-			A_.coeffRef(id1,id1)=pen;
-			A_.coeffRef(id3,id3)=pen;
+			matrixNoCov_.coeffRef(id1,id1)=pen;
+			matrixNoCov_.coeffRef(id3,id3)=pen;
 
 
-			_b(id1)+=bc_values[i]*pen;
-			_b(id3)=0;
+			_rightHandSide(id1)=bc_values[i]*pen;
+			_rightHandSide(id3)=0;
 	 }
 
-	A_.makeCompressed();
+	matrixNoCov_.makeCompressed();
 }
 
 template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
@@ -116,7 +116,7 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::setPsi()
 			{
 				if (tab[k] != 0)
 				{
-					psi_.insert(i,k) = tab[k]/Delta_(i);
+					psi_.insert(i,k) = tab[k]/A_(i); //divide by |D_i|
 				}
 			}
 		}
@@ -144,11 +144,17 @@ MatrixXr MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::Left
 }
 
 template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
-void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::buildA(const SpMat& Psi,  const SpMat& R1,  const SpMat& R0) {
+void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::buildMatrixNoCov(const SpMat& Psi,  const SpMat& R1,  const SpMat& R0) {
 
 	UInt nnodes = mesh_.num_nodes();
 	
-	SpMat DMat = Psi.transpose()*Psi;
+	SpMat DMat;
+	
+	if(regressionData_.getNumberOfRegions()==0) // pointwise data
+	    DMat=Psi.transpose()*Psi;
+	else                                        // areal data: need to add the diag(|D_1|,...,|D_N|)
+	    DMat=Psi.transpose()*A_.asDiagonal()*Psi;    
+	
 
 	std::vector<coeff> tripletAll;
 	tripletAll.reserve(DMat.nonZeros() + 2*R1.nonZeros() + R0.nonZeros());
@@ -174,34 +180,70 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::buildA(c
 		  tripletAll.push_back(coeff(it.row()+nnodes, it.col(), it.value()));
 	  }
 
-	A_.setZero();
-	A_.resize(2*nnodes,2*nnodes);
-	A_.setFromTriplets(tripletAll.begin(),tripletAll.end());
-	A_.makeCompressed();
+	matrixNoCov_.setZero();
+	matrixNoCov_.resize(2*nnodes,2*nnodes);
+	matrixNoCov_.setFromTriplets(tripletAll.begin(),tripletAll.end());
+	matrixNoCov_.makeCompressed();
 	//std::cout<<"Coefficients' Matrix Set Correctly"<<std::endl;
 }
+
+template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
+void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::buildMatrixOnlyCov(const SpMat& Psi,  const MatrixXr& H) {
+
+	UInt nnodes=mesh_.num_nodes();
+	
+	MatrixXr NWblock= MatrixXr::Zero(2*nnodes,2*nnodes);
+	
+	if(regressionData_.getNumberOfRegions()==0) 
+    	NWblock.topLeftCorner(nnodes,nnodes)=Psi.transpose()*(-H)*Psi;
+    else
+	    NWblock.topLeftCorner(nnodes,nnodes)=Psi.transpose()*A_.asDiagonal()*(-H)*Psi;	
+
+//    matrixOnlyCov_.setZero();
+//    matrixOnlyCov_.resize(2*nnodes,2*nnodes);
+    
+    matrixOnlyCov_=NWblock.sparseView();
+//    for(int i=0; i<nnodes; ++i)
+//     for(int j=0; j<nnodes; ++j)
+//       matrixOnlyCov_.coeffRef(i,j)=NWblock(i,j);
+
+	matrixOnlyCov_.makeCompressed();
+}
+
 
 template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::system_factorize() {
 
 	UInt nnodes = mesh_.num_nodes();
 
-	// First phase: Factorization of matrix A
-	Adec_.compute(A_);
+	// First phase: Factorization of matrixNoCov
+	matrixNoCovdec_.compute(matrixNoCov_);
 	
 	if (regressionData_.getCovariates().rows() != 0) {
-		// Second phase: factorization of matrix  G =  C + [V * A^-1 * U]
+		// Second phase: factorization of matrix  G =  C + [V * matrixNoCov^-1 * U]= C + D
 
-		// Definition of matrix U = [ psi * W | 0 ]^T
+		// Definition of matrix U = [ psi^T * A * W | 0 ]^T and V= [ W^T*psi| 0]
+		
 		MatrixXr W(this->regressionData_.getCovariates());
+		
 		U_ = MatrixXr::Zero(2*nnodes, W.cols());
-		U_.topRows(nnodes) = psi_.transpose()*W;
-
-		// D = U^T * A^-1 * U
-		MatrixXr D = U_.transpose()*Adec_.solve(U_);
+		
+		V_=MatrixXr::Zero(W.cols(),2*nnodes);
+		V_.leftCols(nnodes)=W.transpose()*psi_;
+			
+		if(regressionData_.getNumberOfRegions()==0){ // pointwise data
+		  U_.topRows(nnodes) = psi_.transpose()*W;
+		} 
+		else{                                          //areal data
+		  U_.topRows(nnodes) = psi_.transpose()*A_.asDiagonal()*W;
+        }
+		
+		MatrixXr D = V_*matrixNoCovdec_.solve(U_);
+		
 		// G = C + D
 		MatrixXr G = -W.transpose()*W + D;
 		Gdec_.compute(G);
+		
 	}
 }
 
@@ -209,19 +251,20 @@ template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UIn
 template<typename Derived>
 MatrixXr MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::system_solve(const Eigen::MatrixBase<Derived> &b) {
 
-	// Resolution of the system A * x1 = b
-	MatrixXr x1 = Adec_.solve(b);
+	// Resolution of the system matrixNoCov * x1 = b
+	MatrixXr x1 = matrixNoCovdec_.solve(b);
 	
 	if (regressionData_.getCovariates().rows() != 0) {
-		// Resolution of G * x2 = U^T * x1
-		MatrixXr x2 = Gdec_.solve(U_.transpose()*x1);
-		// Resolution of the system A * x3 = U * x2
-		x1 -= Adec_.solve(U_*x2);
+		// Resolution of G * x2 = V * x1
+		
+		MatrixXr x2 = Gdec_.solve(V_*x1); 
+	
+		// Resolution of the system matrixNoCov * x3 = U * x2
+		x1 -= matrixNoCovdec_.solve(U_*x2);
 	}
 	
 	return x1;
 }
-
 
  template<typename InputHandler, typename Integrator, UInt ORDER,UInt mydim, UInt ndim>
  void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::setQ()
@@ -238,15 +281,12 @@ MatrixXr MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::syst
  template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
  void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim, ndim>::setH()
  {
- 	//std::cout<<"Computing Projection Matrix"<<std::endl;
- 	//UInt nnodes = mesh_.num_nodes();
+
  	UInt nlocations = regressionData_.getNumberofObservations();
  
- 	//regressionData_.printCovariates(std::cout);
+
  	MatrixXr W(this->regressionData_.getCovariates());
- 	//std::cout<<"W "<< W <<std::endl;
- 	//total number of mesh nodes
- 	//UInt nnodes = mesh_.num_nodes();
+
  	if(regressionData_.isLocationsByNodes())
  	{
  		MatrixXr W_reduced(regressionData_.getNumberofObservations(), W.cols());
@@ -268,120 +308,22 @@ MatrixXr MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::syst
  }
 
 template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
-void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim, ndim>::setDelta()
+void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim, ndim>::setA()
 {
 	UInt nRegions = regressionData_.getNumberOfRegions();
-	Delta_.resize(nRegions,1);
+	A_.resize(nRegions,1);
 	for (int i=0; i<nRegions; i++)
 	{
-		Delta_(i)=0;
+		A_(i)=0;
 		for (int j=0; j<regressionData_.getIncidenceMatrix().cols(); j++)
 		{
 			if (regressionData_.getIncidenceMatrix()(i,j) == 1)
 			{
-				Delta_(i)+=mesh_.elementMeasure(j);
+				A_(i)+=mesh_.elementMeasure(j);
 			}
 		}
 	}
 }
-
-template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
- void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::buildCoeffMatrix(const SpMat& DMat,  const SpMat& AMat,  const SpMat& MMat)
- {
- 	//I reserve the exact memory for the nonzero entries of each row of the coeffmatrix for boosting performance
- 	//_coeffmatrix.setFromTriplets(tripletA.begin(),tripletA.end());
- 
- 	UInt nnodes = mesh_.num_nodes();
- 
- 	std::vector<coeff> tripletAll;
- 	tripletAll.reserve(DMat.nonZeros() + 2*AMat.nonZeros() + MMat.nonZeros());
- 
- 	for (int k=0; k<DMat.outerSize(); ++k)
- 	  for (SpMat::InnerIterator it(DMat,k); it; ++it)
- 	  {
- 		  tripletAll.push_back(coeff(it.row(), it.col(),it.value()));
- 	  }
- 	for (int k=0; k<MMat.outerSize(); ++k)
- 	  for (SpMat::InnerIterator it(MMat,k); it; ++it)
- 	  {
- 		  tripletAll.push_back(coeff(it.row()+nnodes, it.col()+nnodes,it.value()));
- 	  }
- 	for (int k=0; k<AMat.outerSize(); ++k)
- 	  for (SpMat::InnerIterator it(AMat,k); it; ++it)
- 	  {
- 		  tripletAll.push_back(coeff(it.col(), it.row()+nnodes,it.value()));
- 	  }
- 	for (int k=0; k<AMat.outerSize(); ++k)
- 	  for (SpMat::InnerIterator it(AMat,k); it; ++it)
- 	  {
- 		  tripletAll.push_back(coeff(it.row()+nnodes, it.col(), it.value()));
- 	  }
- 
- 	_coeffmatrix.setZero();
- 	_coeffmatrix.resize(2*nnodes,2*nnodes);
- 	_coeffmatrix.setFromTriplets(tripletAll.begin(),tripletAll.end());
- 	_coeffmatrix.makeCompressed();
- 	//std::cout<<"Coefficients' Matrix Set Correctly"<<std::endl;
- }
-
-template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
- void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::getDataMatrix(SpMat& DMat)
- {
- 		UInt nnodes = mesh_.num_nodes();
- 		//UInt nlocations = regressionData_.getNumberofObservations();
- 
- 		DMat.resize(nnodes,nnodes);
- 
- 		if (regressionData_.getCovariates().rows() == 0
-		 && regressionData_.getNumberOfRegions() == 0) //without covariate, pointwise data
-		{
-			DMat = psi_.transpose()*psi_;
-		}
-		else if (regressionData_.getCovariates().rows() == 0) //without covariate, areal data
-		{
-			DMat = psi_.transpose()*Delta_.asDiagonal()*psi_;
-		}
- 		else if (regressionData_.getNumberOfRegions() == 0) //with covariates, pointwise data
- 		{
- 			DMat = (SpMat(psi_.transpose())*Q_*psi_).sparseView();
- 		}
-		else //with covariates, areal data
-		{
-			DMat = (SpMat(psi_.transpose())*Delta_.asDiagonal()*Q_*psi_).sparseView();
-		}
- }
- 
- template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
- void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::getDataMatrixByIndices(SpMat& DMat)
- {
- 		UInt nnodes = mesh_.num_nodes();
- 		UInt nlocations = regressionData_.getNumberofObservations();
- 
- 		DMat.resize(nnodes,nnodes);
- 
- 		if (regressionData_.getCovariates().rows() == 0) //without covariate
- 		{
- 			DMat.reserve(1);
- 			for (auto i = 0; i<nlocations; ++i)
- 			{
- 				auto index = regressionData_.getObservationsIndices()[i];
- 				DMat.insert(index,index) = 1;
- 			}
- 		}
- 		else //with covariates
- 		{
- 			//May be inefficient
- 			for (auto i = 0; i<nlocations; ++i)
- 			{
- 				auto index_i = regressionData_.getObservationsIndices()[i];
- 				for (auto j = 0; j<nlocations; ++j)
- 				{
- 					auto index_j = regressionData_.getObservationsIndices()[j];
- 					DMat.insert(index_i,index_j) = Q_(i,j);
- 				}
- 			}
- 		}
- }
 
 template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::getRightHandData(VectorXr& rightHandData)
@@ -406,7 +348,7 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::getRightHa
 		}
 		else //areal data
 		{
-			rightHandData=psi_.transpose()*Delta_.asDiagonal()*regressionData_.getObservations();
+			rightHandData=psi_.transpose()*A_.asDiagonal()*regressionData_.getObservations();
 		}
 	}
 	else if (regressionData_.getNumberOfRegions() == 0) //with covariates, pointwise data
@@ -415,7 +357,7 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::getRightHa
 	}
 	else //with covariates, areal data
 	{
-		rightHandData=psi_.transpose()*Delta_.asDiagonal()*LeftMultiplybyQ(regressionData_.getObservations());
+		rightHandData=psi_.transpose()*A_.asDiagonal()*LeftMultiplybyQ(regressionData_.getObservations());
 	}
 }
 
@@ -436,7 +378,7 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::computeDeg
 template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::computeDegreesOfFreedomExact(UInt output_index, Real lambda)
 {
-
+    
 	UInt nnodes = mesh_.num_nodes();
 	UInt nlocations = regressionData_.getNumberofObservations();
 	Real degrees=0;
@@ -467,8 +409,8 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::computeDeg
 		
 		//if( myid==0){
 			id.n=2*nnodes;
-			for (int j=0; j<A_.outerSize(); ++j){
-				for (SpMat::InnerIterator it(A_,j); it; ++it){
+			for (int j=0; j<matrixNoCov_.outerSize(); ++j){
+				for (SpMat::InnerIterator it(matrixNoCov_,j); it; ++it){
 					irn.push_back(it.row()+1);
 					jcn.push_back(it.col()+1);
 					a.push_back(it.value());
@@ -535,7 +477,7 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::computeDeg
 		if (regressionData_.getNumberOfRegions() == 0){ //pointwise data
 			X1 = psi_.transpose() * LeftMultiplybyQ(psi_);
 		}else{ //areal data
-			X1 = psi_.transpose() * Delta_.asDiagonal() * LeftMultiplybyQ(psi_);
+			X1 = psi_.transpose() * A_.asDiagonal() * LeftMultiplybyQ(psi_);
 		}
 
 		if (isRcomputed_ == false){
@@ -593,6 +535,7 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::computeDeg
 template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::computeDegreesOfFreedomStochastic(UInt output_index, Real lambda)
 {	
+	
 	UInt nnodes = mesh_.num_nodes();
 	UInt nlocations = regressionData_.getNumberofObservations();
 
@@ -612,19 +555,38 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::computeDeg
 		}
 	}
 
-	// Define the first right hand side : | I  0 |^T * psi^T * Delta * Q * u
+	// Define the first right hand side : | I  0 |^T * psi^T * A * Q * u
 	MatrixXr b = MatrixXr::Zero(2*nnodes,u.cols());
 	if (regressionData_.getNumberOfRegions() == 0){
 		b.topRows(nnodes) = psi_.transpose() * LeftMultiplybyQ(u);
 	}else{
-		b.topRows(nnodes) = psi_.transpose() * Delta_.asDiagonal() * LeftMultiplybyQ(u);
+		b.topRows(nnodes) = psi_.transpose() * A_.asDiagonal() * LeftMultiplybyQ(u);
 	}
 
 	// Resolution of the system
 	//MatrixXr x = system_solve(b);
 	Eigen::SparseLU<SpMat> solver;
-	solver.compute(_coeffmatrix);
+	
+	if(!regressionData_.getCovariates().rows()==0){
+	
+		this->buildMatrixOnlyCov(psi_, H_);
+		
+		SpMat coeffMatrix_= matrixNoCov_ + matrixOnlyCov_;
+
+	    solver.compute(coeffMatrix_); //matrixNoCov_+matrixOnlyCov_ = full system matrix when there are covariates
+
+	}
+	else{
+		solver.compute(matrixNoCov_);
+	}
+	
 	auto x = solver.solve(b);
+	if(solver.info()!=Eigen::Success)
+		{
+			#ifdef R_VERSION_
+	        Rprintf("Solving system for stoch gcv failed!!!\n");
+	        #endif
+		}
 
 	MatrixXr uTpsi = u.transpose()*psi_;
 	VectorXr edf_vect(nrealizations);
@@ -636,6 +598,7 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::computeDeg
 	}
 	// For any realization we compute the degrees of freedom
 	for (int i=0; i<nrealizations; ++i) {
+		
 		edf_vect(i) = uTpsi.row(i).dot(x.col(i).head(nnodes)) + q;
 	}
 
@@ -644,19 +607,15 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::computeDeg
 	_dof[output_index] = mean;
 }
 
-
-
-
 template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 template<typename A>
-void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::apply(EOExpr<A> oper,const ForcingTerm & u)
+void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::apply(EOExpr<A> oper, const ForcingTerm & u)
 {
 	UInt nnodes=mesh_.num_nodes();
 	FiniteElement<Integrator, ORDER, mydim, ndim> fe;
 
-	setDelta();
+	setA();
 	setPsi();
-	//preProcessData();
 	
 	if(!regressionData_.getCovariates().rows() == 0)
 	{
@@ -664,22 +623,13 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::apply(EO
 		setQ();
 	}
 
-	if(!regressionData_.isLocationsByNodes())
-	{
-		getDataMatrix(DMat_); //updated
-	}
-	else
-	{
-		getDataMatrixByIndices(DMat_);
-	}
-
 	typedef EOExpr<Mass> ETMass; Mass EMass; ETMass mass(EMass);
 	Assembler::operKernel(oper, mesh_, fe, R1_);
 	Assembler::operKernel(mass, mesh_, fe, R0_);
 	VectorXr rightHandData;
 	getRightHandData(rightHandData); //updated
-	this->_b = VectorXr::Zero(2*nnodes);
-	this->_b.topRows(nnodes)=rightHandData;
+	this->_rightHandSide = VectorXr::Zero(2*nnodes);
+	this->_rightHandSide.topRows(nnodes)=rightHandData;
 	
 	VectorXr forcingTerm;
 	
@@ -698,37 +648,32 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::apply(EO
 		Real lambda = regressionData_.getLambda()[i];
 		SpMat R1_lambda = (-lambda)*R1_;
 		SpMat R0_lambda = (-lambda)*R0_;
-		this->buildA(psi_, R1_lambda, R0_lambda);
-		this->buildCoeffMatrix(DMat_, R1_lambda, R0_lambda);
+		
+		this->buildMatrixNoCov(psi_, R1_lambda, R0_lambda);
+		//this->buildCoeffMatrix(DMat_, R1_lambda, R0_lambda);
 				
 		if(this->isSpaceVarying)
 		{
-		    _b.bottomRows(nnodes)=lambda*forcingTerm;	
+		    _rightHandSide.bottomRows(nnodes)=lambda*forcingTerm;	
 		}
 		
 		//Applying boundary conditions if necessary
-		if(regressionData_.getDirichletIndices().size() != 0)
+		if(regressionData_.getDirichletIndices().size() != 0)  // if areal data NO BOUNDARY CONDITIONS
 			addDirichletBC();
 	
-		if (regressionData_.getNumberOfRegions() == 0) //pointwise data
-		{
-			system_factorize();
-			_solution[i] = this->template system_solve(this->_b);
-		}
-		else //areal data NOT OPTIMAL + NO BOUNDARY CONDITIONS
-		{
-			Eigen::SparseLU<SpMat> solver;
-			solver.compute(_coeffmatrix);
-			_solution[i] = solver.solve(this->_b);
-		}
+		system_factorize();	
+
+	    _solution[i] = this->template system_solve(this->_rightHandSide);
+
 		if(regressionData_.computeDOF())
+		{
 			computeDegreesOfFreedom(i,lambda);
+		}
+			
 		else
 			_dof[i] = -1;
 	}
 }
-
-
 
 template<typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 class MixedFERegression<RegressionData, Integrator, ORDER, mydim, ndim> : public MixedFERegressionBase<RegressionData, Integrator, ORDER, mydim, ndim>
@@ -766,9 +711,9 @@ public:
 
 	    const Real& c = this->regressionData_.getC();
 	    const Eigen::Matrix<Real,2,2>& K = this->regressionData_.getK();
-	    const Eigen::Matrix<Real,2,1>& beta = this->regressionData_.getBeta();
+	    const Eigen::Matrix<Real,2,1>& b = this->regressionData_.getBeta();
 
-	    MixedFERegressionBase<RegressionDataElliptic, Integrator, ORDER, mydim, ndim>::apply(c*mass+stiff[K]+dot(beta,grad), ForcingTerm(std::vector<Real>(1)));
+	    MixedFERegressionBase<RegressionDataElliptic, Integrator, ORDER, mydim, ndim>::apply(c*mass+stiff[K]+dot(b,grad), ForcingTerm(std::vector<Real>(1)));
 	}
 	}
 };
@@ -796,14 +741,15 @@ public:
 
 		const Reaction& c = this->regressionData_.getC();
 		const Diffusivity& K = this->regressionData_.getK();
-		const Advection& beta = this->regressionData_.getBeta();
+		const Advection& b = this->regressionData_.getBeta();
 		const ForcingTerm& u= this->regressionData_.getU();
 		
 		this->isSpaceVarying=TRUE;
 
-		MixedFERegressionBase<RegressionDataEllipticSpaceVarying, Integrator, ORDER, mydim, ndim>::apply(c*mass+stiff[K]+dot(beta,grad), u);
+		MixedFERegressionBase<RegressionDataEllipticSpaceVarying, Integrator, ORDER, mydim, ndim>::apply(c*mass+stiff[K]+dot(b,grad), u);
 	}
 	}
 };
 
 #endif
+

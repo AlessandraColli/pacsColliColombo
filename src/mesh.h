@@ -124,9 +124,7 @@ public:
     */
     Real elementMeasure(Id id) const;
 
-    //int readMesh(std::string const & file);
-	//double measure()const;
-	//bool checkmesh()const;
+
 private:
 	#ifdef R_VERSION_
 	SEXP mesh_;

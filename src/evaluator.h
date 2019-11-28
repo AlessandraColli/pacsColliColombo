@@ -9,11 +9,11 @@
 #include "matrix_assembler.h"
 #include "mesh.h"
 
-//!  A class for the evaluation of the solution, given the coefficients of the global bases
+//!  A class for the evaluation of the solution, given the coefficients of the global basis
 /*!
  * This class, given a vector of coordinates evaluates the solution, fist locating the point 
- * and secondly evaluating it respect to the coefficients of the bases
- * It dependes on a template parameter that speciefies the Order of the initializing mesh
+ * and secondly evaluating it respect to the coefficients of the basis
+ * It depends on a template parameter that specifies the Order of the initializing mesh
 */
 
 template <UInt ORDER, UInt mydim, UInt ndim>

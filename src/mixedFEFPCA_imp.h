@@ -256,9 +256,7 @@ void MixedFEFPCABase<Integrator,ORDER, mydim, ndim>::computeCumulativePercentage
 template<typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 void MixedFEFPCABase<Integrator,ORDER, mydim, ndim>::computeIterations(MatrixXr & datamatrixResiduals_, FPCAObject & FPCAinput, UInt lambda_index, UInt nnodes)
 {
-	#ifdef R_VERSION_
-    Rprintf("into: computeIterations \n");
-    #endif
+
 	Real lambda = fpcaData_.getLambda()[lambda_index];
 	SpMat AMat_lambda = (-lambda)*AMat_;
 	SpMat MMat_lambda = (-lambda)*MMat_;
@@ -269,7 +267,7 @@ void MixedFEFPCABase<Integrator,ORDER, mydim, ndim>::computeIterations(MatrixXr 
 	sparseSolver_.factorize(coeffmatrix_);
 	solution_[lambda_index].resize(coeffmatrix_.rows());
 	
-	UInt niter=20;
+	UInt niter=30;
 
 	for(auto j=0;j<niter;j++)
 	{
@@ -300,9 +298,7 @@ void MixedFEFPCABase<Integrator,ORDER, mydim, ndim>::computeIterations(MatrixXr 
 		UInt nlocations=nnodes;
 		FPCAinput.finalizeLoadings(fpcaData_.getObservationsIndices(),nlocations);
 	}
-	#ifdef R_VERSION_
-	Rprintf("exiting MixedFEFPCABase::computeIterations\n");
-	#endif
+
 }
 
 
@@ -694,13 +690,10 @@ void MixedFEFPCAGCV<Integrator,ORDER, mydim, ndim>::computeIterationsGCV(MatrixX
 	// aggiungiamo pezzo per calcolare la soluzione una volta scelto il miglior gcv
 
 	FPCAObject FPCAinput(this->datamatrixResiduals_);
-	
-	#ifdef R_VERSION_
-    Rprintf("entering: MixedFEFPCABase<%i,%i,%i>::computeIterations \n",ORDER,ndim,mydim);
-    #endif
+
 	MixedFEFPCABase<Integrator,ORDER, mydim, ndim>::computeIterations(this->datamatrixResiduals_,FPCAinput,best_GCV,this->mesh_.num_nodes());
 	
-//	if(this->fpcaData_.isLocationsByNodes())  Ã¨ giÃ  dentro compute_iterations
+//	if(this->fpcaData_.isLocationsByNodes())  è già dentro compute_iterations
 //	{
 //		UInt nlocations=nnodes;
 //		FPCAinput.finalizeLoadings(this->fpcaData_.getObservationsIndices(),nlocations);
@@ -749,15 +742,11 @@ void MixedFEFPCAGCV<Integrator,ORDER, mydim, ndim>::apply()
 template<typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 void MixedFEFPCAKFold<Integrator,ORDER, mydim, ndim>::computeKFolds(MatrixXr & datamatrixResiduals_, UInt lambda_index, UInt nnodes, UInt nFolds)
 {   
-    #ifdef R_VERSION_
-	Rprintf("Into: computeKFolds \n");
-	#endif
+
 	Real lambda = this->fpcaData_.getLambda()[lambda_index];
 	SpMat AMat_lambda = (-lambda)*this->AMat_;
 	SpMat MMat_lambda = (-lambda)*this->MMat_;
-	#ifdef R_VERSION_
-	Rprintf("building coeffmatrix \n");
-	#endif
+
 	this->buildCoeffMatrix(this->DMat_, AMat_lambda, MMat_lambda);
 	this->sparseSolver_.analyzePattern(this->coeffmatrix_);
 	this->sparseSolver_.factorize(this->coeffmatrix_);
@@ -765,16 +754,12 @@ void MixedFEFPCAKFold<Integrator,ORDER, mydim, ndim>::computeKFolds(MatrixXr & d
 	
 	UInt niter=20;
 	std::vector<UInt> indices_valid;
-	#ifdef R_VERSION_
-	Rprintf("starting for cycle: for(k<kfolds)\n");
-	#endif
+
 	for(auto k=0; k<nFolds; k++)
 	{
 		UInt length_chunk=floor(datamatrixResiduals_.rows()/nFolds);
 		indices_valid.resize(datamatrixResiduals_.rows());
-		#ifdef R_VERSION_
-     	Rprintf("length_chunk=%i\n",length_chunk);
-    	#endif
+
 		std::iota(indices_valid.begin(),indices_valid.begin()+length_chunk,k*length_chunk);
 		if (k==0)
 			std::iota(indices_valid.begin()+length_chunk,indices_valid.end(),(k+1)*length_chunk);
@@ -783,12 +768,6 @@ void MixedFEFPCAKFold<Integrator,ORDER, mydim, ndim>::computeKFolds(MatrixXr & d
 			std::iota(indices_valid.begin()+length_chunk,indices_valid.begin()+(k+1)*length_chunk,0);
 			std::iota(indices_valid.begin()+(k+1)*length_chunk,indices_valid.end(),(k+1)*length_chunk);
 		}
-		#ifdef R_VERSION_
-		Rprintf("indices_validation: ");
-		for(auto j : indices_valid)
-	    Rprintf("%i ",j);
-	    Rprintf("\n");
-	    #endif
 	    
 		VectorXi indices_v=Eigen::Map<VectorXi,Eigen::Unaligned> (indices_valid.data(),indices_valid.size());
 	    
@@ -804,9 +783,6 @@ void MixedFEFPCAKFold<Integrator,ORDER, mydim, ndim>::computeKFolds(MatrixXr & d
 		X_clean_train=X_clean_train-ones*X_clean_train_mean.transpose();
 		X_valid=X_valid-ones*X_valid_mean.transpose();
 
-    	#ifdef R_VERSION_
-    	Rprintf("building FPCAObject FPCAinputKF \n");
-    	#endif
 		FPCAObject FPCAinputKF(X_clean_train);
 
 		for(auto j=0; j<niter; j++)
@@ -843,33 +819,9 @@ void MixedFEFPCAKFold<Integrator,ORDER, mydim, ndim>::computeKFolds(MatrixXr & d
 		Real U_hat_const=FPCAinputKF.getLoadings().squaredNorm() + lambda* (this->solution_[lambda_index].bottomRows(nnodes)).transpose()*this->MMat_*this->solution_[lambda_index].bottomRows(nnodes);
 		VectorXr U_hat_valid=(X_valid*FPCAinputKF.getLoadings())/U_hat_const;
     	
-    	#ifdef R_VERSION_
-    	MatrixXr diff=(X_valid-U_hat_valid*FPCAinputKF.getLoadings().transpose());
-//		   
-    	Rprintf("computing the squared norm of diff\n");
-    	Real norm=diff.squaredNorm();
-    	Rprintf("norm:%d - %d\n",diff.squaredNorm(), (norm*norm));
-    	
-    	UInt prod=(X_valid.rows()*X_valid.cols());
-    	Rprintf("X_valid.rows()=%i", X_valid.rows());
-    	Rprintf("X_valid.cols()=%i", X_valid.cols());
-    	
-    	Rprintf("prod= %i - %i",X_valid.rows()*X_valid.cols(), prod);
-    	Rprintf("computing division norm/prod=%d",norm/(X_valid.rows()*X_valid.cols()));
-    	#endif
-    	
-    	#ifdef R_VERSION_
-    	Rprintf("computing diffCV: %d",(((X_valid-U_hat_valid*FPCAinputKF.getLoadings().transpose()).squaredNorm())/prod));
-    	#endif
-    	
  		Real diffCV=(X_valid-U_hat_valid*FPCAinputKF.getLoadings().transpose()).squaredNorm()/(X_valid.rows()*X_valid.cols());
- 		#ifdef R_VERSION_
-    	Rprintf("diffCV: %d",diffCV);
-    	#endif
+
 		Real sumCV=(X_valid+U_hat_valid*FPCAinputKF.getLoadings().transpose()).squaredNorm()/(X_valid.rows()*X_valid.cols());
-		#ifdef R_VERSION_
-    	Rprintf("sumCV:%d",sumCV);
-    	#endif
 
 		KFold_[lambda_index]+=std::min(diffCV,sumCV);
 	}
@@ -879,56 +831,35 @@ void MixedFEFPCAKFold<Integrator,ORDER, mydim, ndim>::computeKFolds(MatrixXr & d
 template<typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 void MixedFEFPCAKFold<Integrator,ORDER, mydim, ndim>::apply()
 {
-	#ifdef R_VERSION_
-	Rprintf("Into: MixedFEFPCAKFold<%i,%i,%i>::apply \n",ORDER,ndim,mydim);
-	#endif
 
 	MixedFEFPCABase<Integrator,ORDER, mydim, ndim>::SetAndFixParameters();
 	nFolds=this->fpcaData_.getNFolds();
 	KFold_.resize(this->fpcaData_.getLambda().size());
-	#ifdef R_VERSION_
-	Rprintf("starting for cycle over NPC \n");
-	#endif
+
 	for(auto np=0; np<this->fpcaData_.getNPC(); np++)
 	{
 		std::fill(KFold_.begin(),KFold_.end(),0);
-		#ifdef R_VERSION_
-	    Rprintf("starting for cycle over lambdas for PC=%i \n",np);
-	    #endif
+
 		for(auto i = 0; i<this->fpcaData_.getLambda().size(); ++i)
 		{   
-//	    	#ifdef R_VERSION_
-//         	Rprintf("building FPCAinput \n");
-//        	#endif
+
 			FPCAObject FPCAinput(this->datamatrixResiduals_);
-			#ifdef R_VERSION_
-	        Rprintf("entering: computeKFolds \n");
-         	#endif
+
 			computeKFolds(this->datamatrixResiduals_, i, this->mesh_.num_nodes(), nFolds);
 		}
-		#ifdef R_VERSION_
-	    Rprintf("index_best_KF \n");
-     	#endif
+
 		UInt index_best_KF = std::distance(KFold_.begin(),std::min_element(KFold_.begin(),KFold_.end()));
-		#ifdef R_VERSION_
-        Rprintf("building FPCAinput \n");
-        #endif
+
 		FPCAObject FPCAinput(this->datamatrixResiduals_);
-		#ifdef R_VERSION_
-        Rprintf("entering: MixedFEFPCABase<%i,%i,%i>::computeIterations \n",ORDER,ndim,mydim);
-        #endif
+
 		MixedFEFPCABase<Integrator,ORDER, mydim, ndim>::computeIterations(this->datamatrixResiduals_,FPCAinput,index_best_KF,this->mesh_.num_nodes());
-		#ifdef R_VERSION_
-	    Rprintf("getting PC results\n");
-	    #endif
+
 		this->scores_mat_[np]=FPCAinput.getScores();
 		this->loadings_mat_[np]=FPCAinput.getLoadings();
 		this->lambda_PC_[np]=this->fpcaData_.getLambda()[index_best_KF];
 		
 		//Devo settare la datamatrix togliendo i risultati ottenuti
-		#ifdef R_VERSION_
-     	Rprintf("resetting datamatrix\n");
-    	#endif
+
 		this->datamatrixResiduals_=this->datamatrixResiduals_-this->scores_mat_[np]*this->loadings_mat_[np].transpose();
 		
 		//Change for locations
@@ -947,10 +878,7 @@ void MixedFEFPCAKFold<Integrator,ORDER, mydim, ndim>::apply()
 
 	MixedFEFPCABase<Integrator,ORDER, mydim, ndim>::computeVarianceExplained();
 	MixedFEFPCABase<Integrator,ORDER, mydim,ndim>::computeCumulativePercentageExplained();
-	
-	#ifdef R_VERSION_
-	Rprintf("exiting: MixedFEFPCAKFolds::apply()\n");
-	#endif
+
 }
 
 

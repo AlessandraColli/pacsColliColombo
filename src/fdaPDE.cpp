@@ -2,8 +2,6 @@
 #define R_VERSION_
 
 #include "fdaPDE.h"
-//#include "RedSVD-h" 
-//#include "IO_handler.hpp" 
 #include "regressionData.h"
 #include "mesh_objects.h"
 #include "mesh.h"
@@ -53,30 +51,20 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 template<typename Integrator,UInt ORDER, UInt mydim, UInt ndim>
 SEXP FPCA_skeleton(FPCAData &fPCAData, SEXP Rmesh, std::string validation)
 {
-	#ifdef R_VERSION_
-	Rprintf("Into: FPCA_skeleton<%i,%i,%i> . \n MeshHandler mesh(Rmesh)\n", ORDER, mydim, ndim);
-	#endif
+
 	MeshHandler<ORDER, mydim, ndim> mesh(Rmesh);
-//	#ifdef R_VERSION_
-//	Rprintf("createFPCAsolver \n");
-//	#endif
+
 	std::unique_ptr<MixedFEFPCABase<Integrator, ORDER, mydim, ndim>> fpca = MixedFEFPCAfactory<Integrator, ORDER, mydim, ndim>::createFPCAsolver(validation, mesh, fPCAData);
-//	#ifdef R_VERSION_
-//	Rprintf("fpca->apply \n");
-//	#endif
+
 	fpca->apply();
-//    #ifdef R_VERSION_
-//	Rprintf("getting results \n");
-//	#endif
+
 	const std::vector<VectorXr>& loadings = fpca->getLoadingsMat();
 	const std::vector<VectorXr>& scores = fpca->getScoresMat();
 	const std::vector<Real>& lambdas = fpca->getLambdaPC();
 	const std::vector<Real>& variance_explained = fpca->getVarianceExplained();
 	const std::vector<Real>& cumsum_percentage = fpca->getCumulativePercentage();
 	const std::vector<Real>& var = fpca->getVar();
-//    #ifdef R_VERSION_
-//	Rprintf("formatting results for return in R \n");
-//	#endif
+
 	//Copy result in R memory  
 	SEXP result = NILSXP;
 	result = PROTECT(Rf_allocVector(VECSXP, 7));
@@ -122,9 +110,7 @@ SEXP FPCA_skeleton(FPCAData &fPCAData, SEXP Rmesh, std::string validation)
 	{
 		rans5[i] = var[i];
 	}
-//    #ifdef R_VERSION_
-//	Rprintf("returning result \n");
-//	#endif
+
 	UNPROTECT(1);
 
 	return(result);
@@ -163,7 +149,6 @@ SEXP get_FEM_Matrix_skeleton(SEXP Rmesh, EOExpr<A> oper)
 
 	SpMat AMat;
 	Assembler::operKernel(oper, mesh, fe, AMat);
-   	//std::cout << AMat; 
 
 	//Copy result in R memory     
 	SEXP result;
@@ -193,15 +178,20 @@ extern "C" {
 
 //! This function manages the various options for Spatial Regression, Sangalli et al version
 /*!
-	This function is than called from R code.
+	This function is then called from R code.
 	\param Robservations an R-vector containing the values of the observations.
 	\param Rdesmat an R-matrix containing the design matrix for the regression.
 	\param Rmesh an R-object containg the output mesh from Trilibrary
 	\param Rorder an R-integer containing the order of the approximating basis.
 	\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
-	\param Rbindex an R-integer containing the indexes of the nodes the user want to apply a Dirichlet Condition,
+	\param Rcovariates an R-matrix of covariates for the regression model
+	\param RincidenceMatrix an R-matrix containing the incidence matrix defining the regions for the smooth regression with areal data
+	\param RBCIndices an R-integer containing the indexes of the nodes the user want to apply a Dirichlet Condition,
 			the other are automatically considered in Neumann Condition.
-	\param Rbvalues an R-double containing the value to impose for the Dirichlet condition, on the indexes specified in Rbindex
+	\param RBCValues an R-double containing the value to impose for the Dirichlet condition, on the indexes specified in RBCIndices
+	\param DOF an R boolean indicating whether dofs of the model have to be computed or not
+	\param RGCVmethod an R-integer indicating the method to use to compute the dofs when DOF is TRUE, can be either 1 (exact) or 2 (stochastic)
+	\param Rnrealizations the number of random points used in the stochastic computation of the dofs
 	\return R-vector containg the coefficients of the solution
 */
 
@@ -228,6 +218,27 @@ SEXP regression_Laplace(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Ro
     return(NILSXP);
 }
 
+/*!
+	This function is then called from R code.
+	\param Robservations an R-vector containing the values of the observations.
+	\param Rdesmat an R-matrix containing the design matrix for the regression.
+	\param Rmesh an R-object containg the output mesh from Trilibrary
+	\param Rorder an R-integer containing the order of the approximating basis.
+	\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
+	\param RK an R-matrix representing the diffusivity matrix of the model
+	\param Rbeta an R-vector representing the advection term of the model
+	\param Rc an R-double representing the reaction term of the model
+	\param Rcovariates an R-matrix of covariates for the regression model
+	\param RincidenceMatrix an R-matrix containing the incidence matrix defining the regions for the smooth regression with areal data
+	\param RBCIndices an R-integer containing the indexes of the nodes the user want to apply a Dirichlet Condition,
+			the other are automatically considered in Neumann Condition.
+	\param RBCValues an R-double containing the value to impose for the Dirichlet condition, on the indexes specified in RBCIndices
+	\param DOF an R boolean indicating whether dofs of the model have to be computed or not
+	\param RGCVmethod an R-integer indicating the method to use to compute the dofs when DOF is TRUE, can be either 1 (exact) or 2 (stochastic)
+	\param Rnrealizations the number of random points used in the stochastic computation of the dofs
+	\return R-vector containg the coefficients of the solution
+*/
+
 SEXP regression_PDE(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder,SEXP Rmydim, SEXP Rndim,
 					SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc, SEXP Rcovariates, SEXP RincidenceMatrix,
 					SEXP RBCIndices, SEXP RBCValues, SEXP DOF, SEXP RGCVmethod, SEXP Rnrealizations)
@@ -248,6 +259,27 @@ SEXP regression_PDE(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder
 	return(NILSXP);
 }
 
+/*!
+	This function is then called from R code.
+	\param Robservations an R-vector containing the values of the observations.
+	\param Rdesmat an R-matrix containing the design matrix for the regression.
+	\param Rmesh an R-object containg the output mesh from Trilibrary
+	\param Rorder an R-integer containing the order of the approximating basis.
+	\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
+	\param RK an R object representing the diffusivity tensor of the model
+	\param Rbeta an R object representing the advection function of the model
+	\param Rc an R object representing the reaction function of the model
+	\param Ru an R object representing the forcing function of the model
+	\param Rcovariates an R-matrix of covariates for the regression model
+	\param RincidenceMatrix an R-matrix containing the incidence matrix defining the regions for the smooth regression with areal data
+	\param RBCIndices an R-integer containing the indexes of the nodes the user want to apply a Dirichlet Condition,
+			the other are automatically considered in Neumann Condition.
+	\param RBCValues an R-double containing the value to impose for the Dirichlet condition, on the indexes specified in RBCIndices
+	\param DOF an R boolean indicating whether dofs of the model have to be computed or not
+	\param RGCVmethod an R-integer indicating the method to use to compute the dofs when DOF is TRUE, can be either 1 (exact) or 2 (stochastic)
+	\param Rnrealizations the number of random points used in the stochastic computation of the dofs
+	\return R-vector containg the coefficients of the solution
+*/
 
 
 SEXP regression_PDE_space_varying(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder,SEXP Rmydim, SEXP Rndim,
@@ -271,6 +303,10 @@ SEXP regression_PDE_space_varying(SEXP Rlocations, SEXP Robservations, SEXP Rmes
 	return(NILSXP);
 }
 
+//! A function required for anysotropic and nonstationary regression (only 2D)
+/*! 
+    \return points where the PDE space-varying params are evaluated in the R code
+*/
 SEXP get_integration_points(SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim)
 {
 	//Declare pointer to access data from C++
@@ -286,6 +322,8 @@ SEXP get_integration_points(SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim)
     	return(get_integration_points_skeleton<IntegratorTriangleP4, 2,2,2>(Rmesh));
     return(NILSXP);
 }
+
+//! A utility, not used for system solution, may be used for debugging
 
 SEXP get_FEM_mass_matrix(SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim)
 {
@@ -304,6 +342,7 @@ SEXP get_FEM_mass_matrix(SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim)
 	return(NILSXP);
 }
 
+//! A utility, not used for system solution, may be used for debugging
 SEXP get_FEM_stiff_matrix(SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim)
 {
 	int order = INTEGER(Rorder)[0];
@@ -321,6 +360,7 @@ SEXP get_FEM_stiff_matrix(SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim)
 	return(NILSXP);
 }
 
+//! A utility, not used for system solution, may be used for debugging
 SEXP get_FEM_PDE_matrix(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder,SEXP Rmydim, SEXP Rndim, SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc,
 				   SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues, SEXP DOF,SEXP RGCVmethod, SEXP Rnrealizations)
 {
@@ -345,6 +385,7 @@ SEXP get_FEM_PDE_matrix(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Ro
 	return(NILSXP);
 }
 
+//! A utility, not used for system solution, may be used for debugging
 SEXP get_FEM_PDE_space_varying_matrix(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim, SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc, SEXP Ru,
 		   SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues, SEXP DOF,SEXP RGCVmethod, SEXP Rnrealizations)
 {
@@ -378,6 +419,7 @@ SEXP get_FEM_PDE_space_varying_matrix(SEXP Rlocations, SEXP Robservations, SEXP 
 	\param Rlocations an R-matrix containing the location of the observations.
 	\param Rmesh an R-object containg the output mesh from Trilibrary
 	\param Rorder an R-integer containing the order of the approximating basis.
+	\param RincidenceMatrix an R-matrix representing the incidence matrix defining regions in the model with areal data
 	\param Rmydim an R-integer containing the dimension of the problem we are considering.
 	\param Rndim an R-integer containing the dimension of the space in which the location are.
 	\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
@@ -391,17 +433,12 @@ SEXP get_FEM_PDE_space_varying_matrix(SEXP Rlocations, SEXP Robservations, SEXP 
 */
 SEXP Smooth_FPCA(SEXP Rlocations, SEXP Rdatamatrix, SEXP Rmesh, SEXP Rorder, SEXP RincidenceMatrix, SEXP Rmydim, SEXP Rndim, SEXP Rlambda, SEXP RnPC, SEXP Rvalidation, SEXP RnFolds, SEXP RGCVmethod, SEXP Rnrealizations){
 //Set data   
-//    #ifdef R_VERSION_
-//	Rprintf("Into: smooth_FPCA. \n Creating fPCAdata object \n");
-//	#endif               
+             
 	FPCAData fPCAdata(Rlocations, Rdatamatrix, Rorder, RincidenceMatrix, Rlambda, RnPC, RnFolds, RGCVmethod, Rnrealizations);
-
-//     
+   
 	UInt mydim=INTEGER(Rmydim)[0]; 
 	UInt ndim=INTEGER(Rndim)[0]; 
-//    #ifdef R_VERSION_
-//	Rprintf("creating validation string \n");
-//	#endif
+
 	std::string validation=CHAR(STRING_ELT(Rvalidation,0));
 	
 	if(fPCAdata.getOrder() == 1 && mydim==2 && ndim==2)

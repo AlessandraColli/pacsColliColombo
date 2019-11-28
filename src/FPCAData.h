@@ -59,6 +59,9 @@ class  FPCAData{
 			\param Rlocations an R-matrix containing the location of the observations.
 			
 			\param Rorder an R-integer containing the order of the approximating basis.
+			
+			\param RincidenceMatrix an R-matrix containing the incidence matrix defining the regions in the model with areal data
+			
 			\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
 			
 			\param RnPC an R-integer specifying the number of principal components to compute.

@@ -52,36 +52,27 @@ class  RegressionData{
 		#endif
 
 	public:
-		//! A basic version of the constructor.
-
-		/*!
-			It initializes the object storing the R given objects. This is the simplest of the two possible interfaces with R
-			\param Robservations an R-vector containing the values of the observations.
-			\param Rdesmat an R-matrix containing the design matrix for the regression.
-			\param Rorder an R-integer containing the order of the approximating basis.
-			\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
-			\param Rbindex an R-integer containing the indexes of the nodes the user want to apply a Dirichlet Condition,
-					the other are automatically considered in Neumann Condition.
-			\param Rbvalues an R-double containing the value to impose for the Dirichlet condition, on the indexes specified in Rbindex
-		*/
-
-
-		//! A complete version of the constructor.
-		/*!
-			It initializes the object storing the R given objects. This is the simplest of the two possible interfaces with R
-			\param Robservations an R-vector containing the values of the observations.
-			\param Rdesmat an R-matrix containing the design matrix for the regression.
-			\param Rorder an R-integer containing the order of the approximating basis.
-			\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
-			\param Rbindex an R-integer vector containing the indexes of the nodes the user want to apply a Dirichlet Condition,
-					the other are automatically considered in Neumann Condition.
-			\param Rbvalues an R-double vector containing the value to impose for the Dirichlet condition, on the indexes specified in Rbindex
-			\param Rc an R-double that contains the coefficient of the REACTION term
-			\param Rbeta an R-double 2-dim vector that contains the coefficients for the TRANSPORT coefficients.
-			\param RK an R-double 2X2 matrix containing the coefficients for a anisotropic DIFFUSION term.
-			\param (UNSUPPORTED put it zero) Ru an R-double vector of length #triangles that contaiins the forcing term integrals.
-		*/
+		
 		RegressionData(){};
+
+//! A basic version of the constructor.
+
+		/*!
+			It initializes the object storing the R given objects. This is the simplest of the two possible interfaces with R
+			\param Rlocations an R-matrix containing the location of the observations. 
+			\param Robservations an R-vector containing the values of the observations.
+			\param Rorder an R-integer containing the order of the approximating basis.
+			\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
+			\param Rcovariates an R-matrix storing the covariates of the regression
+			\param RincidenceMatrix an R-matrix containing the incidence matrix defining the regions in the model with areal data
+			\param RBCIndices an R-integer containing the indexes of the nodes the user want to apply a Dirichlet Condition,
+					the other are automatically considered in Neumann Condition.
+			\param RBCValues an R-double containing the value to impose for the Dirichlet condition, on the indexes specified in Rbindex
+			\param DOF an R boolean indicating whether dofs of the model have to be computed or not
+	        \param RGCVmethod an R-integer indicating the method to use to compute the dofs when DOF is TRUE, can be either 1 (exact) or 2 (stochastic)
+	        \param Rnrealizations the number of random points used in the stochastic computation of the dofs
+		*/
+
 
 		#ifdef R_VERSION_
 		explicit RegressionData(SEXP Rlocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda, SEXP Rcovariates,
@@ -137,6 +128,25 @@ class  RegressionDataElliptic:public RegressionData
 		Real c_;
 
 	public:
+		//! A complete version of the constructor.
+		/*!
+			It initializes the object storing the R given objects. This is the simplest of the two possible interfaces with R
+			\param Rlocations an R-matrix containing the location of the observations. 
+			\param Robservations an R-vector containing the values of the observations.
+			\param Rorder an R-integer containing the order of the approximating basis.
+			\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
+			\param RK an R-double 2X2 matrix containing the coefficients for a anisotropic DIFFUSION term.
+			\param Rbeta an R-double 2-dim vector that contains the coefficients for the TRANSPORT coefficients.
+			\param Rc an R-double that contains the coefficient of the REACTION term
+			\param Rcovariates an R-matrix storing the covariates of the regression
+			\param RincidenceMatrix an R-matrix containing the incidence matrix defining the regions in the model with areal data
+			\param RBCIndices an R-integer containing the indexes of the nodes the user want to apply a Dirichlet Condition,
+					the other are automatically considered in Neumann Condition.
+			\param RBCValues an R-double containing the value to impose for the Dirichlet condition, on the indexes specified in Rbindex
+			\param DOF an R boolean indicating whether dofs of the model have to be computed or not
+	        \param RGCVmethod an R-integer indicating the method to use to compute the dofs when DOF is TRUE, can be either 1 (exact) or 2 (stochastic)
+	        \param Rnrealizations the number of random points used in the stochastic computation of the dofs
+		*/
 		#ifdef R_VERSION_
 		explicit RegressionDataElliptic(SEXP Rlocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda, SEXP RK, 
 				SEXP Rbeta, SEXP Rc, SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues,
@@ -163,6 +173,28 @@ class RegressionDataEllipticSpaceVarying:public RegressionData
 		ForcingTerm u_;
 
 	public:
+		
+		//! A complete version of the constructor.
+		/*!
+			It initializes the object storing the R given objects. This is the simplest of the two possible interfaces with R
+			\param Rlocations an R-matrix containing the location of the observations. 
+			\param Robservations an R-vector containing the values of the observations.
+			\param Rorder an R-integer containing the order of the approximating basis.
+			\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
+			\param RK an R-double 2X2 matrix containing the coefficients for a anisotropic DIFFUSION term.
+			\param Rbeta an R-double 2-dim vector that contains the coefficients for the TRANSPORT coefficients.
+			\param Rc an R-double that contains the coefficient of the REACTION term
+			\param  Ru an R-double vector of length #triangles that contaiins the forcing term integrals.
+			\param Rcovariates an R-matrix storing the covariates of the regression
+			\param RincidenceMatrix an R-matrix containing the incidence matrix defining the regions in the model with areal data
+			\param RBCIndices an R-integer containing the indexes of the nodes the user want to apply a Dirichlet Condition,
+					the other are automatically considered in Neumann Condition.
+			\param RBCValues an R-double containing the value to impose for the Dirichlet condition, on the indexes specified in Rbindex
+			\param DOF an R boolean indicating whether dofs of the model have to be computed or not
+	        \param RGCVmethod an R-integer indicating the method to use to compute the dofs when DOF is TRUE, can be either 1 (exact) or 2 (stochastic)
+	        \param Rnrealizations the number of random points used in the stochastic computation of the dofs
+			
+		*/
 		#ifdef R_VERSION_
 		explicit RegressionDataEllipticSpaceVarying(SEXP Rlocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda,
 				SEXP RK, SEXP Rbeta, SEXP Rc, SEXP Ru, SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices,

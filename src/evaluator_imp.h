@@ -18,11 +18,9 @@ void Evaluator<ORDER,2,2>::eval(Real* X, Real *Y, UInt length, const Real *coef,
 	for (int i = 0; i<length; ++i)
 	{
 		current_point = Point(X[i],Y[i]);
-		//current_triangle = mesh_.findLocationNaive(current_point);
-		//std::cout<<"Finding point.. "<<i<<" from "<<current_triangle.getId()<<"\n";
+
 		current_element = mesh_.findLocationWalking(current_point, starting_element);
-		//current_triangle.print(cout);
-		//std::cout<<"Walking...triangle: "<< current_triangle.getId()<<std::endl;
+
 		if(current_element.getId() == Identifier::NVAL && redundancy == true)
 		{
 			//To avoid problems with non convex mesh
@@ -34,6 +32,11 @@ void Evaluator<ORDER,2,2>::eval(Real* X, Real *Y, UInt length, const Real *coef,
 		{
 			//std::cout<<"Position Not Found Naively... \n";
 			isinside[i]=false;
+			
+//			#ifdef R_VERSION_
+//			Rprintf("Element %i not found! NA is returned \n", i);
+//		    #endif
+			
 		}
 		else
 		{
@@ -70,6 +73,9 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 		if(current_element.getId() == Identifier::NVAL)
 		{
 			isinside[i]=false;
+//			#ifdef R_VERSION_
+//			Rprintf("Element %i not found! NA is returned \n", i);
+//		    #endif
 		}
 		else
 		{
@@ -79,7 +85,7 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 				coefficients[j] = coef[current_element[j].getId()];
 			}
 			result[i] = evaluate_point<Nodes,2,3>(current_element, current_point, coefficients);
-			//std::cout<<"result = " <<result[i]<<"\n";
+			
 			starting_element = current_element;
 		}
 	}
@@ -107,6 +113,9 @@ void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 		if(current_element.getId() == Identifier::NVAL)
 		{
 			isinside[i]=false;
+//			#ifdef R_VERSION_
+//			Rprintf("Element %i not found! NA is returned \n", i);
+//		    #endif
 		}
 		else
 		{
@@ -116,7 +125,7 @@ void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 				coefficients[j] = coef[current_element[j].getId()];
 			}
 			result[i] = evaluate_point<Nodes,3,3>(current_element, current_point, coefficients);
-			//std::cout<<"result = " <<result[i]<<"\n";
+			
 			starting_element = current_element;
 		}
 	}
@@ -207,15 +216,10 @@ void Evaluator<ORDER, 3, 3>::integrate(UInt** incidenceMatrix, UInt nRegions, UI
 		{
 			if (incidenceMatrix[region][elem]==1) //elem is in region
 			{
-//				#ifdef R_VERSION_
-//				Rprintf("element [%i][%i] is in region");
-//				#endif
 				current_element = mesh_.getElement(elem);
 				Real measure = mesh_.elementMeasure(elem);
 				Delta[region] += measure;
-//				#ifdef R_VERSION_
-//				Rprintf("new Delta[%i] : %d", region, Delta[region]);
-//				#endif
+
 				// THIS IS ONLY FOR ORDER==1
 				Real s = 0;
 				for (int node=0; node<Nodes; node++)
@@ -223,15 +227,11 @@ void Evaluator<ORDER, 3, 3>::integrate(UInt** incidenceMatrix, UInt nRegions, UI
 					s+=coef[current_element[node].getId()];
 				}
 				integral[region] += measure*s/(3+1);
-//				#ifdef R_VERSION_
-//				Rprintf("new integral[%i] : %d", region, integral[region]);
-//				#endif
+
 			}
 		}
 		result[region]=integral[region]/Delta[region];
-		#ifdef R_VERSION_
-			Rprintf("\n result[%i] : %d \n", region, result[region]);
-		#endif
+
 	}
 }
 

@@ -110,9 +110,9 @@ class Element : public Identifier {
  *  The first three nodes represent the vertices, the others the internal nodes,
  *  following this enumeration: !IMPORTANT! different from Sangalli code!
  *
- * 		       3
- * 			   *
- * 		     /   \
+ * 		        3
+ * 			    *
+ * 		     /    \
  * 		  5 *	   * 4
  * 		  /	        \
  * 		 *_____*_____*
@@ -212,9 +212,9 @@ const int Element<NNODES,2,2>::myDim;
  *  The first three nodes represent the vertices, the others the internal nodes,
  *  following this enumeration: !IMPORTANT! different from Sangalli code!
  *
- * 			   3
- * 			   *
- * 		     /   \
+ * 			    3
+ * 			    *
+ * 		     /    \
  * 		  5 *	   * 4
  * 		  /	        \
  * 		 *_____*_____*
@@ -256,7 +256,7 @@ public:
 	const Eigen::Matrix<Real,2,2>& getMetric() const {return metric_;} //inv(MJ^t*MJ)
 	Real getArea() const {return (std::sqrt(detJ_)/2);} //sqrt(det(MJ^t*MJ))
 
-	Eigen::Matrix<Real,3,1> getBaryCoordinates(const Point& point) const; //! DA VEDERE
+	Eigen::Matrix<Real,3,1> getBaryCoordinates(const Point& point) const; //! TO BE IMPROVED
 
 	//! A member that tests if a Point is located inside a Triangle.
     /*!
@@ -320,10 +320,8 @@ public:
 	const Eigen::Matrix<Real,3,3>& getM_invJ() const {return M_invJ_;}
 	const Eigen::Matrix<Real,3,3>& getMetric() const {return metric_;} //inv(MJ^t*MJ)
 	Real getVolume() const{return Volume_;};
-	//Real getArea() const {return (std::sqrt(detJ_)); //sqrt(det(MJ^t*MJ))
-				//};
 
-	Eigen::Matrix<Real,4,1> getBaryCoordinates(const Point& point) const; //! DA VEDERE
+	Eigen::Matrix<Real,4,1> getBaryCoordinates(const Point& point) const; 
 
 	//! A member that tests if a Point is located inside an Element.
     /*!
@@ -388,11 +386,12 @@ inline Real evaluate_point<6,2,2>(const Element<6,2,2>& t, const Point& point, c
 
 
 
-//! in this case, the implementation is not as trivial
-// first solve the linear system (p-p0) = (p1-p0)*alpha + (p2-p0)*beta + N*gamma
-// where p0,p1,p2 are the vertices of the triangle, p is the point
-// (observe that, if the point is inside the triangle, gamma=0)
-// then the solution u(p) = u(p0) + alpa*(u(p1) - u(p0) + beta*(u(p2)-u(p0))
+/*! THIS COMMENT COMES FROM BERAHA, COSMO: in this case, the implementation is not as trivial
+ first solve the linear system (p-p0) = (p1-p0)*alpha + (p2-p0)*beta + N*gamma
+ where p0,p1,p2 are the vertices of the triangle, p is the point
+ (observe that, if the point is inside the triangle, gamma=0)
+ then the solution u(p) = u(p0) + alpa*(u(p1) - u(p0) + beta*(u(p2)-u(p0))
+ */
 template <>
 inline Real evaluate_point<3,2,3>(const Element<3,2,3>& t, const Point& point, const Eigen::Matrix<Real,3,1>& coefficients)
 {

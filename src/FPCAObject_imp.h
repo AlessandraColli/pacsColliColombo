@@ -61,21 +61,11 @@ void FPCAObject::setObservationData(const MatrixXr& datamatrix_)
 
 void FPCAObject::setLoadingsPsi(UInt nnodes, const VectorXr& f_sol, const SpMat& psi_)
 {	
-	
-//	#ifdef R_VERSION_
-//	Rprintf("dimensions of Psi: nrow= %i, ncol= %i \n", psi_.rows(),psi_.cols());
-//	Rprintf("dimensions of f_sol.topRows: nrow= %i, ncol= %i \n", f_sol.topRows(nnodes).rows(),f_sol.topRows(nnodes).cols());
-//	#endif
-
 	//VectorXr load_=psi_.transpose()*f_sol.topRows(nnodes); dimensioni incompatibili
 	VectorXr load_=psi_*f_sol.topRows(nnodes); // dimensioni qui dovrebbero essere giuste
 
 	loadings_=load_;
-	
-//	#ifdef R_VERSION_
-//	Rprintf("dimensions of loadings: nrow= %i, ncol= %i \n", loadings_.rows(),loadings_.cols());
-//	#endif
-	//std::cout<<"Load dim:"<<loadings_.size()<<std::endl;
+
 }
 
 void FPCAObject::setLoadings(UInt nnodes, const VectorXr& f_sol, const std::vector<UInt>& obs_indices)
