@@ -4,7 +4,7 @@ This repository contains the development version of fdaPDE package (future 2.0 v
 
 New features wrt CRAN: smooth regression for manifold and volumetric domains, also with areal data. Smooth fPCA over 2D, 2.5D and 3D domains, also with areal data.
 
-Bugs in fPCA, boundary conditions and space-varying regression have been fixed. Issues of point location in 2.5D have been fixed. Areal data are still undergoing tests.
+Image.FEM has been restored. Bugs in fPCA, boundary conditions and space-varying regression have been fixed. Issues of point location in 2.5D have been fixed. Areal data are still undergoing tests.
 
 Compiled in both Win RStudio and Ubuntu 18.04 using g++ compiler. If using a Linux machine, it is advisable to install rgl, plot3D and plot3Drgl before fdaPDE.
 
@@ -23,7 +23,7 @@ Remarks:
 
    mesh <- fdaPDE::create.MESH.2.5D(nodes = vertici,triangles = triangoli)
    
-2) the test scripts in /tests are outdated, and will be updated as soon as possible. Scripts in /RScripts have not been verified yet.
+2) the test scripts in /tests are outdated, and will be updated as soon as possible.
 
 3) the shift of indexes from R to C++ is done within the R functions smooth.FEM.basis and smooth.FEM.FPCA. Do not use C++ scripts directly on the R mesh objects, unless you take care of shifing indexes by yourself.
  
