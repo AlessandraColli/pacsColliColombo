@@ -32,6 +32,7 @@ void Evaluator<ORDER,2,2>::eval(Real* X, Real *Y, UInt length, const Real *coef,
 				{
 					coefficients[j] = coef[current_element[j].getId()];
 				}
+				// std::cout << "i : " << i << " current element id: " << current_element.getId() << std::endl;
 				result[i] = evaluate_point<Nodes,2,2>(current_element, current_point, coefficients);
 			}
 		}
@@ -54,6 +55,7 @@ void Evaluator<ORDER,2,2>::eval(Real* X, Real *Y, UInt length, const Real *coef,
 				{
 					coefficients[j] = coef[current_element[j].getId()];
 				}
+				// std::cout << "i : " << i << " current element id: " << current_element.getId() << std::endl;
 				result[i] = evaluate_point<Nodes,2,2>(current_element, current_point, coefficients);
 			}
 		}
@@ -81,6 +83,7 @@ void Evaluator<ORDER,2,2>::eval(Real* X, Real *Y, UInt length, const Real *coef,
 				{
 					coefficients[j] = coef[current_element[j].getId()];
 				}
+				// std::cout << "i : " << i << " current element id: " << current_element.getId() << std::endl;
 				result[i] = evaluate_point<Nodes,2,2>(current_element, current_point, coefficients);
 				starting_element = current_element;
 			}
@@ -105,7 +108,7 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 		std::cout << "This is Naive Search" << std::endl;
 		for (int i = 0; i<length; ++i)
 		{
-			current_point = Point(X[i],Y[i]);
+			current_point = Point(X[i],Y[i],Z[i]);
 			current_element = mesh_.findLocationNaive(current_point);
 
 			if(current_element.getId() == Identifier::NVAL)
@@ -119,6 +122,7 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 				{
 					coefficients[j] = coef[current_element[j].getId()];
 				}
+				// std::cout << "i : " << i << " current element id: " << current_element.getId() << std::endl;
 				result[i] = evaluate_point<Nodes,2,3>(current_element, current_point, coefficients);
 			}
 		}
@@ -127,7 +131,7 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 		std::cout << "This is Tree Search" << std::endl;
 		for (int i = 0; i<length; ++i) 
 		{
-			current_point = Point(X[i],Y[i]);
+			current_point = Point(X[i],Y[i],Z[i]);
 			current_element = mesh_.findLocationTree(current_point);
 
 			if(current_element.getId() == Identifier::NVAL)
@@ -141,6 +145,7 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 				{
 					coefficients[j] = coef[current_element[j].getId()];
 				}
+				// std::cout << "i : " << i << " current element id: " << current_element.getId() << std::endl;
 				result[i] = evaluate_point<Nodes,2,3>(current_element, current_point, coefficients);
 			}
 		}
@@ -163,7 +168,7 @@ void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 		std::cout << "This is Naive Search" << std::endl;
 		for (int i = 0; i<length; ++i)
 		{
-			current_point = Point(X[i],Y[i]);
+			current_point = Point(X[i],Y[i],Z[i]);
 			current_element = mesh_.findLocationNaive(current_point);
 
 			if(current_element.getId() == Identifier::NVAL)
@@ -177,6 +182,7 @@ void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 				{
 					coefficients[j] = coef[current_element[j].getId()];
 				}
+				// std::cout << "i : " << i << " current element id: " << current_element.getId() << std::endl;
 				result[i] = evaluate_point<Nodes,3,3>(current_element, current_point, coefficients);
 			}
 		}
@@ -185,7 +191,7 @@ void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 		std::cout << "This is Tree Search" << std::endl;
 		for (int i = 0; i<length; ++i) 
 		{
-			current_point = Point(X[i],Y[i]);
+			current_point = Point(X[i],Y[i],Z[i]);
 			current_element = mesh_.findLocationTree(current_point);
 
 			if(current_element.getId() == Identifier::NVAL)
@@ -199,6 +205,7 @@ void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 				{
 					coefficients[j] = coef[current_element[j].getId()];
 				}
+				// std::cout << "i : " << i << " current element id: " << current_element.getId() << std::endl;
 				result[i] = evaluate_point<Nodes,3,3>(current_element, current_point, coefficients);
 			}
 		}
