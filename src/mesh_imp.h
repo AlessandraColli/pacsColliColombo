@@ -51,7 +51,10 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::getElement(Id id) const
 	for (int i=0; i<3*ORDER; ++i)
 	{
 		id_current_point = elements_[i*num_elements_ + id];
-		element_points[i]= Point(id_current_point, Identifier::NVAL, points_[id_current_point],points_[num_nodes_+id_current_point]);
+		element_points[i]= Point(id_current_point, 
+								 Identifier::NVAL, 
+								 points_[id_current_point],
+								 points_[num_nodes_+id_current_point]);
 						  
 								  
 												
@@ -110,8 +113,7 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationWalking(const Point& po
 
 template <UInt ORDER>
 Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationTree(const Point& point) const {
-	// if(flag_ == 1){
-		std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
+		// std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
 		std::vector<Real> region(4);
 		bool result;
 		std::set<int> found;
@@ -124,7 +126,7 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationTree(const Point& point
 	
 		result = tree_.search(region, found);
 		if(result == 0) {
-			std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
+			// std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
 			return Element<3*ORDER,2,2>();
 		}
 		for (std::set<int>::iterator i = found.begin(); i != found.end(); i++) {
@@ -133,14 +135,11 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationTree(const Point& point
 	  		tmp = this -> getElement(index);
 			result = tmp.isPointInside(point);
 			if(result == 1) {
-				std::cout << "findLocationTree returns the right Element!" <<std::endl;
+				// std::cout << "findLocationTree returns the right Element!" <<std::endl;
 				return tmp;
 			}
 		}
-	// }
-	// std::cout << std::endl;
-	// std::cout << " you need to create the tree to use this algorithm, put flag = 1 " <<std::endl;
-	std::cout << "findLocationTree returns 0!" <<std::endl;
+	// std::cout << "findLocationTree returns 0!" <<std::endl;
 	return Element<3*ORDER,2,2>();
 }
 
@@ -361,14 +360,15 @@ Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::getElement(Id id) const
 	for (int i=0; i<3*ORDER; ++i)
 	{
 		id_current_point = elements_[3*ORDER * id + i];
-		element_points[i]= Point(id_current_point, Identifier::NVAL, points_[3*id_current_point],points_[3*id_current_point+1],points_[3*id_current_point+2]);
-						  
-									
-									  
-									   
+		element_points[i]= Point(id_current_point, 
+								 Identifier::NVAL, 
+								 points_[3*id_current_point],
+								 points_[3*id_current_point+1],
+								 points_[3*id_current_point+2]);									   
 	}
 	return Element<3*ORDER,2,3>(id, element_points);	 													
 }
+
 
 template <UInt ORDER>
 Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationNaive(Point point) const
@@ -387,8 +387,7 @@ Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationNaive(Point point) cons
 
 template <UInt ORDER>
 Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationTree(const Point& point) const {
-	// if(flag_ == 1){
-	std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
+	// std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
 	std::vector<Real> region(6);
 	bool result;
 	std::set<int> found;
@@ -403,7 +402,7 @@ Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationTree(const Point& point
 
 	result = tree_.search(region, found);
 	if(result == 0) {
-		std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
+		// std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
 		return Element<3*ORDER,2,3>();
 	}
 	for (std::set<int>::iterator i = found.begin(); i != found.end(); i++) {
@@ -412,14 +411,11 @@ Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationTree(const Point& point
   		tmp = this -> getElement(index);
 		result = tmp.isPointInside(point);
 		if(result == 1) {
-			std::cout << "findLocationTree returns the right Element!" <<std::endl;
+			// std::cout << "findLocationTree returns the right Element!" <<std::endl;
 			return tmp;
 		}
 	}
-	// }
-	// std::cout << std::endl;
-	// std::cout << " you need to create the tree to use this algorithm, put flag = 1 " <<std::endl;
-	std::cout << "findLocationTree returns 0!" <<std::endl;
+	// std::cout << "findLocationTree returns 0!" <<std::endl;
 	return Element<3*ORDER,2,3>();
 }
 
@@ -517,11 +513,11 @@ Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::getElement(Id id) const
 	for (int i=0; i<6*ORDER-2; ++i)
 	{
 		id_current_point = elements_[(6*ORDER-2) * id + i];
-		element_points[i]= Point(id_current_point, Identifier::NVAL, points_[3*id_current_point],points_[3*id_current_point+1],points_[3*id_current_point+2]);
-						  
-									
-									  
-									   
+		element_points[i]= Point(id_current_point, 
+								 Identifier::NVAL, 
+								 points_[3*id_current_point],
+								 points_[3*id_current_point+1],
+								 points_[3*id_current_point+2]);									   
 	}
 	return Element<6*ORDER-2,3,3>(id, element_points);													  
 }
@@ -543,8 +539,7 @@ Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::findLocationNaive(Point point) co
 
 template <UInt ORDER>
 Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::findLocationTree(const Point& point) const {
-	// if(flag_ == 1){
-	std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
+	// std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
 	std::vector<Real> region(6);
 	bool result;
 	std::set<int> found;
@@ -559,7 +554,7 @@ Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::findLocationTree(const Point& poi
 
 	result = tree_.search(region, found);
 	if(result == 0) {
-		std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
+		// std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
 		return Element<6*ORDER-2,3,3>();
 	}
 	for (std::set<int>::iterator i = found.begin(); i != found.end(); i++) {
@@ -568,14 +563,11 @@ Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::findLocationTree(const Point& poi
   		tmp = this -> getElement(index);
 		result = tmp.isPointInside(point);
 		if(result == 1) {
-			std::cout << "findLocationTree returns the right Element!" <<std::endl;
+			// std::cout << "findLocationTree returns the right Element!" <<std::endl;
 			return tmp;
 		}
 	}
-	// }
-	// std::cout << std::endl;
-	// std::cout << " you need to create the tree to use this algorithm, put flag = 1 " <<std::endl;
-	std::cout << "findLocationTree returns 0!" <<std::endl;
+	// std::cout << "findLocationTree returns 0!" <<std::endl;
 	return Element<6*ORDER-2,3,3>();
 }
 

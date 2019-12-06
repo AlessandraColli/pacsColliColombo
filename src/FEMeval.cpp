@@ -83,7 +83,7 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP RX, SEXP RY, SEXP Rcoef, SEXP Rorder, SEXP Rfa
     return(result);
 }*/
 
-SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef, SEXP Rorder, SEXP Rfast, SEXP Rmydim, SEXP Rndim)
+SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef, SEXP Rorder, SEXP Rfast, SEXP Rmydim, SEXP Rndim, SEXP Rsearch)
 {
 	int n_X = INTEGER(Rf_getAttrib(Rlocations, R_DimSymbol))[0];
 	int nRegions = INTEGER(Rf_getAttrib(RincidenceMatrix, R_DimSymbol))[0];
@@ -92,7 +92,7 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 	double *X, *Y, *Z;
 	UInt **incidenceMatrix;
 	double *coef;
-	int order, mydim, ndim;
+	int order, mydim, ndim, search;
 	bool fast;
 
 	coef  = REAL(Rcoef);
@@ -100,6 +100,7 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
     fast  = INTEGER(Rfast)[0];
     mydim = INTEGER(Rmydim)[0];
     ndim  = INTEGER(Rndim)[0];
+	search  = INTEGER(Rsearch)[0];
 
 	X = (double*) malloc(sizeof(double)*n_X);
 	Y = (double*) malloc(sizeof(double)*n_X);
@@ -160,13 +161,13 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 			MeshHandler<1,2,2> mesh(Rmesh);
 			Evaluator<1,2,2> evaluator(mesh);
 			//std::cout<<"Starting evaluation from FEMeval \n";
-			evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside);
+			evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside, search);
 		}
 		else if(order==2 && mydim==2 && ndim==2)
 		{
 			MeshHandler<2,2,2> mesh(Rmesh);
 			Evaluator<2,2,2> evaluator(mesh);
-			evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside);
+			evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside, search);
 		}
 		else if(order==1 && mydim==2 && ndim==3)
 		{ 
@@ -174,13 +175,13 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 			//mesh.printTriangles(std::cout);
 			//mesh.printPoints(std::cout);
 			Evaluator<1,2,3> evaluator(mesh);
-			evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside);
+			evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside, search);
 		}
 		else if(order==2 && mydim==2 && ndim==3)
 		{
 			MeshHandler<2,2,3> mesh(Rmesh);
 			Evaluator<2,2,3> evaluator(mesh);
-			evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside);
+			evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside, search);
 		}
 		else if(order==1 && mydim==3 && ndim==3)
 		{ 
@@ -188,7 +189,7 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 			//mesh.printTriangles(std::cout);
 			//mesh.printPoints(std::cout);
 			Evaluator<1,3,3> evaluator(mesh);
-			evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside);
+			evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside, search);
 		}
 
 		for (int i=0; i<n_X; ++i)

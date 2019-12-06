@@ -75,7 +75,7 @@ CPP_smooth.manifold.FEM.basis<-function(locations, observations, FEMbasis, lambd
   return(bigsol)
 }
 
-CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, ndim, mydim)
+CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, ndim, mydim, search)
 {
   FEMbasis = FEM$FEMbasis
   
@@ -102,12 +102,13 @@ CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, n
   storage.mode(mydim) <- "integer"
   storage.mode(locations) <- "double"
   storage.mode(redundancy) <- "integer"
+  storage.mode(search) <- "integer"
   
   #Calling the C++ function "eval_FEM_fd" in RPDE_interface.cpp
   evalmat = matrix(0,max(nrow(locations),nrow(incidence_matrix)),ncol(coeff))
   for (i in 1:ncol(coeff)){
     evalmat[,i] <- .Call("eval_FEM_fd", FEMbasis$mesh, locations, incidence_matrix, coeff[,i],
-                         FEMbasis$order, redundancy, mydim, ndim, package = "fdaPDE")
+                         FEMbasis$order, redundancy, mydim, ndim, search, package = "fdaPDE")
   }
   
   #Returning the evaluation matrix

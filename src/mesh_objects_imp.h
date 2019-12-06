@@ -258,12 +258,11 @@ bool Element<NNODES,2,3>::isPointInside(const Point& point) const
 	// #endif
 
 	err = A*sol-b;
-
-	if(err(0)*err(0) < tolerance && err(1)*err(1) < tolerance && err(2)*err(2) < tolerance){
-		return((sol(0)+sol(1)<=1) && (sol(0)>=0) && (sol(1)>=0));
-	}else{
-		return 0;}
-
+	if (err(0)*err(0) < tolerance && err(1)*err(1) < tolerance && err(2)*err(2) < tolerance) {
+		return ((sol(0)+sol(1) <= 1+2*eps) && (sol(0) >= 0-eps) && (sol(1) >= 0-eps));
+	} else {
+		return 0;
+	}
 	// if((err(0)*err(0) + err(1)*err(1) + err(2)*err(2)) < tolerance ){
 	// 	return((sol(0)+sol(1)<=1) && (sol(0)>=0) && (sol(1)>=0));
 	// }else{

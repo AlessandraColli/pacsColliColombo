@@ -11,7 +11,7 @@
 #'  Devillers, O. et al. 2001. Walking in a Triangulation, Proceedings of the Seventeenth Annual Symposium on Computational Geometry
 
 
-eval.FEM <- function(FEM, locations, incidence_matrix = NULL)
+eval.FEM <- function(FEM, locations, incidence_matrix = NULL, search = "tree")
 {
   if (is.null(FEM))
     stop("FEM required;  is NULL.")
@@ -25,6 +25,24 @@ eval.FEM <- function(FEM, locations, incidence_matrix = NULL)
   if(dim(locations)[1]==dim(FEM$FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEM$FEMbasis$mesh$nodes)[2])
     warning("The locations matrix has the same dimensions as the mesh nodes. If you want to get the FEM object evaluation
             at the mesh nodes, use FEM$coeff instead")
+			
+  if(search=="naive")
+    search=1
+  else if(search=="tree")
+    search=2
+  else if(search=="walking")
+    search=3
+  else{
+    stop("search must be either naive or walking or tree")
+  }
+
+  if(class(FEM$FEMbasis$mesh)=='MESH.2.5D' & search ==3){
+	stop("2.5D search must be either naive or tree")
+  }
+  if(class(FEM$FEMbasis$mesh)=='MESH.3D' & search ==3){
+	stop("3D search must be either naive or tree")
+  }
+
   
   if (is.null(locations))
     locations <- matrix(nrow = 0, ncol = 2)
@@ -36,16 +54,15 @@ eval.FEM <- function(FEM, locations, incidence_matrix = NULL)
   if(class(FEM$FEMbasis$mesh)=='MESH2D'){
     ndim = 2
     mydim = 2
-    res = CPP_eval.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim)
-    
+    res = CPP_eval.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search)  
   }else if(class(FEM$FEMbasis$mesh)=='MESH.2.5D'){
-    ndim = 3
-    mydim = 2
-    res = CPP_eval.manifold.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim)
+	ndim = 3
+	mydim = 2
+	res = CPP_eval.manifold.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search)
   }else if(class(FEM$FEMbasis$mesh)=='MESH.3D'){
-    ndim = 3
-    mydim = 3
-    res = CPP_eval.volume.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim)
+	ndim = 3
+	mydim = 3
+	res = CPP_eval.volume.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search)
   }
   
   return(as.matrix(res))

@@ -41,7 +41,7 @@ class Evaluator<ORDER,2,2>
 		\param result a double pointer to an already allocated memory space, where the evaluations
 		will be stored
 		*/
-		void eval(Real* X, Real *Y, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside);
+		void eval(Real* X, Real *Y, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, int search);
 
 		//! A member that computes the integral over regions divided by the measure of the region in a mesh,
 		//  given the bases' coefficients.
@@ -81,7 +81,7 @@ class Evaluator<ORDER,2,3>
 		\param result a double pointer to an already allocated memory space, where the evaluations
 		will be stored
 		*/
-		void eval(Real* X, Real *Y, Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside);
+		void eval(Real* X, Real *Y, Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, int search);
 		
 		//! A member that computes the integral over regions divided by the measure of the region in a mesh,
 		//  given the bases' coefficients.
@@ -124,7 +124,7 @@ class Evaluator<ORDER,3,3>
 		\param result a double pointer to an already allocated memory space, where the evaluations
 		will be stored
 		*/
-		void eval(Real* X, Real *Y, Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside);
+		void eval(Real* X, Real *Y, Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, int search);
 		
 		//! A member that computes the integral over regions divided by the measure of the region in a mesh,
 		//  given the bases' coefficients.
