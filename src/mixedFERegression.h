@@ -20,13 +20,12 @@ class MixedFERegressionBase
 		
 	const MeshHandler<ORDER, mydim, ndim> &mesh_;
 	const InputHandler& regressionData_;
-	std::vector<coeff> tripletsData_;
 	
-	//  system matrix= 	|psi^T * A *psi | R1^T  |   +  |psi^T * A * (-H) * psi |  O |   =  matrixNoCov + matrixOnlyCov
-	//	                |     R1        | R0	|      |         O             |  O |
+	//  system matrix= 	|psi^T * A *psi | lambda R1^T  |   +  |psi^T * A * (-H) * psi |  O |   =  matrixNoCov + matrixOnlyCov
+	//	                |     R1        | R0	      |      |         O             |  O |
 	
 	SpMat matrixNoCov_;	//! System matrix with psi^T*psi or psi^T*A*psi in north-west block  (is the full system matrix if no covariates)
-	SpMat matrixOnlyCov_; //! coeffmatrix=matrixNoCov+matrixOnlyCov
+	//SpMat matrixOnlyCov_; //! coeffmatrix=matrixNoCov+matrixOnlyCov
 	SpMat R1_;	//! North-east block of system matrix matrixNoCov_
 	SpMat R0_;	//! South-east block of system matrix matrixNoCov_
 	SpMat psi_; //! Psi matrix of the model
@@ -57,8 +56,8 @@ class MixedFERegressionBase
 	void setPsi();
 	//! A member function computing the no-covariates version of the system matrix 
 	void buildMatrixNoCov(const SpMat& Psi,  const SpMat& R1,  const SpMat& R0);
-	//! A member function computing the matrix to be added to matrixNoCov_ to obtain the full system matrix
-	void buildMatrixOnlyCov(const SpMat& Psi, const MatrixXr& H);
+	// A member function computing the matrix to be added to matrixNoCov_ to obtain the full system matrix
+	//void buildMatrixOnlyCov(const SpMat& Psi, const MatrixXr& H);
 	//! A function that given a vector u, performs Q*u efficiently
 	MatrixXr LeftMultiplybyQ(const MatrixXr& u);
 	//! A function which adds Dirichlet boundary conditions before solving the system ( Remark: BC for areal data are not implemented!)

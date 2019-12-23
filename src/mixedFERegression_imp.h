@@ -187,29 +187,29 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::buildMat
 	//std::cout<<"Coefficients' Matrix Set Correctly"<<std::endl;
 }
 
-template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
-void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::buildMatrixOnlyCov(const SpMat& Psi,  const MatrixXr& H) {
-
-	UInt nnodes=mesh_.num_nodes();
-	
-	MatrixXr NWblock= MatrixXr::Zero(2*nnodes,2*nnodes);
-	
-	if(regressionData_.getNumberOfRegions()==0) 
-    	NWblock.topLeftCorner(nnodes,nnodes)=Psi.transpose()*(-H)*Psi;
-    else
-	    NWblock.topLeftCorner(nnodes,nnodes)=Psi.transpose()*A_.asDiagonal()*(-H)*Psi;	
-
-//    matrixOnlyCov_.setZero();
-//    matrixOnlyCov_.resize(2*nnodes,2*nnodes);
-    
-    matrixOnlyCov_=NWblock.sparseView();
-//    for(int i=0; i<nnodes; ++i)
-//     for(int j=0; j<nnodes; ++j)
-//       matrixOnlyCov_.coeffRef(i,j)=NWblock(i,j);
-
-	matrixOnlyCov_.makeCompressed();
-}
-
+//template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
+//void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::buildMatrixOnlyCov(const SpMat& Psi,  const MatrixXr& H) {
+//
+//	UInt nnodes=mesh_.num_nodes();
+//	
+//	MatrixXr NWblock= MatrixXr::Zero(2*nnodes,2*nnodes);
+//	
+//	if(regressionData_.getNumberOfRegions()==0) 
+//    	NWblock.topLeftCorner(nnodes,nnodes)=Psi.transpose()*(-H)*Psi;
+//    else
+//	    NWblock.topLeftCorner(nnodes,nnodes)=Psi.transpose()*A_.asDiagonal()*(-H)*Psi;	
+//
+////    matrixOnlyCov_.setZero();
+////    matrixOnlyCov_.resize(2*nnodes,2*nnodes);
+//    
+//    matrixOnlyCov_=NWblock.sparseView();
+////    for(int i=0; i<nnodes; ++i)
+////     for(int j=0; j<nnodes; ++j)
+////       matrixOnlyCov_.coeffRef(i,j)=NWblock(i,j);
+//
+//	matrixOnlyCov_.makeCompressed();
+//}
+//
 
 template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::system_factorize() {
@@ -564,29 +564,30 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER,mydim,ndim>::computeDeg
 	}
 
 	// Resolution of the system
-	//MatrixXr x = system_solve(b);
-	Eigen::SparseLU<SpMat> solver;
+	MatrixXr x = system_solve(b);
 	
-	if(!regressionData_.getCovariates().rows()==0){
-	
-		this->buildMatrixOnlyCov(psi_, H_);
-		
-		SpMat coeffMatrix_= matrixNoCov_ + matrixOnlyCov_;
-
-	    solver.compute(coeffMatrix_); //matrixNoCov_+matrixOnlyCov_ = full system matrix when there are covariates
-
-	}
-	else{
-		solver.compute(matrixNoCov_);
-	}
-	
-	auto x = solver.solve(b);
-	if(solver.info()!=Eigen::Success)
-		{
-			#ifdef R_VERSION_
-	        Rprintf("Solving system for stoch gcv failed!!!\n");
-	        #endif
-		}
+//	Eigen::SparseLU<SpMat> solver;
+//	
+//	if(!regressionData_.getCovariates().rows()==0){
+//	
+//		this->buildMatrixOnlyCov(psi_, H_);
+//		
+//		SpMat coeffMatrix_= matrixNoCov_ + matrixOnlyCov_;
+//
+//	    solver.compute(coeffMatrix_); //matrixNoCov_+matrixOnlyCov_ = full system matrix when there are covariates
+//
+//	}
+//	else{
+//		solver.compute(matrixNoCov_);
+//	}
+//	
+//	auto x = solver.solve(b);
+//	if(solver.info()!=Eigen::Success)
+//		{
+//			#ifdef R_VERSION_
+//	        Rprintf("Solving system for stoch gcv failed!!!\n");
+//	        #endif
+//		}
 
 	MatrixXr uTpsi = u.transpose()*psi_;
 	VectorXr edf_vect(nrealizations);
