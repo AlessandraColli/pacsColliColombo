@@ -12,9 +12,9 @@ Compiled in both Win RStudio and Ubuntu 18.04 using g++ compiler. If using a Lin
 
 Subfolder structure:
 /src contains all C++ code and a special file named Makevars necessary to build and install the R package, 
-/R contains the R functions that wrap the C++ calls
-/tests contains a script to test the package
-/data contains the data to run the tests in /tests
+/R contains the R functions that wrap the C++ calls,
+/tests contains a script to test the package,
+/data contains the data to run the tests in /tests.
 
 Remarks:
 
