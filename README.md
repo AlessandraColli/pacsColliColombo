@@ -19,4 +19,6 @@ Subfolder structure:
 Remarks:
 
 1) the shift of indexes from R to C++ is done within the R functions smooth.FEM.basis and smooth.FEM.FPCA. Do not use C++ scripts directly on the R mesh objects, unless you take care of shifing indexes by yourself.
+
+2) The datasets manual will soon be updated 
  
