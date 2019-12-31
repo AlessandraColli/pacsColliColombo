@@ -47,7 +47,7 @@ CPP_smooth.FEM.FPCA<-function(locations, datamatrix, FEMbasis, incidence_matrix,
   bigsol <- .Call("Smooth_FPCA", locations, datamatrix, FEMbasis$mesh, 
                   FEMbasis$order, incidence_matrix, mydim, ndim, 
                   lambda, nPC, validation, NFolds, GCVmethod, nrealizations,
-                  package = "fdaPDE")
+                  PACKAGE = "fdaPDE")
   
   ## Reset them correctly
   #fdobj$basis$params$mesh$triangles = fdobj$basis$params$mesh$triangles + 1
@@ -111,7 +111,7 @@ CPP_smooth.manifold.FEM.FPCA<-function(locations, datamatrix, FEMbasis, incidenc
   bigsol <- .Call("Smooth_FPCA", locations, datamatrix, FEMbasis$mesh, 
                   FEMbasis$mesh$order, incidence_matrix, mydim, ndim, lambda,
                   nPC, validation, NFolds, GCVmethod, nrealizations,
-                  package = "fdaPDE")
+                  PACKAGE = "fdaPDE")
 
   return(bigsol)
 }
@@ -169,7 +169,7 @@ CPP_smooth.volume.FEM.FPCA<-function(locations, datamatrix, FEMbasis, incidence_
   bigsol <- .Call("Smooth_FPCA", locations, datamatrix, FEMbasis$mesh, 
                   FEMbasis$mesh$order, incidence_matrix, mydim, ndim, lambda,
                   nPC, validation, NFolds, GCVmethod, nrealizations,
-                  package = "fdaPDE")
+                  PACKAGE = "fdaPDE")
 
   return(bigsol)
 }

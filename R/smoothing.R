@@ -56,7 +56,7 @@
 #' data(MeuseBorder)
 #' ## Create a triangular mesh for these data with the provided boundary and plot it
 #' order=1
-#' mesh <- create.MESH.2D(nodes = MeuseData[,c(2,3)], segments = MeuseBorder, order = order)
+#' mesh <- create.mesh.2D(nodes = MeuseData[,c(2,3)], segments = MeuseBorder, order = order)
 #' plot(mesh)
 #' ## Create the Finite Element basis 
 #' FEMbasis = create.FEM.basis(mesh)
@@ -82,13 +82,13 @@
 
 smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, PDE_parameters=NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100)
 {
-  if(class(FEMbasis$mesh) == "MESH.2D"){
+  if(class(FEMbasis$mesh) == "mesh.2D"){
     ndim = 2
     mydim = 2
-  }else if(class(FEMbasis$mesh) == "MESH.2.5D"){
+  }else if(class(FEMbasis$mesh) == "mesh.2.5D"){
     ndim = 3
     mydim = 2
-  }else if(class(FEMbasis$mesh) == "MESH.3D"){
+  }else if(class(FEMbasis$mesh) == "mesh.3D"){
     ndim = 3
     mydim = 3
   }else{
@@ -135,7 +135,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
   
   ################## End checking parameters, sizes and conversion #############################
   
-  if(class(FEMbasis$mesh) == 'MESH.2D' & is.null(PDE_parameters)){	
+  if(class(FEMbasis$mesh) == 'mesh.2D' & is.null(PDE_parameters)){	
     
     bigsol = NULL
     print('C++ Code Execution')
@@ -145,7 +145,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
   
     numnodes = nrow(FEMbasis$mesh$nodes)
     
-  } else if(class(FEMbasis$mesh) == 'MESH.2D' & !is.null(PDE_parameters) & space_varying==FALSE){
+  } else if(class(FEMbasis$mesh) == 'mesh.2D' & !is.null(PDE_parameters) & space_varying==FALSE){
     
     bigsol = NULL
     print('C++ Code Execution')
@@ -156,7 +156,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
     
     numnodes = nrow(FEMbasis$mesh$nodes)
 
-  } else if(class(FEMbasis$mesh) == 'MESH.2D' & !is.null(PDE_parameters) & space_varying==TRUE){	
+  } else if(class(FEMbasis$mesh) == 'mesh.2D' & !is.null(PDE_parameters) & space_varying==TRUE){	
     
     bigsol = NULL
     print('C++ Code Execution')
@@ -167,15 +167,17 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
   
     numnodes = nrow(FEMbasis$mesh$nodes)
   
-  }else if(class(FEMbasis$mesh) == 'MESH.2.5D'){
+  }else if(class(FEMbasis$mesh) == 'mesh.2.5D'){
     
     bigsol = NULL  
     print('C++ Code Execution')
+    if(!is.null(locations))
+      stop("The option locations!=NULL for manifold domains is currently not implemented")
     bigsol = CPP_smooth.manifold.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations)
     
     numnodes = FEMbasis$mesh$nnodes
     
-  }else if(class(FEMbasis$mesh) == 'MESH.3D'){
+  }else if(class(FEMbasis$mesh) == 'mesh.3D'){
     
     bigsol = NULL  
     print('C++ Code Execution')
@@ -284,4 +286,26 @@ getGCV<-function(locations, observations, fit.FEM, covariates = NULL, incidence_
   stderr[stderr2<0] = NaN;
   
   return(list(stderr = stderr, GCV = GCV))
+}
+
+#' Deprecated Functions 
+#' 
+#' These functions are Deprecated in this release of fdaPDE, they will be 
+#' marked as Defunct and removed in a future version. 
+#' @name fdaPDE-deprecated
+  
+
+#' @rdname fdaPDE-deprecated
+#' @export
+smooth.FEM.PDE.basis=function(locations = NULL, observations, FEMbasis, lambda, PDE_parameters, covariates = NULL, BC = NULL, GCV = FALSE, CPP_CODE = TRUE,GCVmethod = 2, nrealizations = 100, incidence_matrix=NULL)
+{
+  .Deprecated("smooth.FEM.basis", package = "fdaPDE")
+  
+}
+
+#' @rdname fdaPDE-deprecated
+#' @export
+smooth.FEM.PDE.sv.basis=function(locations = NULL, observations, FEMbasis, lambda, PDE_parameters, covariates = NULL, BC = NULL, GCV = FALSE, CPP_CODE = TRUE,GCVmethod = 2, nrealizations = 100, incidence_matrix=NULL)
+{
+  .Deprecated("smooth.FEM.basis", package = "fdaPDE")
 }

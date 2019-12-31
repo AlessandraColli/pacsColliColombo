@@ -68,13 +68,13 @@
 
 smooth.FEM.FPCA<-function(locations = NULL, datamatrix, FEMbasis, incidence_matrix = NULL, lambda, nPC = 1, validation = NULL, NFolds = 5, GCVmethod = "Stochastic", nrealizations = 100)
 {
- if(class(FEMbasis$mesh) == "MESH.2D"){
+ if(class(FEMbasis$mesh) == "mesh.2D"){
  	ndim = 2
  	mydim = 2
- }else if(class(FEMbasis$mesh) == "MESH.2.5D"){
+ }else if(class(FEMbasis$mesh) == "mesh.2.5D"){
  	ndim = 3
  	mydim = 2
- }else if(class(FEMbasis$mesh) == "MESH.3D"){
+ }else if(class(FEMbasis$mesh) == "mesh.3D"){
  	ndim = 3
  	mydim = 3
  }else{
@@ -104,19 +104,19 @@ smooth.FEM.FPCA<-function(locations = NULL, datamatrix, FEMbasis, incidence_matr
 	  ################## End checking parameters, sizes and conversion #############################
   
   bigsol = NULL
-  if(class(FEMbasis$mesh) == 'MESH.2D'){
+  if(class(FEMbasis$mesh) == 'mesh.2D'){
 	  print('C++ Code Execution')
 	  bigsol = CPP_smooth.FEM.FPCA(locations, datamatrix, FEMbasis, incidence_matrix,
 	  								lambda, ndim, mydim, nPC, validation, NFolds, 
 									GCVmethod, nrealizations)
 	  numnodes = nrow(FEMbasis$mesh$nodes)
-  } else if(class(FEMbasis$mesh) == 'MESH.2.5D'){
+  } else if(class(FEMbasis$mesh) == 'mesh.2.5D'){
 	  print('C++ Code Execution')
 	  bigsol = CPP_smooth.manifold.FEM.FPCA(locations, datamatrix, FEMbasis,
 	  										incidence_matrix, lambda, ndim, mydim,
 											nPC, validation, NFolds, GCVmethod, nrealizations)
 	  numnodes = FEMbasis$mesh$nnodes
-  } else if(class(FEMbasis$mesh) == 'MESH.3D'){
+  } else if(class(FEMbasis$mesh) == 'mesh.3D'){
 	  print('C++ Code Execution')
 	  bigsol = CPP_smooth.volume.FEM.FPCA(locations, datamatrix, FEMbasis,
 	  										incidence_matrix, lambda, ndim, mydim,

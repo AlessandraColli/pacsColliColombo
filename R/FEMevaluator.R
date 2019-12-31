@@ -35,16 +35,16 @@ eval.FEM <- function(FEM, locations, incidence_matrix = NULL)
   
   res <- NULL
   
-  if(class(FEM$FEMbasis$mesh)=='MESH.2D'){
+  if(class(FEM$FEMbasis$mesh)=='mesh.2D'){
     ndim = 2
     mydim = 2
     res = CPP_eval.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim)
     
-  }else if(class(FEM$FEMbasis$mesh)=='MESH.2.5D'){
+  }else if(class(FEM$FEMbasis$mesh)=='mesh.2.5D'){
     ndim = 3
     mydim = 2
     res = CPP_eval.manifold.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim)
-  }else if(class(FEM$FEMbasis$mesh)=='MESH.3D'){
+  }else if(class(FEM$FEMbasis$mesh)=='mesh.3D'){
     ndim = 3
     mydim = 3
     res = CPP_eval.volume.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim)

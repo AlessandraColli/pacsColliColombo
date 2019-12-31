@@ -268,7 +268,7 @@ CPP_eval.FEM = function(FEM, locations, incidence_matrix, redundancy, ndim, mydi
   evalmat = matrix(0,max(nrow(locations),nrow(incidence_matrix)),ncol(coeff))
   for (i in 1:ncol(coeff)){
     evalmat[,i] <- .Call("eval_FEM_fd", FEMbasis$mesh, locations, incidence_matrix, coeff[,i],
-                         FEMbasis$order, redundancy, mydim, ndim, package = "fdaPDE")
+                         FEMbasis$order, redundancy, mydim, ndim, PACKAGE = "fdaPDE")
   }
   
   #Returning the evaluation matrix
@@ -281,10 +281,10 @@ CPP_get_evaluations_points = function(mesh, order)
   #here we do not shift indices since this function is called inside CPP_smooth.FEM.PDE.sv.basis
   
   # Imposing types, this is necessary for correct reading from C++
-  if(class(mesh)=="MESH.2D"){
+  if(class(mesh)=="mesh.2D"){
     ndim=2
     mydim=2
-  }else if(class(mesh) == "MESH.2.5D" || class(mesh) == "MESH.3D"){
+  }else if(class(mesh) == "mesh.2.5D" || class(mesh) == "mesh.3D"){
     stop('Function not yet implemented for this mesh class')
   }else{
     stop('Unknown mesh class')
@@ -308,10 +308,10 @@ CPP_get_evaluations_points = function(mesh, order)
 
 CPP_get.FEM.Mass.Matrix<-function(FEMbasis)
 {
-  if(class(FEMbasis$mesh) == "MESH.2D"){
+  if(class(FEMbasis$mesh) == "mesh.2D"){
     ndim = 2
     mydim = 2
-  }else if(class(FEMbasis$mesh) == "MESH.2.5D" || class(mesh) == "MESH.3D"){
+  }else if(class(FEMbasis$mesh) == "mesh.2.5D" || class(mesh) == "mesh.3D"){
     stop('Function not yet implemented for this mesh class')
   }else{
     stop('Unknown mesh class')
@@ -345,10 +345,10 @@ CPP_get.FEM.Mass.Matrix<-function(FEMbasis)
 
 CPP_get.FEM.Stiff.Matrix<-function(FEMbasis)
 {
-  if(class(FEMbasis$mesh) == "MESH.2D"){
+  if(class(FEMbasis$mesh) == "mesh.2D"){
     ndim = 2
     mydim = 2
-  }else if(class(FEMbasis$mesh) == "MESH.2.5D" || class(mesh) == "MESH.3D"){
+  }else if(class(FEMbasis$mesh) == "mesh.2.5D" || class(mesh) == "mesh.3D"){
     stop('Function not yet implemented for this mesh class')
   }else{
     stop('Unknown mesh class')
@@ -381,10 +381,10 @@ CPP_get.FEM.Stiff.Matrix<-function(FEMbasis)
 
 CPP_get.FEM.PDE.Matrix<-function(FEMbasis, PDE_parameters)
 {
-  if(class(FEMbasis$mesh) == "MESH.2D"){
+  if(class(FEMbasis$mesh) == "mesh.2D"){
     ndim = 2
     mydim = 2
-  }else if(class(FEMbasis$mesh) == "MESH.2.5D" || class(mesh) == "MESH.3D"){
+  }else if(class(FEMbasis$mesh) == "mesh.2.5D" || class(mesh) == "mesh.3D"){
     stop('Function not yet implemented for this mesh class')
   }else{
     stop('Unknown mesh class')
@@ -446,10 +446,10 @@ CPP_get.FEM.PDE.Matrix<-function(FEMbasis, PDE_parameters)
 CPP_get.FEM.PDE.sv.Matrix<-function(FEMbasis, PDE_parameters)
 {
   
-  if(class(FEMbasis$mesh) == "MESH.2D"){
+  if(class(FEMbasis$mesh) == "mesh.2D"){
     ndim = 2
     mydim = 2
-  }else if(class(FEMbasis$mesh) == "MESH.2.5D" || class(mesh) == "MESH.3D"){
+  }else if(class(FEMbasis$mesh) == "mesh.2.5D" || class(mesh) == "mesh.3D"){
     stop('Function not yet implemented for this mesh class')
   }else{
     stop('Unknown mesh class')
