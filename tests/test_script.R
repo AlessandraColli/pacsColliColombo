@@ -14,10 +14,10 @@ graphics.off()
 data(square2Ddata)
 
 mesh=create.mesh.2D(nodes=nodes)
-x11()
+# x11()
 plot(mesh)
-axis(1)
-axis(2)
+# axis(1)
+# axis(2)
 
 nnodes=dim(mesh$nodes)[1]
 
@@ -69,7 +69,6 @@ data(simpleMesh2Ddata)
 
 mesh=create.mesh.2D(nodes=nodes, triangles = triangles, order=2)
 
-x11()
 plot(mesh)
 
 # Create the FEM basis object
@@ -118,7 +117,7 @@ output_CPP4 = smooth.FEM.basis(observations = data2, locations=loc, covariates=W
                                FEMbasis = FEMbasis, lambda = lambda, 
                                PDE_parameters = PDE_parameters_anys,
                                GCV=GCVFLAG, GCVmethod = GCVMETHODFLAG)
-image(output_CPP4$fit.FEM)
+#image(output_CPP4$fit.FEM)
 output_CPP4$beta
 
 
@@ -128,7 +127,6 @@ rm(list=ls())
 
 data(charotid2Ddata)
 
-x11()
 plot(mesh)
 
 FEMbasis = create.FEM.basis(mesh)
@@ -303,7 +301,7 @@ data = obs_areal + W_areal%*%beta_exact + rnorm(RDD_groups, mean=0, sd=0.05*(ran
 smooth_areal2<-smooth.FEM.basis(observations=data, FEMbasis=FEMbasis, lambda=lambda, covariates = W_areal,
                                 incidence_matrix=incidence_matrix, GCV=GCVFLAG, GCVmethod = GCVMETHODFLAG)
 
-image(smooth_areal2$fit.FEM)
+#image(smooth_areal2$fit.FEM)
 
 #### FPCA - Kfold cross-validation, locations at nodes ####
 
@@ -564,6 +562,7 @@ rm(list=ls())
   # Build mesh: Sphere
   data(sphere3Ddata)
   sphere3D<-create.mesh.3D(sphere3Ddata$nodes, sphere3Ddata$tetrahedrons)
+  plot(sphere3D)
   FEMbasis <- create.FEM.basis(sphere3D)
   nodesLocations=sphere3D$nodes
   
@@ -580,7 +579,7 @@ rm(list=ls())
   for (i in 0:(nnodes-1)){
     func_evaluation[i+1] = a1* sin(2*pi*sphere3D$nodes[i+1,1]) +  a2* sin(2*pi*sphere3D$nodes[i+1,2]) +  a3*sin(2*pi*sphere3D$nodes[i+1,3]) +1
   }
-  ran=range(func_evaluation)  #-3.492844  5.444553
+  ran=range(func_evaluation) 
   
   plot(FEM(func_evaluation,FEMbasis))
   # Set smoothing parameter
@@ -608,7 +607,7 @@ rm(list=ls())
   for (i in 0:(nloc-1)){
     func_evaluation2[i+1] = a1* sin(2*pi*loc[i+1,1]) +  a2* sin(2*pi*loc[i+1,2]) +  a3*sin(2*pi*loc[i+1,3]) +1
   }
-  ran2=range(func_evaluation2) #-3.468719  5.405640
+  ran2=range(func_evaluation2) 
   
   set.seed(5847947)
   
@@ -619,8 +618,7 @@ rm(list=ls())
   
   beta_exact=c(0.3,0.5)
   
-  range(W2%*%beta_exact) # -4.274224  5.692633
-  ran4=range(W2%*%beta_exact + func_evaluation2) # -6.268882 10.468963
+  ran4=range(W2%*%beta_exact + func_evaluation2) 
   
   data4=func_evaluation2 + W2%*%beta_exact + rnorm(nloc,mean=0,sd=0.05*(ran4[2]-ran4[1]))
   
@@ -632,11 +630,15 @@ rm(list=ls())
 #### areal sphere 3D ####
   
   rm(list=ls())
+  
+  data("sphere3DarealData")
+  
+  FEMbasis=create.FEM.basis(mesh)
 
   set.seed(5847947)
   
   # Exact test function
-  nnodes = sphere3D$nnodes
+  nnodes = mesh$nnodes
   a1 = rnorm(1,mean = 1, sd = 1)
   a2 = rnorm(1,mean = 1, sd = 1)
   a3 = rnorm(1,mean = 1, sd = 1)
@@ -644,16 +646,15 @@ rm(list=ls())
   func_evaluation = numeric(nnodes)
   
   for (i in 0:(nnodes-1)){
-    func_evaluation[i+1] = a1* sin(2*pi*sphere3D$nodes[i+1,1]) +  a2* sin(2*pi*sphere3D$nodes[i+1,2]) +  a3*sin(2*pi*sphere3D$nodes[i+1,3]) +1
+    func_evaluation[i+1] = a1* sin(2*pi*mesh$nodes[i+1,1]) +  a2* sin(2*pi*mesh$nodes[i+1,2]) +  a3*sin(2*pi*mesh$nodes[i+1,3]) +1
   }
-  ran=range(func_evaluation)  #-3.492844  5.444553
+  ran=range(func_evaluation)  
   
   
   vals=numeric(dim(mesh$nodes)[1])
   valscov=numeric(dim(mesh$nodes)[1])
   cov=numeric(dim(mesh$nodes)[1])
   
-  mesh=sphere3D
   for(i in 1:dim(mesh$nodes)[1]){
     vals[i]=obs_areal[RDD[i]]
     valscov[i]=obs_areal[RDD[i]]+0.8*cov_areal[RDD[i]]
@@ -674,17 +675,18 @@ rm(list=ls())
   lambda=seq(0.000001,0.000009,0.000001)
   
   W_areal=cbind(cov_areal)
+  W=cbind(cov1)
   
   beta_exact=c(0.8)
   
-  plot(FEM(sol_exact+W%*%beta_exact,FEMbasis))
+  plot(FEM(func_evaluation+W%*%beta_exact,FEMbasis))
   
-  range(W_areal%*%beta_exact) #-1.059765  1.257048
+  range(W_areal%*%beta_exact) 
   ran2=range(obs_areal + W_areal%*%beta_exact)
   
   data2 = obs_areal + W_areal%*%beta_exact + rnorm(RDD_groups, mean=0, sd=0.05*(ran2[2]-ran2[1]))
   
-  smooth_areal2<-smooth.FEM.basis(observations=data2, FEMbasis=FEMbasis, lambda=lambda2, covariates = W_areal,
+  smooth_areal2<-smooth.FEM.basis(observations=data2, FEMbasis=FEMbasis, lambda=lambda, covariates = W_areal,
                                   incidence_matrix=incidence_matrix, GCV=GCVFLAG, GCVmethod = GCVMETHODFLAG)
   
   
@@ -706,7 +708,7 @@ rm(list=ls())
   nSamples<-50
   sd_score1<-0.1
   sd_score2<-0.05
-  sd_score3<-0.025#0.0125
+  sd_score3<-0.025
   sd_error<-0.05
   set.seed(seed)
   
@@ -717,7 +719,7 @@ rm(list=ls())
   plot(eigenf1)
   plot(eigenf2)
   plot(eigenf3)
-  
+  # 
   truedatarange.loc<-max(c(eigenf1$coeff,eigenf2$coeff,eigenf3$coeff))-min(c(eigenf1$coeff,eigenf2$coeff,eigenf3$coeff))
   truecoeff<-cbind(eigenf1$coeff,eigenf2$coeff,eigenf3$coeff)
   
