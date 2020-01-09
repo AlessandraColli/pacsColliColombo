@@ -86,6 +86,7 @@ triangulate_native <- function(P, PB, PA, S, SB,H, TR, flags) {
 #' in the triangulation, when the domain has holes.}
 #' \item{\code{order}}{Either '1' or '2'. It specifies wether each mesh triangle should be represented by 3 nodes (the triangle' vertices) or by 6 nodes (the triangle's vertices and midpoints). 
 #' These are respectively used for linear (order = 1) and quadratic (order = 2) Finite Elements. Default is \code{order} = 1.}
+#' @export
 #' @examples 
 #' ## Upload the Meuse data
 #' data(MeuseData)
@@ -264,7 +265,7 @@ create.mesh.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
 #' in the triangulation, when the domain has holes.}
 #' \item{\code{order}}{Either '1' or '2'. It specifies wether each mesh triangle should be represented by 3 nodes (the triangle' vertices) or by 6 nodes (the triangle's vertices and midpoints).
 #' These are respectively used for linear (order = 1) and quadratic (order = 2) Finite Elements. Default is \code{order} = 1.}
-#' @examples 
+#'  @examples 
 #' ## Upload the Meuse data and a domain boundary for these data
 #' data(MeuseData)
 #' data(MeuseBorder)
@@ -275,6 +276,7 @@ create.mesh.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
 #' ## Refine the triangulation
 #' mesh_refine <- refine.mesh.2D(mesh, minimum_angle = 30, maximum_area = 10000)
 #' plot(mesh_refine)
+#' @export
 
 refine.mesh.2D<-function(mesh, minimum_angle = NA, maximum_area = NA, delaunay = FALSE, verbosity = 0)
 { 
@@ -364,6 +366,7 @@ refine.mesh.2D<-function(mesh, minimum_angle = NA, maximum_area = NA, delaunay =
 #' \item{\code{triangles}}{A #triangles-by-3*order matrix specifying the indices of the nodes in each triangle of the mesh}
 #' \item{\code{order}}{Either '1' or '2'. It specifies wether each mesh triangle should be represented by 3 nodes (the triangle' vertices) or by 6 nodes (the triangle's vertices and midpoints). 
 #' These are respectively used for linear (order = 1) and quadratic (order = 2) Finite Elements. Default is \code{order} = 1.}
+#' @export
 #' @examples
 #' #Load the matrix nodes and triangles
 #'
@@ -484,6 +487,7 @@ second.order.mesh.2.5D<-function(nodes, triangles){
 #' \item{\code{tetrahedrons}}{A #tetrahedrons-by-4*order matrix specifying the indices of the nodes in each triangle of the mesh}
 #' \item{\code{order}}{It specifies the order of the Finite Element basis. When order = 1, each mesh tetrahedron is represented by 4 nodes (the tetrahedron vertices). 
 #' These are respectively used for linear (order = 1) Finite Elements. Currently only \code{order} = 1 is implemented, and is the default option.}
+#' @export
 #' @examples
 #' #Load the matrix nodes and tetrahedrons
 #'

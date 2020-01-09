@@ -10,7 +10,7 @@
 #' @usage eval.FEM(FEM, locations, incidence_matrix=NULL)
 #' @references 
 #'  Devillers, O. et al. 2001. Walking in a Triangulation, Proceedings of the Seventeenth Annual Symposium on Computational Geometry
-
+#' @export
 
 eval.FEM <- function(FEM, locations, incidence_matrix = NULL)
 {

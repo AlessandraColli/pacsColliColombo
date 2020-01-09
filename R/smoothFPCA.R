@@ -21,10 +21,10 @@
 #' \item{\code{lambda}}{A vector of length #PrincipalComponents where each value is \code{lambda} chosen for that Principal Component.}
 #' \item{\code{variance_explained}}{A vector of length #PrincipalComponents where each value represent the variance explained by that component.}
 #' \item{\code{ cumsum_percentage}}{A vector of length #PrincipalComponents containing the cumulative percentage of the variance explained by the first components.}
-#' \item{\code{var}}{If GCV is \code{TRUE} and GCVmethod = "Stochastic", a scalar or vector with the sample variance of the realizations of the stochastic edf estimator for each value of the smoothing parameter specified in \code{lambda}.}
 #' @description This function implements a smooth functional principal component analysis over a planar mesh, a smooth manifold or a volume. In order to perform some regularization, the calculation involves the Laplacian of the spatial field. The computation relies only on the C++ implementation of the algorithm.
-#' @usage smooth.FEM.FPCA(locations = NULL, datamatrix, FEMbasis, lambda, nPC=1, validation=NULL,NFolds=5,GCVmethod = 2, nrealizations = 100)
+#' @usage FPCA.FEM(locations = NULL, datamatrix, FEMbasis, lambda, nPC=1, validation=NULL,NFolds=5,GCVmethod = "Stochastic", nrealizations = 100)
 #' @references Sangalli, L.M., Ramsay, J.O. & Ramsay, T.O., 2013. Spatial spline regression models. Journal of the Royal Statistical Society. Series B: Statistical Methodology, 75(4), pp. 681-703.
+#' @export
 #' @examples
 #' library(fdaPDE)
 #' ## Load the hub data
@@ -66,8 +66,10 @@
 
 #observation is a matrix with nrow=number of location points (or mesh nodes) and n cols=n of observations
 
-smooth.FEM.FPCA<-function(locations = NULL, datamatrix, FEMbasis, incidence_matrix = NULL, lambda, nPC = 1, validation = NULL, NFolds = 5, GCVmethod = "Stochastic", nrealizations = 100)
+FPCA.FEM<-function(locations = NULL, datamatrix, FEMbasis,lambda, nPC = 1, validation = NULL, NFolds = 5, GCVmethod = "Stochastic", nrealizations = 100)
 {
+  incidence_matrix=NULL # if areal fpca will be included in release, this should be put in the input
+  
  if(class(FEMbasis$mesh) == "mesh.2D"){
  	ndim = 2
  	mydim = 2
@@ -137,6 +139,6 @@ smooth.FEM.FPCA<-function(locations = NULL, datamatrix, FEMbasis, incidence_matr
   
   var=bigsol[[6]]
   
-  reslist=list(loadings.FEM=loadings.FEM, scores=scores, lambda=lambda, variance_explained=variance_explained, cumsum_percentage=cumsum_percentage, var=var)
+  reslist=list(loadings.FEM=loadings.FEM, scores=scores, lambda=lambda, variance_explained=variance_explained, cumsum_percentage=cumsum_percentage)
   return(reslist)
 }

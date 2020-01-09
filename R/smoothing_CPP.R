@@ -379,7 +379,7 @@ CPP_get.FEM.Stiff.Matrix<-function(FEMbasis)
   return(A)
 }
 
-CPP_get.FEM.PDE.Matrix<-function(FEMbasis, PDE_parameters)
+CPP_get.FEM.PDE.Matrix<-function(observations, FEMbasis, PDE_parameters)
 {
   if(class(FEMbasis$mesh) == "mesh.2D"){
     ndim = 2
@@ -443,7 +443,7 @@ CPP_get.FEM.PDE.Matrix<-function(FEMbasis, PDE_parameters)
 }
 
 
-CPP_get.FEM.PDE.sv.Matrix<-function(FEMbasis, PDE_parameters)
+CPP_get.FEM.PDE.sv.Matrix<-function(observations, FEMbasis, PDE_parameters)
 {
   
   if(class(FEMbasis$mesh) == "mesh.2D"){

@@ -28,6 +28,7 @@
 #' plot(mesh)                   
 #' ## Creates the basis
 #' FEMbasis = create.FEM.basis(mesh)
+#' @export
 
 create.FEM.basis = function(mesh)
 {
@@ -78,6 +79,7 @@ create.FEM.basis = function(mesh)
 #' coeff <- sin(mesh.2D.rectangular$nodes[,1])*cos(mesh.2D.rectangular$nodes[,2])
 #' FEM_object<- FEM(coeff, FEMbasis)
 #' plot(FEM_object)
+#' @export
 
 FEM<-function(coeff,FEMbasis)
 {

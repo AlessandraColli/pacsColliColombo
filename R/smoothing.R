@@ -35,6 +35,7 @@
 #'        the Generalized Cross Validation criterion, for each value of the smoothing parameter specified in \code{lambda}.
 #' @param GCVmethod either "Exact" or "Stochastic". If set to "Exact" perform an exact (but possibly slow) computation of the GCV index. If set to "Stochastic" approximate the GCV with a stochastic algorithm.
 #'        This parameter is considered only when \code{GCV=TRUE}
+#' @param nrealizations a positive integer, represents the number of uniform random variables used in stochastic GCV computation.      
 
 #' @return A list with the following variables:
 #' \item{\code{fit.FEM}}{A \code{FEM} object that represents the fitted spatial field.}
@@ -44,9 +45,11 @@
 #' \item{\code{edf}}{If GCV is \code{TRUE}, a scalar or vector with the trace of the smoothing matrix for each value of the smoothing parameter specified in \code{lambda}.}
 #' \item{\code{stderr}}{If GCV is \code{TRUE}, a scalar or vector with the estimate of the standard deviation of the error for each value of the smoothing parameter specified in \code{lambda}.}
 #' \item{\code{GCV}}{If GCV is \code{TRUE}, a  scalar or vector with the value of the GCV criterion for each value of the smoothing parameter specified in \code{lambda}.}
-#' @description This function implements a spatial regression model with differential regularization; isotropic and stationary case. In particular, the regularizing term involves the Laplacian of the spatial field. Space-varying covariates can be included in the model. The technique accurately handle data distributed over irregularly shaped domains. Moreover, various conditions can be imposed at the domain boundaries.
-#' @usage smooth.FEM.basis(locations = NULL, observations, FEMbasis, lambda, 
-#'        covariates = NULL, BC = NULL, GCV = FALSE)
+#'  @description This function implements a spatial regression model with differential regularization; isotropic and stationary case. In particular, the regularizing term involves the Laplacian of the spatial field. Space-varying covariates can be included in the model. The technique accurately handle data distributed over irregularly shaped domains. Moreover, various conditions can be imposed at the domain boundaries.
+#' @usage smooth.FEM(locations = NULL, observations, FEMbasis, lambda, 
+#'        covariates = NULL, PDE_parameters=NULL,incidence_matrix=NULL, BC = NULL, GCV = FALSE,
+#'        GCVmethod="Stochastic", nrealizations)
+#' @export        
 
 #' @references Sangalli, L.M., Ramsay, J.O. & Ramsay, T.O., 2013. Spatial spline regression models. Journal of the Royal Statistical Society. Series B: Statistical Methodology, 75(4), pp. 681-703.
 #' @examples
@@ -80,7 +83,7 @@
 #' print(ZincMeuseCovar$beta)
 
 
-smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, PDE_parameters=NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100)
+smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, PDE_parameters=NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100)
 {
   if(class(FEMbasis$mesh) == "mesh.2D"){
     ndim = 2
@@ -288,24 +291,3 @@ getGCV<-function(locations, observations, fit.FEM, covariates = NULL, incidence_
   return(list(stderr = stderr, GCV = GCV))
 }
 
-#' Deprecated Functions 
-#' 
-#' These functions are Deprecated in this release of fdaPDE, they will be 
-#' marked as Defunct and removed in a future version. 
-#' @name fdaPDE-deprecated
-  
-
-#' @rdname fdaPDE-deprecated
-#' @export
-smooth.FEM.PDE.basis=function(locations = NULL, observations, FEMbasis, lambda, PDE_parameters, covariates = NULL, BC = NULL, GCV = FALSE, CPP_CODE = TRUE,GCVmethod = 2, nrealizations = 100, incidence_matrix=NULL)
-{
-  .Deprecated("smooth.FEM.basis", package = "fdaPDE")
-  
-}
-
-#' @rdname fdaPDE-deprecated
-#' @export
-smooth.FEM.PDE.sv.basis=function(locations = NULL, observations, FEMbasis, lambda, PDE_parameters, covariates = NULL, BC = NULL, GCV = FALSE, CPP_CODE = TRUE,GCVmethod = 2, nrealizations = 100, incidence_matrix=NULL)
-{
-  .Deprecated("smooth.FEM.basis", package = "fdaPDE")
-}
