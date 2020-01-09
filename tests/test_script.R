@@ -54,7 +54,7 @@ GCVMETHODFLAG='Exact'
 
 data = sol_exact + rnorm(nnodes, mean=0, sd=0.05*(ran[2]-ran[1]))
 
-output_CPP<-smooth.FEM.basis(observations=data, FEMbasis=FEMbasis, lambda=lambda,
+output_CPP<-smooth.FEM(observations=data, FEMbasis=FEMbasis, lambda=lambda,
                             GCV=GCVFLAG, GCVmethod = GCVMETHODFLAG)
 
 image(FEM(output_CPP$fit.FEM$coeff[,which.min(output_CPP$GCV)],FEMbasis))
@@ -113,7 +113,7 @@ cov1_nonod=sin(pi*xobs)
 cov2_nonod=rnorm(mean=0, sd=0.5,n=length(xobs))
 W_nonod=cbind(cov1_nonod,cov2_nonod)
 
-output_CPP4 = smooth.FEM.basis(observations = data2, locations=loc, covariates=W_nonod,
+output_CPP4 = smooth.FEM(observations = data2, locations=loc, covariates=W_nonod,
                                FEMbasis = FEMbasis, lambda = lambda, 
                                PDE_parameters = PDE_parameters_anys,
                                GCV=GCVFLAG, GCVmethod = GCVMETHODFLAG)
@@ -151,7 +151,7 @@ Data = DatiEsatti + rnorm(length(DatiEsatti), sd = 0.05*(max(DatiEsatti)-min(Dat
 GCVFLAG=T
 GCVMETHODFLAG='Exact'
 
-Sol = smooth.FEM.basis(locations = SpacePoints,
+Sol = smooth.FEM(locations = SpacePoints,
                        observations = Data, 
                        FEMbasis = FEMbasis, 
                        lambda = lambda, 
@@ -222,7 +222,7 @@ K_func<-function(points)
 
 PDE_parameters <- list(K = K_func, b = b_func, c = c_func, u = u_func)
 
-smoothing <- smooth.FEM.basis(observations=data, FEMbasis=basisobj, lambda= 10^c(-3,-1,1,3,10), PDE_parameters = PDE_parameters, BC = BC)
+smoothing <- smooth.FEM(observations=data, FEMbasis=basisobj, lambda= 10^c(-3,-1,1,3,10), PDE_parameters = PDE_parameters, BC = BC)
 plot.FEM(smoothing$fit.FEM)
 
 # see the difference with u =0
@@ -238,7 +238,7 @@ u_func<-function(points)
 }
 PDE_parameters <- list(K = K_func, b = b_func, c = c_func, u = u_func)
 
-smoothing2 <- smooth.FEM.basis(observations=data, FEMbasis=basisobj, lambda= 10^c(-3,-1,1,3,10), PDE_parameters = PDE_parameters, BC = BC)
+smoothing2 <- smooth.FEM(observations=data, FEMbasis=basisobj, lambda= 10^c(-3,-1,1,3,10), PDE_parameters = PDE_parameters, BC = BC)
 plot.FEM(smoothing2$fit.FEM)
 
 
@@ -298,7 +298,7 @@ GCVMETHODFLAG='Exact'
 
 data = obs_areal + W_areal%*%beta_exact + rnorm(RDD_groups, mean=0, sd=0.05*(ran2[2]-ran2[1]))
 
-smooth_areal2<-smooth.FEM.basis(observations=data, FEMbasis=FEMbasis, lambda=lambda, covariates = W_areal,
+smooth_areal2<-smooth.FEM(observations=data, FEMbasis=FEMbasis, lambda=lambda, covariates = W_areal,
                                 incidence_matrix=incidence_matrix, GCV=GCVFLAG, GCVmethod = GCVMETHODFLAG)
 
 #image(smooth_areal2$fit.FEM)
@@ -352,7 +352,7 @@ error<-rnorm(n=nSamples*nnodes,sd=sd_error*truedatarange)
 datamatrix.pointwise<-datamatrix.pointwise.exact+error
 dm.pointwise.centred<-datamatrix.pointwise-matrix(apply(datamatrix.pointwise,2,mean),ncol=ncol(datamatrix.pointwise),nrow=nrow(datamatrix.pointwise),byrow=TRUE)
 
-sol.pointwise<-smooth.FEM.FPCA(datamatrix=dm.pointwise.centred,FEMbasis=FEMbasis,lambda=lambda,nPC=3,validation=validation,GCVmethod=GCVMETHOD, NFolds = nfolds)
+sol.pointwise<-FPCA.FEM(datamatrix=dm.pointwise.centred,FEMbasis=FEMbasis,lambda=lambda,nPC=3,validation=validation,GCVmethod=GCVMETHOD, NFolds = nfolds)
 
 plot(sol.pointwise$loadings.FEM)
 
@@ -413,7 +413,7 @@ GCVMETHODFLAG='Exact'
 
 data2 = func_evaluation + W%*%beta_exact +rnorm(nnodes,mean=0,sd=0.05*(ran2[2]-ran2[1]))
 
-output_CPP2 = smooth.FEM.basis(observations = data2, covariates = W,
+output_CPP2 = smooth.FEM(observations = data2, covariates = W,
                                FEMbasis = FEMbasis, lambda = lambda, GCV = GCVFLAG, 
                                GCVmethod = GCVMETHODFLAG)
 
@@ -479,7 +479,7 @@ lambda2=seq(1.8*10^-5,2*10^-5,by=10^-7)
 
 data2 = obs_areal + W_areal%*%beta_exact + rnorm(RDD_groups, mean=0, sd=0.05*(ran2[2]-ran2[1]))
 
-smooth_areal2<-smooth.FEM.basis(observations=data2, FEMbasis=FEMbasis, lambda=lambda2, covariates = W_areal,
+smooth_areal2<-smooth.FEM(observations=data2, FEMbasis=FEMbasis, lambda=lambda2, covariates = W_areal,
                                 incidence_matrix=incidence_matrix, GCV=GCVFLAG, GCVmethod = GCVMETHODFLAG)
 
 plot(FEM(smooth_areal2$fit.FEM$coeff[,which.min(smooth_areal2$GCV)],FEMbasis))
@@ -545,7 +545,7 @@ error<-rnorm(n=nSamples*nnodes,sd=sd_error*truedatarange)
 datamatrix.pointwise<-datamatrix.pointwise.exact+error
 dm.pointwise.centred<-datamatrix.pointwise-matrix(apply(datamatrix.pointwise,2,mean),ncol=ncol(datamatrix.pointwise),nrow=nrow(datamatrix.pointwise),byrow=TRUE)
   
-sol.pointwise<-smooth.FEM.FPCA(datamatrix=dm.pointwise.centred, FEMbasis=FEMbasis, lambda=lambda, nPC=3, validation=validation, GCVmethod=GCVMETHOD)
+sol.pointwise<-FPCA.FEM(datamatrix=dm.pointwise.centred, FEMbasis=FEMbasis, lambda=lambda, nPC=3, validation=validation, GCVmethod=GCVMETHOD)
   
 plot(sol.pointwise$loadings.FEM)
 
@@ -622,7 +622,7 @@ rm(list=ls())
   
   data4=func_evaluation2 + W2%*%beta_exact + rnorm(nloc,mean=0,sd=0.05*(ran4[2]-ran4[1]))
   
-  output_CPP4 = smooth.FEM.basis(observations = data4,locations=loc, covariates=W2,
+  output_CPP4 = smooth.FEM(observations = data4,locations=loc, covariates=W2,
                                  FEMbasis = FEMbasis, lambda = lambda, GCV = GCVFLAG, GCVmethod = GCVMETHODFLAG)
   
   plot(output_CPP4$fit.FEM)
@@ -686,7 +686,7 @@ rm(list=ls())
   
   data2 = obs_areal + W_areal%*%beta_exact + rnorm(RDD_groups, mean=0, sd=0.05*(ran2[2]-ran2[1]))
   
-  smooth_areal2<-smooth.FEM.basis(observations=data2, FEMbasis=FEMbasis, lambda=lambda, covariates = W_areal,
+  smooth_areal2<-smooth.FEM(observations=data2, FEMbasis=FEMbasis, lambda=lambda, covariates = W_areal,
                                   incidence_matrix=incidence_matrix, GCV=GCVFLAG, GCVmethod = GCVMETHODFLAG)
   
   
@@ -754,7 +754,7 @@ rm(list=ls())
   datamatrix.pointwise.loc<-datamatrix.pointwise.exact.loc+error
   dm.pointwise.centred.loc<-datamatrix.pointwise.loc-matrix(apply(datamatrix.pointwise.loc,2,mean),ncol=ncol(datamatrix.pointwise.loc),nrow=nrow(datamatrix.pointwise.loc),byrow=TRUE)
   
-  sol.pointwise.loc<-smooth.FEM.FPCA(locations=loc,datamatrix=dm.pointwise.centred.loc,FEMbasis=FEMbasis,lambda=lambda,nPC=3,validation=validation, GCVmethod=GCVMETHOD)
+  sol.pointwise.loc<-FPCA.FEM(locations=loc,datamatrix=dm.pointwise.centred.loc,FEMbasis=FEMbasis,lambda=lambda,nPC=3,validation=validation, GCVmethod=GCVMETHOD)
   
   plot(sol.pointwise.loc$loadings.FEM)
   
