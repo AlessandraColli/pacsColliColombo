@@ -61,17 +61,16 @@ triangulate_native <- function(P, PB, PA, S, SB,H, TR, flags) {
 #' to create a triangulation of the domain of interest starting from a list of points, to be used as triangles' vertices, and a list of segments, that define the domain boundary. The resulting
 #' mesh is a Constrained Delaunay triangulation. This is constructed in a way to preserve segments provided in the input \code{segments} without splitting them. This imput can be used to define the boundaries
 #' of the domain. If this imput is NULL, it generates a triangulation over the
-#' convex hull of the points.
+#' convex hull of the points. 
+#' It is also possible to create a mesh.2D from the nodes locations and the connectivity matrix.
 #' @usage create.mesh.2D(nodes, nodesattributes = NA, segments = NA, holes = NA, 
 #'                      triangles = NA, order = 1, verbosity = 0)
 #' @seealso \code{\link{refine.mesh.2D}}, \code{\link{create.FEM.basis}}
 #' @return An object of the class mesh.2D with the following output:
 #' \item{\code{nodes}}{A #nodes-by-2 matrix containing the x and y coordinates of the mesh nodes.}
 #' \item{\code{nodesmarkers}}{A vector of length #nodes, with entries either '1' or '0'. An entry '1' indicates that the corresponding node is a boundary node; an entry '0' indicates that the corresponding node is not a boundary node.}
-#' \item{\code{nodesattributes}}{nodesattributes A matrix with #nodes rows containing nodes' attributes. 
-#' These are passed unchanged to the output. If a node is added during the triangulation process or mesh refinement, its attributes are computed  
-#' by linear interpolation using the attributes of neighboring nodes. This functionality is for instance used to compute the value 
-#' of a Dirichlet boundary condition at boundary nodes added during the triangulation process.}
+#' \item{\code{nodesattributes}}{A matrix with #nodes rows containing nodes' attributes. 
+#' These are passed unchanged from the input.}
 #' \item{\code{triangles}}{A #triangles-by-3 (when \code{order} = 1) or #triangles-by-6 (when \code{order} = 2) matrix.
 #' This option is used when a triangulation is already available. It specifies the triangles giving the indices in \code{nodes} of the triangles' vertices and (when \code{nodes} = 2) also if the triangles' edges midpoints. The triangles' vertices and midpoints are ordered as described 
 #' at  \cr https://www.cs.cmu.edu/~quake/triangle.highorder.html.}
@@ -88,20 +87,24 @@ triangulate_native <- function(P, PB, PA, S, SB,H, TR, flags) {
 #' These are respectively used for linear (order = 1) and quadratic (order = 2) Finite Elements. Default is \code{order} = 1.}
 #' @export
 #' @examples 
-#' ## Upload the Meuse data
-#' data(MeuseData)
-#' ## Create a triangulation on the convex hull of these data,
-#' ## where each data location is a triangle vertex
-#' mesh <- create.mesh.2D(nodes = MeuseData[,c(2,3)], order = 1)
-#' ## Plot the mesh
+#' library(fdaPDE)
+#' 
+#' ## Upload the quasicirle2D data
+#' data(quasicircle2D)
+#' 
+#' ## create mesh from boundary
+#' ## if the domain is convex it is sufficient to call:
+#' mesh = create.mesh.2D(nodes = rbind(boundary_nodes, locations))
 #' plot(mesh)
-#' ## Upload a domain boundary for these data
-#' data(MeuseBorder)
-#' ## Create a constrained Delaunay triangulation with the provided boundary 
-#' ## where each datalocation is a triangle vertex
-#' mesh <- create.mesh.2D(nodes = MeuseData[,c(2,3)], segments = MeuseBorder, order = 1)
-#' ## Plot the mesh
+#' 
+#' ## if the domain is not convex, pass in addition the segments the compose the boundary:
+#' mesh = create.mesh.2D(nodes = rbind(boundary_nodes, locations), segments = boundary_segments)
+#' 
+#' ## create mesh from data locations (without knowing the boundary)
+#' mesh = create.mesh.2D(nodes = locations)
 #' plot(mesh)
+#' ## In this case the domain is the convex hull of the data locations. 
+#' ## Do this only if you do not have any information about the shape of the domain of interest.  
 
 create.mesh.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = NA, triangles = NA, order = 1, verbosity = 0)
 { 
@@ -129,12 +132,12 @@ create.mesh.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
   }
   
   ## If boundary nodes not specified, set them to 0
-#   if (any(is.na(nodesmarkers))) {
-#     nodesmarkers <- vector(mode = "integer", 0)
-#   }else{
-#     nodesmarkers = as.vector(nodesmarkers)
-#   }
-    
+  #   if (any(is.na(nodesmarkers))) {
+  #     nodesmarkers <- vector(mode = "integer", 0)
+  #   }else{
+  #     nodesmarkers = as.vector(nodesmarkers)
+  #   }
+  
   ## Deal with segments
   if (any(is.na(segments))) {
     segments <- matrix(0, 0, 2)
@@ -146,11 +149,11 @@ create.mesh.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
   }
   
   ## If boundary segments not specified, set them to 0
-#   if (any(is.na(segmentsmarkers))) {
-#     segmentsmarkers <- vector(mode = "integer", 0)
-#   }else{
-#     segmentsmarkers = as.vector(segmentsmarkers)
-#   }
+  #   if (any(is.na(segmentsmarkers))) {
+  #     segmentsmarkers <- vector(mode = "integer", 0)
+  #   }else{
+  #     segmentsmarkers = as.vector(segmentsmarkers)
+  #   }
   
   ## If hole not specified, set it to empty matrix
   if (any(is.na(holes)))
@@ -227,7 +230,7 @@ create.mesh.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
   names(out)[10]<-"holes"
   out[[11]] = order
   names(out)[11]<-"order"
-
+  
   
   class(out)<-"mesh.2D"
   
@@ -242,7 +245,7 @@ create.mesh.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
 #' @param delaunay A boolean parameter indicating whether or not the output mesh should satisfy the Delaunay condition.
 #' @param verbosity This can be '0', '1' or '2'. It indicates the level of verbosity in the triangulation process.
 #' @description This function refines a Constrained Delaunay triangulation into a Conforming Delaunay triangulation. This is a wrapper of the Triangle library (http://www.cs.cmu.edu/~quake/triangle.html). It can be used to 
-#' refine a mesh created previously with \link{create.mesh.2D}. The algorithm can add Steiner points (points through which the \code{segments} are splitted)
+#' refine a mesh previously created with \link{create.mesh.2D}. The algorithm can add Steiner points (points through which the \code{segments} are splitted)
 #' in order to meet the imposed refinement conditions.
 #' @usage refine.mesh.2D(mesh, minimum_angle, maximum_area, delaunay, verbosity)
 #' @seealso \code{\link{create.mesh.2D}}, \code{\link{create.FEM.basis}}
@@ -253,9 +256,7 @@ create.mesh.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
 #' These are passed unchanged to the output. If a node is added during the triangulation process or mesh refinement, its attributes are computed  
 #' by linear interpolation using the attributes of neighboring nodes. This functionality is for instance used to compute the value 
 #' of a Dirichlet boundary condition at boundary nodes added during the triangulation process.}
-#' \item{\code{triangles}}{A #triangles-by-3 (when \code{order} = 1) or #triangles-by-6 (when \code{order} = 2) matrix.
-#' This option is used when a triangulation is already available. It specifies the triangles giving the row's indices in \code{nodes} of the triangles' vertices and (when \code{nodes} = 2) also if the triangles' edges midpoints. The triangles' vertices and midpoints are ordered as described 
-#' at \cr  https://www.cs.cmu.edu/~quake/triangle.highorder.html.}
+#' \item{\code{triangles}}{A #triangles-by-3 (when \code{order} = 1) or #triangles-by-6 (when \code{order} = 2) matrix.}
 #' \item{\code{edges}}{A #edges-by-2 matrix. Each row contains the row's indices of the nodes where the edge starts from and ends to.}
 #' \item{\code{edgesmarkers}}{A vector of lenght #edges with entries either '1' or '0'. An entry '1' indicates that the corresponding element in \code{edge} is a boundary edge;  
 #' an entry '0' indicates that the corresponding edge is not a boundary edge.}
@@ -266,16 +267,20 @@ create.mesh.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
 #' \item{\code{order}}{Either '1' or '2'. It specifies wether each mesh triangle should be represented by 3 nodes (the triangle' vertices) or by 6 nodes (the triangle's vertices and midpoints).
 #' These are respectively used for linear (order = 1) and quadratic (order = 2) Finite Elements. Default is \code{order} = 1.}
 #'  @examples 
-#' ## Upload the Meuse data and a domain boundary for these data
-#' data(MeuseData)
-#' data(MeuseBorder)
-#' ## Create a Constrained Delaunay triangulation
-#' mesh <- create.mesh.2D(nodes = MeuseData[,c(2,3)], segments = MeuseBorder, order = 1)
-#' ## Plot the mesh
+#' library(fdaPDE)
+#' 
+#' ## Upload the quasicircle2D data
+#' data(quasicircle2D)
+#' 
+#' ## create mesh from boundary:
+#' mesh = create.mesh.2D(nodes = boundary_nodes, segments = boundary_segments)
 #' plot(mesh)
-#' ## Refine the triangulation
-#' mesh_refine <- refine.mesh.2D(mesh, minimum_angle = 30, maximum_area = 10000)
-#' plot(mesh_refine)
+#' ## refine the mesh with the maximum area criterion:
+#' finemesh = refine.mesh.2D(mesh = mesh, maximum_area = 0.1)
+#' plot(finemesh)
+#' ## refine the mesh with the minimum angle criterion:
+#' finemesh2 = refine.mesh.2D(mesh = mesh, minimum_angle = 30)
+#' plot(finemesh2)
 #' @export
 
 refine.mesh.2D<-function(mesh, minimum_angle = NA, maximum_area = NA, delaunay = FALSE, verbosity = 0)
@@ -354,36 +359,39 @@ refine.mesh.2D<-function(mesh, minimum_angle = NA, maximum_area = NA, delaunay =
   return(out)
 }
 
-#' Create a \code{mesh.2.5D} object from the connectivty matrix and nodes locations
+#' Create a \code{mesh.2.5D} object from the nodes locations and the connectivty matrix 
 #'
-#' @param nodes A #nodes-by-3 matrix specifying the locations of each node
-#' @param triangles A #triangles-by-3*order matrix specifying the indices of the nodes in each triangle
-#' @param order Either "1" or "2". Order of the Finite Element basis default is order = 1
+#' @param nodes A #nodes-by-3 matrix specifying the locations of each node.
+#' @param triangles A #triangles-by-3 (when \code{order} = 1) or #triangles-by-6 (when \code{order} = 2) matrix, 
+#' specifying the indices of the nodes in each triangle.
+#' @param order Either '1' or '2'. It specifies wether each mesh triangle should be represented by 3 nodes 
+#' (the triangle' vertices) or by 6 nodes (the triangle's vertices and midpoints). 
+#' These are respectively used for linear (order = 1) and quadratic (order = 2) Finite Elements. 
+#' Default is \code{order} = 1.
 #' @return An object of the class \code{mesh.2.5D} with the following output:
-#' \item{\code{nnodes}}{The #nodes contained in the mesh}
-#' \item{\code{ntriangles}}{The #triangles contained in the mesh}
-#' \item{\code{nodes}}{A #nodes-by-3 matrix containing the x,y and z coordinate for each point of the mesh}
-#' \item{\code{triangles}}{A #triangles-by-3*order matrix specifying the indices of the nodes in each triangle of the mesh}
-#' \item{\code{order}}{Either '1' or '2'. It specifies wether each mesh triangle should be represented by 3 nodes (the triangle' vertices) or by 6 nodes (the triangle's vertices and midpoints). 
-#' These are respectively used for linear (order = 1) and quadratic (order = 2) Finite Elements. Default is \code{order} = 1.}
+#' \item{\code{nnodes}}{The #nodes in the mesh.}
+#' \item{\code{ntriangles}}{The #triangles in the mesh.}
+#' \item{\code{nodes}}{A #nodes-by-3 matrix containing the x,y and z coordinate for each point of the mesh.}
+#' \item{\code{triangles}}{A #triangles-by-3 (when \code{order} = 1) or #triangles-by-6 (when \code{order} = 2) matrix, 
+#' specifying the indices of the nodes in each triangle.}
+#' \item{\code{order}}{Either '1' or '2'. It specifies wether each mesh triangle should be represented by 3 nodes 
+#' (the triangle' vertices) or by 6 nodes (the triangle's vertices and midpoints). 
+#' It is passed unchanged from the input.}
 #' @export
 #' @examples
-#' #Load the matrix nodes and triangles
-#'
 #' library(fdaPDE)
-#' data(sphereData)
 #'
-#' nodes=sphere$nodes
-#' triangles=sphere$triangles
+#' ## Upload the hub2.5D the data
+#' data(hub2.5D)
 #'
-#' #Create the triangulated mesh from the connectivity matrix and nodes locations
-#' mesh=create.mesh.2.5D(nodes,triangles)
-#' 
+#' ## create mesh from nodes and connectivity matrix:
+#' mesh = create.mesh.2.5D(nodes = hub2.5D.nodes, triangles = hub2.5D.triangles)
+#' plot(mesh)
 
 create.mesh.2.5D<- function(nodes, triangles, order = 1)
 {
   nnodes = dim(nodes)[1]
-
+  
   ntriangles = dim(triangles)[1]
   
   if(order==1 & dim(triangles)[2]== 3){
@@ -401,105 +409,104 @@ create.mesh.2.5D<- function(nodes, triangles, order = 1)
   }
   
   class(out)<-"mesh.2.5D"
-
+  
   return(out)
 }
 
 second.order.mesh.2.5D<-function(nodes, triangles){
-
-    toll=1e-5
-    # T = matrix(mesh$triangles,nrow=mesh$ntriangles,ncol=3, byrow = TRUE)
-    # V = matrix(mesh$nodes, nrow = mesh$nnodes, ncol= 3, byrow = TRUE)
-    T=triangles
-    V=nodes
-    T <- cbind(T, matrix(0,nrow=nrow(T),ncol=3))
-    nnodes=nrow(V)
-    index=nrow(V)
-    points = V[T[1,],]
+  
+  toll=1e-5
+  # T = matrix(mesh$triangles,nrow=mesh$ntriangles,ncol=3, byrow = TRUE)
+  # V = matrix(mesh$nodes, nrow = mesh$nnodes, ncol= 3, byrow = TRUE)
+  T=triangles
+  V=nodes
+  T <- cbind(T, matrix(0,nrow=nrow(T),ncol=3))
+  nnodes=nrow(V)
+  index=nrow(V)
+  points = V[T[1,],]
+  midpoints<-rbind((points[2,]+points[3,])/2,(points[1,]+points[3,])/2, (points[1,]+points[2,])/2);
+  # if(!is.null(bc)){
+  #   isBC<-c( any(bc==T[1,2]) & any(bc==T[1,3]),
+  #            any(bc==T[1,1]) & any(bc==T[1,3]),
+  #            any(bc==T[1,2]) & any(bc==T[1,1]))
+  # }
+  
+  for (side in 1:3){
+    point<-midpoints[side,]
+    index<-index+1;
+    V<-rbind(V,point)
+    T[1,3+side]<-index;
+    
+    # if(!is.null(bc)&&isBC[side]==1){
+    #   bc<-c(bc,index)
+    # }
+    
+  }
+  
+  for (i in 2:nrow(T)){
+    points = V[T[i,],]
     midpoints<-rbind((points[2,]+points[3,])/2,(points[1,]+points[3,])/2, (points[1,]+points[2,])/2);
     # if(!is.null(bc)){
-    #   isBC<-c( any(bc==T[1,2]) & any(bc==T[1,3]),
-    #            any(bc==T[1,1]) & any(bc==T[1,3]),
-    #            any(bc==T[1,2]) & any(bc==T[1,1]))
+    #   isBC<-c( any(bc==T[i,2]) & any(bc==T[i,3]),
+    #            any(bc==T[i,1]) & any(bc==T[i,3]),
+    #            any(bc==T[i,2]) & any(bc==T[i,1]))
     # }
-
+    
     for (side in 1:3){
       point<-midpoints[side,]
-      index<-index+1;
-      V<-rbind(V,point)
-      T[1,3+side]<-index;
-
-      # if(!is.null(bc)&&isBC[side]==1){
-      #   bc<-c(bc,index)
-      # }
-
-    }
-
-    for (i in 2:nrow(T)){
-      points = V[T[i,],]
-      midpoints<-rbind((points[2,]+points[3,])/2,(points[1,]+points[3,])/2, (points[1,]+points[2,])/2);
-      # if(!is.null(bc)){
-      #   isBC<-c( any(bc==T[i,2]) & any(bc==T[i,3]),
-      #            any(bc==T[i,1]) & any(bc==T[i,3]),
-      #            any(bc==T[i,2]) & any(bc==T[i,1]))
-      # }
-
-      for (side in 1:3){
-        point<-midpoints[side,]
-        isthere<-apply(V[(nnodes+1):nrow(V),], 1, function(x) identical(as.vector(x), point))
-        loc = which(isthere)
-        if(length(loc)>0){
-          loc = loc+nnodes
-          T[i,3+side]<-loc[1]
-        }else{
-          index<-index+1;
-          V<-rbind(V,point)
-          T[i,3+side]<-index;
-# 
-#           if(!is.null(bc)&&isBC[side]==1){
-#             bc<-c(bc,index)
-#          }
-        }
+      isthere<-apply(V[(nnodes+1):nrow(V),], 1, function(x) identical(as.vector(x), point))
+      loc = which(isthere)
+      if(length(loc)>0){
+        loc = loc+nnodes
+        T[i,3+side]<-loc[1]
+      }else{
+        index<-index+1;
+        V<-rbind(V,point)
+        T[i,3+side]<-index;
+        # 
+        #           if(!is.null(bc)&&isBC[side]==1){
+        #             bc<-c(bc,index)
+        #          }
       }
     }
+  }
   #}
   # if(is.null(bc)){
   #   out = list(nnodes=nrow(V), ntriangles=nrow(T), nodes=V, triangles = T, order=2)
   #   class(out)<-"mesh.2.5D"
   #   return(out)
-#  }else{
-    out = list(nnodes=nrow(V), ntriangles=nrow(T), nodes=V, triangles = T, order=2)
-#    class(out)<-"mesh.2.5D"
-#    retlist = list(mesh = out, bc_index=bc)
-    return(out)
+  #  }else{
+  out = list(nnodes=nrow(V), ntriangles=nrow(T), nodes=V, triangles = T, order=2)
+  #    class(out)<-"mesh.2.5D"
+  #    retlist = list(mesh = out, bc_index=bc)
+  return(out)
   
 }
 
 #' Create a \code{mesh.3D} object from the connectivty matrix and nodes locations
 #'
-#' @param nodes A #nodes-by-3 matrix specifying the locations of each node
-#' @param tetrahedrons A #tetrahedrons-by-4*order matrix specifying the indices of the nodes in each tetrahedrons
-#' @param order Order of the Finite Element basis default is order = 1. Only order = 1 is possible for the 3D Finite Elements.
+#' @param nodes A #nodes-by-3 matrix specifying the locations of each node.
+#' @param tetrahedrons A #tetrahedrons-by-4 matrix specifying the indices of the nodes in each tetrahedrons.
+#' @param order Order of the Finite Element basis. Only order = 1 is currently implemented.
 #' @return An object of the class \code{mesh.3D} with the following output:
-#' \item{\code{nnodes}}{The #nodes contained in the mesh}
-#' \item{\code{ntetrahedrons}}{The #tetrahedrons contained in the mesh}
-#' \item{\code{nodes}}{A #nodes-by-3 matrix containing the x,y and z coordinate for each point of the mesh}
-#' \item{\code{tetrahedrons}}{A #tetrahedrons-by-4*order matrix specifying the indices of the nodes in each triangle of the mesh}
-#' \item{\code{order}}{It specifies the order of the Finite Element basis. When order = 1, each mesh tetrahedron is represented by 4 nodes (the tetrahedron vertices). 
-#' These are respectively used for linear (order = 1) Finite Elements. Currently only \code{order} = 1 is implemented, and is the default option.}
+#' \item{\code{nnodes}}{The #nodes in the mesh.}
+#' \item{\code{ntetrahedrons}}{The #tetrahedrons in the mesh.}
+#' \item{\code{nodes}}{A #nodes-by-3 matrix containing the x,y and z coordinate for each point of the mesh.}
+#' \item{\code{tetrahedrons}}{A #tetrahedrons-by-4 matrix specifying the indices of the nodes in each tetrahedron of the mesh.}
+#' \item{\code{order}}{It specifies the order of the associated Finite Element basis. When order = 1, each 
+#' mesh tetrahedron is represented by 4 nodes (the tetrahedron vertices).}
 #' @export
 #' @examples
-#' #Load the matrix nodes and tetrahedrons
-#'
 #' library(fdaPDE)
+#'
+#' ##Load the matrix nodes and tetrahedrons
 #' data(sphere3Ddata)
 #'
 #' nodes=sphere3Ddata$nodes
 #' tetrahedrons=sphere3Ddata$tetrahedrons
 #'
-#' #Create the triangulated mesh from the connectivity matrix and nodes locations
+#' ##Create the triangulated mesh from the connectivity matrix and nodes locations
 #' mesh=create.mesh.3D(nodes,tetrahedrons)
-#' 
 
 create.mesh.3D<- function(nodes, tetrahedrons, order = 1)
 {
