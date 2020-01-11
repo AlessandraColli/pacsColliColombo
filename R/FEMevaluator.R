@@ -1,18 +1,43 @@
 #' Evaluate a FEM object at a set of point locations
 #' 
 #' @param FEM A \code{FEM} object to be evaluated.
-#' @param locations A 2-columns(in case of planar mesh) or 3-columns(in case of 2D manifold in a 3D space or a 3D volume) matrix with the spatial locations where the FEM object should be evaluated.
-#' @param incidence_matrix In case of areal data, the #regions x #elements incidence matrix defining the regions
+#' @param locations A 2-columns (in 2D) or 3-columns (in 2.5D and 3D) matrix with the spatial locations where the 
+#' FEM object should be evaluated. 
+#' @param incidence_matrix In case of areal evaluations, the #regions-by-#elements incidence matrix defining the regions 
+#' where the FEM object should be evaluated.
 #' @return 
-#' A matrix of numeric evaluations of the \code{FEM} object. Each row indicates the location where the evaluation has been taken, the column indicates the 
-#' function evaluated.
-#' @description It evaluates a FEM object the specified set of locations or regions. Locations and incidence_matrix parameters cannot be both null or both provided.  
-#' @usage eval.FEM(FEM, locations, incidence_matrix=NULL)
-#' @references 
-#'  Devillers, O. et al. 2001. Walking in a Triangulation, Proceedings of the Seventeenth Annual Symposium on Computational Geometry
+#' A vector or a matrix of numeric evaluations of the \code{FEM} object. 
+#' If the \code{FEM} object contains multiple finite element functions the output is a matrix, and 
+#' each row corresponds to the location (or areal region) where the evaluation has been taken, while each column 
+#' corresponds to the function evaluated. 
+#' @description It evaluates a FEM object at the specified set of locations or areal regions. The locations are used for 
+#' pointwise evaluations and incidence matrix for areal evaluations. 
+#' The locations and the incidence matrix cannot be both NULL or both provided.  
+#' @usage eval.FEM(FEM, locations = NULL, incidence_matrix = NULL)
+#' @examples 
+#' ## Upload the horseshoe2D data
+#' data(horseshoe2D)
+#' 
+#' ## Create the 2D mesh
+#' mesh = create.mesh.2D(nodes = rbind(boundary_nodes, locations), segments = boundary_segments)
+#' ## Create the FEM basis
+#' FEMbasis = create.FEM.basis(mesh)
+#' ## Compute the coeff vector evaluating the desired function at the mesh nodes
+#' ## In this case we consider the fs.test() function introduced by Wood et al. 2008
+#' coeff = fs.test(mesh$nodes[,1], mesh$nodes[,2], exclude = FALSE)
+#' ## Create the FEM object
+#' FEMfunction = FEM(coeff, FEMbasis)
+#' 
+#' ## Evaluate the finite element function in the location (1,0.5)
+#' eval.FEM(FEMfunction, locations = matrix(c(1, 0.5), ncol = 2))
+#' 
+#' ## Evaluate the mean of the finite element function over the fifth triangle of the mesh
+#' incidence_matrix = matrix(0, ncol = nrow(mesh$triangles))
+#' incidence_matrix[1,5] = 1
+#' eval.FEM(FEMfunction, incidence_matrix = incidence_matrix)
 #' @export
 
-eval.FEM <- function(FEM, locations, incidence_matrix = NULL)
+eval.FEM <- function(FEM, locations = NULL, incidence_matrix = NULL)
 {
   if (is.null(FEM))
     stop("FEM required;  is NULL.")
