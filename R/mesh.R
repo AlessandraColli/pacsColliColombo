@@ -92,7 +92,7 @@ triangulate_native <- function(P, PB, PA, S, SB,H, TR, flags) {
 #' ## Upload the quasicirle2D data
 #' data(quasicircle2D)
 #' 
-#' ## create mesh from boundary
+#' ## Create mesh from boundary
 #' ## if the domain is convex it is sufficient to call:
 #' mesh = create.mesh.2D(nodes = rbind(boundary_nodes, locations))
 #' plot(mesh)
@@ -100,7 +100,7 @@ triangulate_native <- function(P, PB, PA, S, SB,H, TR, flags) {
 #' ## if the domain is not convex, pass in addition the segments the compose the boundary:
 #' mesh = create.mesh.2D(nodes = rbind(boundary_nodes, locations), segments = boundary_segments)
 #' 
-#' ## create mesh from data locations (without knowing the boundary)
+#' ## Create mesh from data locations (without knowing the boundary)
 #' mesh = create.mesh.2D(nodes = locations)
 #' plot(mesh)
 #' ## In this case the domain is the convex hull of the data locations. 
@@ -272,13 +272,13 @@ create.mesh.2D <- function(nodes, nodesattributes = NA, segments = NA, holes = N
 #' ## Upload the quasicircle2D data
 #' data(quasicircle2D)
 #' 
-#' ## create mesh from boundary:
+#' ## Create mesh from boundary:
 #' mesh = create.mesh.2D(nodes = boundary_nodes, segments = boundary_segments)
 #' plot(mesh)
-#' ## refine the mesh with the maximum area criterion:
+#' ## Refine the mesh with the maximum area criterion:
 #' finemesh = refine.mesh.2D(mesh = mesh, maximum_area = 0.1)
 #' plot(finemesh)
-#' ## refine the mesh with the minimum angle criterion:
+#' ## Refine the mesh with the minimum angle criterion:
 #' finemesh2 = refine.mesh.2D(mesh = mesh, minimum_angle = 30)
 #' plot(finemesh2)
 #' @export
@@ -384,7 +384,7 @@ refine.mesh.2D<-function(mesh, minimum_angle = NA, maximum_area = NA, delaunay =
 #' ## Upload the hub2.5D the data
 #' data(hub2.5D)
 #'
-#' ## create mesh from nodes and connectivity matrix:
+#' ## Create mesh from nodes and connectivity matrix:
 #' mesh = create.mesh.2.5D(nodes = hub2.5D.nodes, triangles = hub2.5D.triangles)
 #' plot(mesh)
 
