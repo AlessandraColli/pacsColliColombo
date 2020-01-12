@@ -38,8 +38,8 @@
 #' a smooth manifold or a volume. 
 #' @usage FPCA.FEM(locations = NULL, datamatrix, FEMbasis, lambda, nPC=1, 
 #'          validation = NULL, NFolds = 5, GCVmethod = "Stochastic", nrealizations = 100)
-#' @references Lila, E., Aston, J.A.D., &  Sangalli, L.M., 2016a. Smooth Principal Component Analysis over two-dimensional 
-#' manifolds with an application to neuroimaging. Ann. Appl. Stat., 10(4), pp. 1854–1879. 
+#' @references Lila, E., Aston, J.A.D.,  Sangalli, L.M., 2016a. Smooth Principal Component Analysis over two-dimensional 
+#' manifolds with an application to neuroimaging. Ann. Appl. Stat., 10(4), pp. 1854-1879. 
 #' @export
 #' @examples
 #' library(fdaPDE)

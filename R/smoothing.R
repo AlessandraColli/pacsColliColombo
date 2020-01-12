@@ -72,9 +72,9 @@
 #'      BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100)
 #' @export        
 
-#' @references \item{Sangalli, L. M., Ramsay, J. O., & Ramsay, T. O. (2013). Spatial spline regression models. 
+#' @references \item{Sangalli, L. M., Ramsay, J. O., Ramsay, T. O. (2013). Spatial spline regression models. 
 #' Journal of the Royal Statistical Society: Series B (Statistical Methodology), 75(4), 681-703.}
-#' \item{Azzimonti, L., Sangalli, L. M., Secchi, P., Domanin, M., & Nobile, F. (2015). Blood flow velocity field estimation 
+#' \item{Azzimonti, L., Sangalli, L. M., Secchi, P., Domanin, M., Nobile, F. (2015). Blood flow velocity field estimation 
 #' via spatial regression with PDE penalization. Journal of the American Statistical Association, 110(511), 1057-1071.}
 #' @examples
 #' library(fdaPDE)
