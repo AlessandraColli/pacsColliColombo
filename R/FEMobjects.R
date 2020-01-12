@@ -80,6 +80,7 @@ create.FEM.basis = function(mesh)
 #' @usage FEM(coeff,FEMbasis)
 #' @return An \code{FEM} object. This contains a list with components \code{coeff} and \code{FEMbasis}.
 #' @examples 
+#' library(fdaPDE)
 #' ## Upload the horseshoe2D data
 #' data(horseshoe2D)
 #' 

@@ -43,6 +43,7 @@
 #' @export
 #' @examples
 #' library(fdaPDE)
+#' 
 #' ## Load the hub data
 #' data(hub2.5D)
 #' mesh = create.mesh.2.5D(nodes = hub2.5D.nodes, triangles = hub2.5D.triangles)

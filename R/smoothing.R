@@ -60,19 +60,22 @@
 #' \item{\code{edf}}{If GCV is \code{TRUE}, a scalar or vector with the trace of the smoothing matrix for each value of the smoothing parameter specified in \code{lambda}.}
 #' \item{\code{stderr}}{If GCV is \code{TRUE}, a scalar or vector with the estimate of the standard deviation of the error for each value of the smoothing parameter specified in \code{lambda}.}
 #' \item{\code{GCV}}{If GCV is \code{TRUE}, a  scalar or vector with the value of the GCV criterion for each value of the smoothing parameter specified in \code{lambda}.}
-#'  @description This function implements a spatial regression model with differential regularization. 
+#' @description This function implements a spatial regression model with differential regularization. 
 #'  The regularizing term involves a Partial Differential Equation (PDE). In the simplest case the PDE involves only the 
 #'  Laplacian of the spatial field, that induces an isotropic smoothing. When prior information about the anisotropy or 
 #'  non-stationarity is available the PDE involves a general second order linear differential operator with possibly 
 #'  space-varying coefficients. 
 #'  The technique accurately handle data distributed over irregularly shaped domains. Moreover, various conditions 
 #'  can be imposed at the domain boundaries.
-#' @usage smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda, 
+#' @usage smooth.FEM(locations = NULL, observations, FEMbasis, lambda, 
 #'      covariates = NULL, PDE_parameters=NULL, incidence_matrix = NULL, 
 #'      BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100)
 #' @export        
 
-#' @references Sangalli, L.M., Ramsay, J.O. & Ramsay, T.O., 2013. Spatial spline regression models. Journal of the Royal Statistical Society. Series B: Statistical Methodology, 75(4), pp. 681-703.
+#' @references \item{Sangalli, L. M., Ramsay, J. O., & Ramsay, T. O. (2013). Spatial spline regression models. 
+#' Journal of the Royal Statistical Society: Series B (Statistical Methodology), 75(4), 681-703.}
+#' \item{Azzimonti, L., Sangalli, L. M., Secchi, P., Domanin, M., & Nobile, F. (2015). Blood flow velocity field estimation 
+#' via spatial regression with PDE penalization. Journal of the American Statistical Association, 110(511), 1057-1071.}
 #' @examples
 #' library(fdaPDE)
 #' 

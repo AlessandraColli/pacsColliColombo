@@ -15,6 +15,7 @@
 #' @export
 #' @seealso \code{\link{FEM}}, \code{\link{image.FEM}}
 #' @examples 
+#' library(fdaPDE)
 #' ## Upload the horseshoe2D data
 #' data(horseshoe2D)
 #' 
@@ -145,6 +146,8 @@ plot.mesh.2.5D<-function(mesh,...){
 
 #' @usage \method{plot}{mesh.3D}(mesh, ...)
 #' @examples
+#' library(fdaPDE)
+#' 
 #' ##Load a mesh.3D object
 #' data(sphere3D)
 #' ##Plot the triangulation of the object
@@ -415,6 +418,7 @@ plot.mesh.3D<-function(mesh,...){
  #' @seealso \code{\link{FEM}} \code{\link{plot.FEM}}
  #' @export
  #' @examples 
+ #' library(fdaPDE)
  #' ## Upload the horseshoe2D data
  #' data(horseshoe2D)
  #' 
