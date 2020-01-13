@@ -2,6 +2,7 @@
 #' 
 #' @param mesh A \code{mesh.2D}, \code{mesh.2.5D} or \code{mesh.3D} object representing the domain triangulation. See \link{create.mesh.2D}, \link{create.mesh.2.5D}, \link{create.mesh.3D}.
 #' @return A \code{FEMbasis} object. This contains the \code{mesh}, along with some additional quantities:
+#' \itemize{
 #' 	\item{\code{order}}{Either "1" or "2" for the 2D and 2.5D case, and "1" for the 3D case. 
 #' 	Order of the Finite Element basis.} 
 #' 	\item{\code{nbasis}}{Scalar. The number of basis.} 
@@ -12,6 +13,7 @@
 #' 	\item{\code{detJ}}{It takes value only in the 2D case. A vector of length #triangles. The ith element contains 
 #' 	the determinant of the transformation from the reference triangle to the nodes of the i-th triangle. 
 #' 	Its value is also the double of the area of each triangle of the basis.}
+#' }
 #' @description Sets up a Finite Element basis. It requires a \code{mesh.2D}, \code{mesh.2.5D} or \code{mesh.3D} object, 
 #' as input. 
 #' The basis' functions are globally continuos functions, that are polynomials once restricted to a triangle in the mesh. 

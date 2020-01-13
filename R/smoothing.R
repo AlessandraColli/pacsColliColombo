@@ -17,12 +17,15 @@
 #' @param PDE_parameters A list specifying the parameters of the PDE in the regularizing term. Default is NULL, i.e. 
 #' regularization is by means of the Laplacian (stationary, isotropic case). 
 #' If the coefficients of the PDE are constant over the domain \code{PDE_parameters} must contain: 
-#' \item{\code{K}, a 2-by-2 matrix of diffusion coefficients. This induces an anisotropic 
+#' \itemize{
+#'    \item{\code{K}, a 2-by-2 matrix of diffusion coefficients. This induces an anisotropic 
 #' smoothing with a preferential direction that corresponds to the first eigenvector of the diffusion matrix K;}
-#' \item{\code{b}, a vector of length 2 of advection coefficients. This induces a 
+#'    \item{\code{b}, a vector of length 2 of advection coefficients. This induces a 
 #' smoothing only in the direction specified by the vector \code{b};} 
-#' \item{\code{c}, a scalar reaction coefficient. \code{c} induces a shrinkage of the surface to zero.}
+#'    \item{\code{c}, a scalar reaction coefficient. \code{c} induces a shrinkage of the surface to zero.}
+#' }
 #' If the coefficients of the PDE are space-varying \code{PDE_parameters} must contain: 
+#' \itemize{
 #' \item{\code{K}, a function that for each spatial location in the spatial domain (indicated by the vector of the 2 
 #' spatial coordinates) returns a 2-by-2 matrix of diffusion coefficients. The function must support recycling for 
 #' efficiency reasons, thus if the input parameter is a #point-by-2 matrix, the output should be
@@ -38,6 +41,7 @@
 #' \code{u} induces a reaction effect. The function must support recycling for efficiency reasons, thus if the input 
 #' parameter is a #point-by-2 matrix, the output should be
 #' a vector with length #points.}
+#' }
 #' For 2.5D and 3D, only the Laplacian is available (\code{PDE_parameters=NULL}). 
 #' @param incidence_matrix A #regions-by-#triangles/tetrahedrons matrix where the element (i,j) equals 1 if the j-th 
 #' triangle/tetrahedron is in the i-th region and 0 otherwise.
@@ -53,13 +57,15 @@
 #' @param nrealizations This parameter is considered only when \code{GCV=TRUE} and \code{GCVmethod = "Stochastic"}. 
 #' It is a positive integer that represents the number of uniform random variables used in stochastic GCV computation.      
 #' @return A list with the following variables:
-#' \item{\code{fit.FEM}}{A \code{FEM} object that represents the fitted spatial field.}
-#' \item{\code{PDEmisfit.FEM}}{A \code{FEM} object that represents the Laplacian of the estimated spatial field.}
-#' \item{\code{beta}}{If covariates is not \code{NULL}, a matrix with number of rows equal to the number of covariates and numer of columns equal to length of lambda.  The \code{j}th column represents the vector of regression coefficients when 
+#' \itemize{
+#'    \item{\code{fit.FEM}}{A \code{FEM} object that represents the fitted spatial field.}
+#'    \item{\code{PDEmisfit.FEM}}{A \code{FEM} object that represents the Laplacian of the estimated spatial field.}
+#'    \item{\code{beta}}{If covariates is not \code{NULL}, a matrix with number of rows equal to the number of covariates and numer of columns equal to length of lambda.  The \code{j}th column represents the vector of regression coefficients when 
 #' the smoothing parameter is equal to \code{lambda[j]}.}
-#' \item{\code{edf}}{If GCV is \code{TRUE}, a scalar or vector with the trace of the smoothing matrix for each value of the smoothing parameter specified in \code{lambda}.}
-#' \item{\code{stderr}}{If GCV is \code{TRUE}, a scalar or vector with the estimate of the standard deviation of the error for each value of the smoothing parameter specified in \code{lambda}.}
-#' \item{\code{GCV}}{If GCV is \code{TRUE}, a  scalar or vector with the value of the GCV criterion for each value of the smoothing parameter specified in \code{lambda}.}
+#'    \item{\code{edf}}{If GCV is \code{TRUE}, a scalar or vector with the trace of the smoothing matrix for each value of the smoothing parameter specified in \code{lambda}.}
+#'    \item{\code{stderr}}{If GCV is \code{TRUE}, a scalar or vector with the estimate of the standard deviation of the error for each value of the smoothing parameter specified in \code{lambda}.}
+#'    \item{\code{GCV}}{If GCV is \code{TRUE}, a  scalar or vector with the value of the GCV criterion for each value of the smoothing parameter specified in \code{lambda}.}
+#' }
 #' @description This function implements a spatial regression model with differential regularization. 
 #'  The regularizing term involves a Partial Differential Equation (PDE). In the simplest case the PDE involves only the 
 #'  Laplacian of the spatial field, that induces an isotropic smoothing. When prior information about the anisotropy or 
@@ -72,10 +78,13 @@
 #'      BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100)
 #' @export        
 
-#' @references \item{Sangalli, L. M., Ramsay, J. O., Ramsay, T. O. (2013). Spatial spline regression models. 
+#' @references 
+#' \itemize{
+#'    \item{Sangalli, L. M., Ramsay, J. O., Ramsay, T. O. (2013). Spatial spline regression models. 
 #' Journal of the Royal Statistical Society: Series B (Statistical Methodology), 75(4), 681-703.}
-#' \item{Azzimonti, L., Sangalli, L. M., Secchi, P., Domanin, M., Nobile, F. (2015). Blood flow velocity field estimation 
+#'    \item{Azzimonti, L., Sangalli, L. M., Secchi, P., Domanin, M., Nobile, F. (2015). Blood flow velocity field estimation 
 #' via spatial regression with PDE penalization. Journal of the American Statistical Association, 110(511), 1057-1071.}
+#' }
 #' @examples
 #' library(fdaPDE)
 #' 

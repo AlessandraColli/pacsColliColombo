@@ -14,10 +14,13 @@
 #' pointwise evaluations and incidence matrix for areal evaluations. 
 #' The locations and the incidence matrix cannot be both NULL or both provided.  
 #' @usage eval.FEM(FEM, locations = NULL, incidence_matrix = NULL)
-#' @references \item{Sangalli, L. M., Ramsay, J. O., & Ramsay, T. O. (2013). Spatial spline regression models. 
+#' @references 
+#' \itemize{
+#'    \item{Sangalli, L. M., Ramsay, J. O., & Ramsay, T. O. (2013). Spatial spline regression models. 
 #' Journal of the Royal Statistical Society: Series B (Statistical Methodology), 75(4), 681-703.}
-#' \item{Azzimonti, L., Sangalli, L. M., Secchi, P., Domanin, M., & Nobile, F. (2015). Blood flow velocity field estimation 
+#'    \item{Azzimonti, L., Sangalli, L. M., Secchi, P., Domanin, M., & Nobile, F. (2015). Blood flow velocity field estimation 
 #' via spatial regression with PDE penalization. Journal of the American Statistical Association, 110(511), 1057-1071.}
+#' }
 #' @examples 
 #' library(fdaPDE)
 #' ## Upload the horseshoe2D data

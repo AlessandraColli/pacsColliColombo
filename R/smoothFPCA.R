@@ -27,6 +27,7 @@
 #' of the GCV index. If set to "Stochastic" the GCV is approximated by a stochastic algorithm.
 #' @param nrealizations The number of realizations to be used in the stochastic algorithm for the estimation of GCV.
 #' @return A list with the following variables:
+#' \itemize{
 #' \item{\code{loadings.FEM}}{A \code{FEM} object that represents the L^2-normalized functional loadings for each 
 #' Principal Component computed.}
 #' \item{\code{scores}}{A #samples-by-#PrincipalComponents matrix that represents the unnormalized scores or PC vectors.}
@@ -34,6 +35,7 @@
 #' chosen for that Principal Component.}
 #' \item{\code{variance_explained}}{A vector of length #PrincipalComponents where each value represent the variance explained by that component.}
 #' \item{\code{cumsum_percentage}}{A vector of length #PrincipalComponents containing the cumulative percentage of the variance explained by the first components.}
+#' }
 #' @description This function implements a smooth functional principal component analysis over a planar mesh, 
 #' a smooth manifold or a volume. 
 #' @usage FPCA.FEM(locations = NULL, datamatrix, FEMbasis, lambda, nPC=1, 

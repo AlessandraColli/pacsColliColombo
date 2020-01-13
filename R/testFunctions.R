@@ -13,9 +13,12 @@
 #' @return Returns function evaluations, or NAs for points outside the horseshoe domain. 
 #' @usage fs.test(x, y, r0 = 0.1, r = 0.5, l = 3, b = 1, exclude = TRUE)  
 #' @export
-#' @references \item{Ramsay, T. 2002. Spline smoothing over difficult regions. J.R.Statist. Soc. B 64(2):307-319}
-#' \item{Wood, S. N., Bravington, M. V., & Hedley, S. L. (2008). Soap film smoothing. Journal of the Royal 
+#' @references 
+#' \itemize{
+#'    \item{Ramsay, T. 2002. Spline smoothing over difficult regions. J.R.Statist. Soc. B 64(2):307-319}
+#'    \item{Wood, S. N., Bravington, M. V., & Hedley, S. L. (2008). Soap film smoothing. Journal of the Royal 
 #' Statistical Society: Series B (Statistical Methodology), 70(5), 931-955.}
+#' }
 #' @examples 
 #' library(fdaPDE)
 #' 
