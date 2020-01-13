@@ -12,7 +12,6 @@
 #' Simon Wood (2008).
 #' @return Returns function evaluations, or NAs for points outside the horseshoe domain. 
 #' @usage fs.test(x, y, r0 = 0.1, r = 0.5, l = 3, b = 1, exclude = TRUE)  
-#' @export
 #' @references 
 #' \itemize{
 #'    \item{Ramsay, T. 2002. Spline smoothing over difficult regions. J.R.Statist. Soc. B 64(2):307-319}
@@ -65,4 +64,22 @@ fs.test <- function (x, y, r0 = 0.1, r = 0.5, l = 3, b = 1, exclude = TRUE)
   
   attr(f, "exclude") <- ind
   f
+}
+
+
+#' Covariate test function for the horseshoe domain
+#' 
+#' @param x,y Points at which to evaluate the test function.
+#' @description Implements a finite area test function the horseshoe domain.
+#' @return Returns function evaluations. 
+#' @usage covs.test(x, y)  
+#' @export
+
+covs.test = function(x,y){
+  eval = rep(NA, length(x))
+  ind <- y > 0
+  eval[ind] = 2*exp(1 - 0.75*((x[ind]-1.5)^2 + 12*((y[ind])-0.5)^2))
+  ind <- y <= 0
+  eval[ind] = 2*exp(1 - 0.75*((x[ind]-2.5)^2 + 3*((-y[ind])-0.5)^2))
+  ifelse(eval > 10^{-16}, eval, 0)
 }
