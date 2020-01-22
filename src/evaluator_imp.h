@@ -135,8 +135,8 @@ void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 template <UInt ORDER>
 void Evaluator<ORDER, 2, 2>::integrate(UInt** incidenceMatrix, UInt nRegions, UInt nElements, const Real *coef, Real* result)
 {
-	Real Delta[nRegions];
-	Real integral[nRegions];
+	std::vector<Real> Delta(nRegions);
+	std::vector<Real> integral(nRegions);
 	constexpr UInt Nodes = 3*ORDER;
 	Element<Nodes, 2, 2> current_element;
 
@@ -167,8 +167,8 @@ void Evaluator<ORDER, 2, 2>::integrate(UInt** incidenceMatrix, UInt nRegions, UI
 template <UInt ORDER>
 void Evaluator<ORDER, 2, 3>::integrate(UInt** incidenceMatrix, UInt nRegions, UInt nElements, const Real *coef, Real* result)
 {
-	Real Delta[nRegions];
-	Real integral[nRegions];
+	std::vector<Real> Delta(nRegions);
+	std::vector<Real> integral(nRegions);
 	constexpr UInt Nodes = 3*ORDER;
 	Element<Nodes, 2, 3> current_element;
 
@@ -203,8 +203,8 @@ void Evaluator<ORDER, 2, 3>::integrate(UInt** incidenceMatrix, UInt nRegions, UI
 template <UInt ORDER>
 void Evaluator<ORDER, 3, 3>::integrate(UInt** incidenceMatrix, UInt nRegions, UInt nElements, const Real *coef, Real* result)
 {
-	Real Delta[nRegions];
-	Real integral[nRegions];
+	std::vector<Real> Delta(nRegions);
+	std::vector<Real> integral(nRegions);
 	constexpr UInt Nodes = 6*ORDER-2;
 	Element<Nodes, 3, 3> current_element;
 

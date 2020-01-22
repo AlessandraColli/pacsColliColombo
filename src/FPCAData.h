@@ -16,20 +16,15 @@ class  FPCAData{
 	
 		std::vector<Point> locations_;
 
-		bool locations_by_nodes_;
 	
 		//Design matrix
 		MatrixXr datamatrix_;
-		std::vector<UInt> observations_indices_;
-		UInt n_;
-		UInt p_;
-
+		
+		UInt order_;
+		
 		//Areal data
 		MatrixXi incidenceMatrix_;
-		UInt nRegions_;
-		
-		//Other parameters
-		UInt order_;
+		//lambda
 		std::vector<Real> lambda_;
 		
 		//Number of Principal Components
@@ -41,6 +36,15 @@ class  FPCAData{
 		//Parameters for better GCV timings
 		UInt GCVmethod_;
 		UInt nrealizations_;      // Number of relizations for the stochastic estimation of GCV
+		
+		
+		std::vector<UInt> observations_indices_;
+		UInt n_;
+		UInt p_;
+		
+		UInt nRegions_;
+		
+		bool locations_by_nodes_;
 		
 		#ifdef R_VERSION_
 		void setDatamatrix(SEXP Rdatamatrix);

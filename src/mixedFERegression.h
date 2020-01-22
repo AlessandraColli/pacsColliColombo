@@ -37,8 +37,8 @@ class MixedFERegressionBase
 	Eigen::SparseLU<SpMat> matrixNoCovdec_; // Stores the factorization of matrixNoCov_
 	Eigen::PartialPivLU<MatrixXr> Gdec_;	// Stores factorization of G =  C + [V * matrixNoCov^-1 * U]
 	Eigen::PartialPivLU<MatrixXr> WTW_;	// Stores the factorization of W^T * W
-	bool isWTWfactorized_;
-	bool isRcomputed_;
+	bool isWTWfactorized_ = false;
+	bool isRcomputed_ = false;
 	MatrixXr R_; //R1 ^T * R0^-1 * R1
 	
 	MatrixXr Q_;  //! Identity - H, projects onto the orthogonal subspace
@@ -87,7 +87,7 @@ class MixedFERegressionBase
 	
 	public:
 	//!A Constructor.
-	MixedFERegressionBase(const MeshHandler<ORDER,mydim,ndim>& mesh, const InputHandler& regressionData): mesh_(mesh), regressionData_(regressionData), isRcomputed_(false), isWTWfactorized_(false) {};
+	MixedFERegressionBase(const MeshHandler<ORDER,mydim,ndim>& mesh, const InputHandler& regressionData): mesh_(mesh), regressionData_(regressionData) {};
 
 	//! The function solving the system, used by the children classes. Saves the result in _solution
 	/*!

@@ -2,8 +2,8 @@
 #define __FPCADATA_IMP_HPP__
 
 FPCAData::FPCAData(std::vector<Point>& locations, MatrixXr& datamatrix, UInt order, MatrixXi& incidenceMatrix,
-					std::vector<Real> lambda, UInt nPC, UInt nFolds): locations_(locations), order_(order),
-					incidenceMatrix_(incidenceMatrix), lambda_(lambda), datamatrix_(datamatrix), nPC_(nPC),
+					std::vector<Real> lambda, UInt nPC, UInt nFolds): locations_(locations), datamatrix_(datamatrix), order_(order),
+					incidenceMatrix_(incidenceMatrix), lambda_(lambda),  nPC_(nPC),
 					nFolds_(nFolds)
 {
 	nRegions_ = incidenceMatrix.rows();
