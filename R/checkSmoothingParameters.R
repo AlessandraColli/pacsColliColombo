@@ -24,6 +24,9 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
       stop("Missing values not admitted in 'observations' when 'locations' are specified.")
   }
   
+  if (is.null(locations))
+    warning("No search algorithm is used because the location coincides with the nodes.")
+    
   if (is.null(observations))
     stop("observations required;  is NULL.")
   

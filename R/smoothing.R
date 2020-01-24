@@ -80,7 +80,7 @@
 #' print(ZincMeuseCovar$beta)
 
 
-smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, PDE_parameters=NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100)
+smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, PDE_parameters=NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100, search = "tree")
 {
   if(class(FEMbasis$mesh) == "MESH2D"){
     ndim = 2
@@ -192,10 +192,10 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
   PDEmisfit.FEM = FEM(g, FEMbasis)
   
   reslist = NULL
-  beta = getBetaCoefficients(locations, observations, fit.FEM, covariates, incidence_matrix, ndim, mydim)
+  beta = getBetaCoefficients(locations, observations, fit.FEM, covariates, incidence_matrix, ndim, mydim, search)
   if(GCV == TRUE)
   {
-    seq=getGCV(locations = locations, observations = observations, fit.FEM = fit.FEM, covariates = covariates, incidence_matrix = incidence_matrix, edf = bigsol[[2]], ndim, mydim)
+    seq=getGCV(locations = locations, observations = observations, fit.FEM = fit.FEM, covariates = covariates, incidence_matrix = incidence_matrix, edf = bigsol[[2]], ndim, mydim, search)
     reslist=list(fit.FEM = fit.FEM, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV)
   }else{
     reslist=list(fit.FEM = fit.FEM, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta)
@@ -204,7 +204,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
   return(reslist)
 }
 
-getBetaCoefficients<-function(locations, observations, fit.FEM, covariates, incidence_matrix = NULL, ndim, mydim)
+getBetaCoefficients<-function(locations, observations, fit.FEM, covariates, incidence_matrix = NULL, ndim, mydim, search)
 {
   loc_nodes = NULL
   fnhat = NULL
@@ -218,7 +218,7 @@ getBetaCoefficients<-function(locations, observations, fit.FEM, covariates, inci
       fnhat = as.matrix(fit.FEM$coeff[loc_nodes,])
     }else{
       loc_nodes = 1:length(observations)
-      fnhat = eval.FEM(FEM = fit.FEM, locations = locations, incidence_matrix = incidence_matrix)
+      fnhat = eval.FEM(FEM = fit.FEM, locations = locations, incidence_matrix = incidence_matrix, search = search)
     }
     ## #row number of covariates, #col number of functions
     betahat = matrix(0, nrow = ncol(covariates), ncol = ncol(fnhat))
@@ -230,7 +230,7 @@ getBetaCoefficients<-function(locations, observations, fit.FEM, covariates, inci
 }
 
 
-getGCV<-function(locations, observations, fit.FEM, covariates = NULL, incidence_matrix = NULL, edf, ndim, mydim)
+getGCV<-function(locations, observations, fit.FEM, covariates = NULL, incidence_matrix = NULL, edf, ndim, mydim, search)
 {
   loc_nodes = NULL
   fnhat = NULL
@@ -243,7 +243,7 @@ getGCV<-function(locations, observations, fit.FEM, covariates = NULL, incidence_
     fnhat = as.matrix(fit.FEM$coeff[loc_nodes,])
   }else{
     loc_nodes = 1:length(observations)
-    fnhat = eval.FEM(FEM = fit.FEM, locations = locations, incidence_matrix = incidence_matrix)
+    fnhat = eval.FEM(FEM = fit.FEM, locations = locations, incidence_matrix = incidence_matrix, search = search)
   }
   
   zhat = NULL

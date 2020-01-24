@@ -24,7 +24,7 @@ eval.FEM <- function(FEM, locations, incidence_matrix = NULL, search = "tree")
   
   if(dim(locations)[1]==dim(FEM$FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEM$FEMbasis$mesh$nodes)[2])
     warning("The locations matrix has the same dimensions as the mesh nodes. If you want to get the FEM object evaluation
-            at the mesh nodes, use FEM$coeff instead")
+            at the mesh nodes, use FEM$coeff instead.")
 			
   if(search=="naive")
     search=1
@@ -33,14 +33,14 @@ eval.FEM <- function(FEM, locations, incidence_matrix = NULL, search = "tree")
   else if(search=="walking")
     search=3
   else{
-    stop("search must be either naive or walking or tree")
+    stop("search must be either tree or naive or walking.")
   }
 
   if(class(FEM$FEMbasis$mesh)=='MESH.2.5D' & search ==3){
-	stop("2.5D search must be either naive or tree")
+	stop("2.5D search must be either tree or naive.")
   }
   if(class(FEM$FEMbasis$mesh)=='MESH.3D' & search ==3){
-	stop("3D search must be either naive or tree")
+	stop("3D search must be either tree or naive.")
   }
 
   
