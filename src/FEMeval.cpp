@@ -13,6 +13,7 @@
 #include "mesh_objects.h"
 #include "mesh.h"
 #include "evaluator.h"
+#include "projection.h"
 
 extern "C" {
 //! This function manages the various option for the solution evaluation.
@@ -252,4 +253,67 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
     return(result);
 }
 
+
+SEXP data_projection(SEXP Rmesh, SEXP Rlocations)
+{
+	int n_X = INTEGER(Rf_getAttrib(Rlocations, R_DimSymbol))[0];
+	//Declare pointer to access data from C++
+	double X, Y, Z;
+
+    // Cast all computation parameters
+    std::vector<Point> deData_(n_X); // the points to be projected
+    std::vector<Point> prjData_(n_X); // the projected points
+    
+    for (int i=0; i<n_X; i++)
+	{
+		X = REAL(Rlocations)[i + n_X*0];
+		//Rprintf("X[%i]= %d", i, X[i]);
+		Y = REAL(Rlocations)[i + n_X*1];
+		Z = REAL(Rlocations)[i + n_X*2];
+		deData_[i]=Point(X,Y,Z);
+
+		if (i==0) {
+			Rprintf("Rlocation_0: %f\n", REAL(Rlocations)[i + n_X*0]);
+			Rprintf("Rlocation_1: %f\n", REAL(Rlocations)[i + n_X*1]);
+			Rprintf("Rlocation_2: %f\n", REAL(Rlocations)[i + n_X*2]);
+			Rprintf("X= %f\n", X);
+			Rprintf("Y= %f\n", Y);
+			Rprintf("Z= %f\n", Z);
+		}
+	}
+
+    SEXP result;
+
+	if (n_X>0) //pointwise data
+	{
+		PROTECT(result = Rf_allocMatrix(REALSXP, n_X, 3));
+		//default order: 1 *************************
+		MeshHandler<1,2,3> mesh(Rmesh);
+		projection<1,2,3> projector(mesh, deData_);
+		prjData_ = projector.computeProjection();
+	}
+
+	for (int i=0; i<n_X; ++i)
+	{
+		REAL(result)[i + n_X*0]=prjData_[i][0];
+		REAL(result)[i + n_X*1]=prjData_[i][1];
+		REAL(result)[i + n_X*2]=prjData_[i][2];
+
+		if (i==0) {
+			Rprintf("prjData_[i][0]= %f\n", prjData_[i][0]);
+			Rprintf("prjData_[i][1]= %f\n", prjData_[i][1]);
+			Rprintf("prjData_[i][2]= %f\n", prjData_[i][2]);
+			Rprintf("result_0: %f\n", REAL(result)[i + n_X*0]);
+			Rprintf("result_1: %f\n", REAL(result)[i + n_X*1]);
+			Rprintf("result_2: %f\n", REAL(result)[i + n_X*2]);
+
+		}
+	}
+
+	UNPROTECT(1);
+    // result matrix
+    return(result);
 }
+
+}
+
