@@ -2,9 +2,9 @@
 #define __FPCADATA_IMP_HPP__
 
 FPCAData::FPCAData(std::vector<Point>& locations, MatrixXr& datamatrix, UInt order, MatrixXi& incidenceMatrix,
-					std::vector<Real> lambda, UInt nPC, UInt nFolds): locations_(locations), order_(order),
-					incidenceMatrix_(incidenceMatrix), lambda_(lambda), datamatrix_(datamatrix), nPC_(nPC),
-					nFolds_(nFolds)
+					std::vector<Real> lambda, UInt nPC, UInt nFolds, UInt search): 
+					locations_(locations), order_(order), incidenceMatrix_(incidenceMatrix), lambda_(lambda), datamatrix_(datamatrix), nPC_(nPC),
+					nFolds_(nFolds), search_(search)
 {
 	nRegions_ = incidenceMatrix.rows();
 	if(locations.size()==0 && nRegions_==0)
@@ -16,7 +16,7 @@ FPCAData::FPCAData(std::vector<Point>& locations, MatrixXr& datamatrix, UInt ord
 }
 
 #ifdef R_VERSION_
-FPCAData::FPCAData(SEXP Rlocations, SEXP Rdatamatrix, SEXP Rorder, SEXP RincidenceMatrix, SEXP Rlambda, SEXP RnPC, SEXP RnFolds,SEXP RGCVmethod, SEXP Rnrealizations)
+FPCAData::FPCAData(SEXP Rlocations, SEXP Rdatamatrix, SEXP Rorder, SEXP RincidenceMatrix, SEXP Rlambda, SEXP RnPC, SEXP RnFolds,SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch)
 {
 	setLocations(Rlocations);
 	setIncidenceMatrix(RincidenceMatrix);
@@ -26,6 +26,7 @@ FPCAData::FPCAData(SEXP Rlocations, SEXP Rdatamatrix, SEXP Rorder, SEXP Rinciden
 	GCVmethod_ = INTEGER(RGCVmethod)[0];
 
 	order_ =  INTEGER(Rorder)[0];
+	search_ =  INTEGER(Rsearch)[0];
 	
 	UInt length_lambda = Rf_length(Rlambda);
 	for (UInt i = 0; i<length_lambda; ++i) lambda_.push_back(REAL(Rlambda)[i]);

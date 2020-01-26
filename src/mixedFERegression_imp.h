@@ -69,9 +69,21 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::setPsi()
 
 		Real evaluator;
 
+		if (regressionData_.getSearch() == 1) { //use Naive search
+		std::cout << "This is Naive Search" << std::endl;
+		} else if (regressionData_.getSearch() == 2)  { //use Tree search (default)
+		std::cout << "This is Tree Search" << std::endl;
+		}
+
 		for(UInt i=0; i<nlocations;i++)
 		{
-			tri_activated = mesh_.findLocationNaive(regressionData_.getLocations()[i]);
+
+			if (regressionData_.getSearch() == 1) { //use Naive search
+				tri_activated = mesh_.findLocationNaive(regressionData_.getLocations()[i]);
+			} else if (regressionData_.getSearch() == 2) { //use Tree search (default)
+				tri_activated = mesh_.findLocationTree(regressionData_.getLocations()[i]);
+			}
+
 			if(tri_activated.getId() == Identifier::NVAL)
 			{
 				#ifdef R_VERSION_
@@ -89,7 +101,8 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::setPsi()
 					psi_.insert(i, tri_activated[node].getId()) = evaluator;
 				}
 			}
-		}
+		} //end of for loop
+
 		psi_.makeCompressed();
 	}
 	else //areal data

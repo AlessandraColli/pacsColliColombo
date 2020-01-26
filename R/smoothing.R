@@ -94,8 +94,9 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
   }else{
     stop('Unknown mesh class')
   }
+
   ##################### Checking parameters, sizes and conversion ################################
-  
+
   if(GCVmethod=="Stochastic")
     GCVMETHOD=2
   else if(GCVmethod=="Exact")
@@ -103,6 +104,15 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
   else{
     stop("GCVmethod must be either Stochastic or Exact")
   }
+
+  if(search=="naive")
+    search=1
+  else if(search=="tree")
+    search=2
+  else{
+    stop("search must be either tree or naive.")
+  }
+
   
   space_varying=checkSmoothingParameters(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, BC, GCV, PDE_parameters, GCVMETHOD , nrealizations)
   
@@ -141,7 +151,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
     print('C++ Code Execution')
     bigsol = CPP_smooth.FEM.basis(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda,
                                   covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim,
-                                  BC=BC, GCV=GCV,GCVMETHOD=GCVMETHOD, nrealizations=nrealizations)
+                                  BC=BC, GCV=GCV,GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
   
     numnodes = nrow(FEMbasis$mesh$nodes)
     
@@ -152,7 +162,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
     bigsol = CPP_smooth.FEM.PDE.basis(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda,
                                       PDE_parameters = PDE_parameters,
                                       covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim,
-                                      BC=BC, GCV=GCV,GCVMETHOD=GCVMETHOD, nrealizations=nrealizations)
+                                      BC=BC, GCV=GCV,GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
     
     numnodes = nrow(FEMbasis$mesh$nodes)
 
@@ -163,7 +173,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
     bigsol = CPP_smooth.FEM.PDE.sv.basis(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda,
                                          PDE_parameters = PDE_parameters,
                                          covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim,
-                                         BC=BC, GCV=GCV,GCVMETHOD=GCVMETHOD, nrealizations=nrealizations)
+                                         BC=BC, GCV=GCV,GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
   
     numnodes = nrow(FEMbasis$mesh$nodes)
   
@@ -171,7 +181,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
     
     bigsol = NULL  
     print('C++ Code Execution')
-    bigsol = CPP_smooth.manifold.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations)
+    bigsol = CPP_smooth.manifold.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations, search)
     
     numnodes = FEMbasis$mesh$nnodes
     
@@ -179,7 +189,7 @@ smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, cov
     
     bigsol = NULL  
     print('C++ Code Execution')
-    bigsol = CPP_smooth.volume.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations)
+    bigsol = CPP_smooth.volume.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations, search)
     
     numnodes = FEMbasis$mesh$nnodes
   }

@@ -68,9 +68,22 @@ void MixedFEFPCABase<Integrator, ORDER, mydim, ndim>::computeBasisEvaluations()
 		Eigen::Matrix<Real,Nodes,1> coefficients;
 
 		Real evaluator;
+
+		if (fpcaData_.getSearch() == 1) { //use Naive search
+		std::cout << "This is Naive Search" << std::endl;
+		} else if (fpcaData_.getSearch() == 2)  { //use Tree search (default)
+		std::cout << "This is Tree Search" << std::endl;
+		}
+
 		for(UInt i=0; i<nlocations;i++)
 		{
-			tri_activated = mesh_.findLocationNaive(fpcaData_.getLocations()[i]);
+
+			if (fpcaData_.getSearch() == 1) { //use Naive search
+				tri_activated = mesh_.findLocationNaive(fpcaData_.getLocations()[i]);
+			} else if (fpcaData_.getSearch() == 2) { //use Tree search (default)
+				tri_activated = mesh_.findLocationTree(fpcaData_.getLocations()[i]);
+			}
+
 			if(tri_activated.getId() == Identifier::NVAL)
 			{
 				#ifdef R_VERSION_
@@ -89,7 +102,8 @@ void MixedFEFPCABase<Integrator, ORDER, mydim, ndim>::computeBasisEvaluations()
 					Psi_.insert(i, tri_activated[node].getId()) = evaluator;
 				}
 			}
-		}
+		} //end of for loop
+
 		Psi_.prune(tolerance);
 		Psi_.makeCompressed();
 	}

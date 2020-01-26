@@ -30,6 +30,7 @@ class  FPCAData{
 		
 		//Other parameters
 		UInt order_;
+		UInt search_;
 		std::vector<Real> lambda_;
 		
 		//Number of Principal Components
@@ -54,19 +55,14 @@ class  FPCAData{
 
 		/*!
 			It initializes the object storing the R given objects. This is the simplest of the two possible interfaces with R
-			\param Rdatamatrix an R-matrix containing the datamatrix.
-			
+			\param Rdatamatrix an R-matrix containing the datamatrix.			
 			\param Rlocations an R-matrix containing the location of the observations.
-			
 			\param Rorder an R-integer containing the order of the approximating basis.
-			\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
-			
-			\param RnPC an R-integer specifying the number of principal components to compute.
-			
-			\param RnFolds an R-integer specifying the number of folds to use if K-Fold cross validation method is chosen.
-			
-			\param RGCVmethod an R-integer specifying if the GCV computation has to be exact(if = 1) or stochastic (if = 2).
-			
+			\param Rsearch an R-integer to decide the search algorithm type (tree or naive or walking search algorithm).
+			\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.			
+			\param RnPC an R-integer specifying the number of principal components to compute.			
+			\param RnFolds an R-integer specifying the number of folds to use if K-Fold cross validation method is chosen.			
+			\param RGCVmethod an R-integer specifying if the GCV computation has to be exact(if = 1) or stochastic (if = 2).			
 			\param Rnrealizations an R-integer specifying the number of realizations to use when computing the GCV stochastically.
 		
 		*/
@@ -75,12 +71,12 @@ class  FPCAData{
 
 		#ifdef R_VERSION_
 		explicit FPCAData(SEXP Rlocations, SEXP Rdatamatrix, SEXP Rorder, SEXP RincidenceMatrix,
-		SEXP Rlambda, SEXP RnPC, SEXP RnFolds, SEXP RGCVmethod, SEXP Rnrealizations);
+		SEXP Rlambda, SEXP RnPC, SEXP RnFolds, SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch);
 		#endif
 
 				
 		explicit FPCAData(std::vector<Point>& locations, MatrixXr& datamatrix,
-		UInt order, MatrixXi& incidenceMatrix, std::vector<Real> lambda, UInt nPC, UInt nFolds);
+		UInt order, MatrixXi& incidenceMatrix, std::vector<Real> lambda, UInt nPC, UInt nFolds, UInt search);
 
 
 		void printDatamatrix(std::ostream & out) const;
@@ -115,7 +111,9 @@ class  FPCAData{
 		inline std::vector<Real> const & getLambda() const {return lambda_;}
 		//! A method returning the input order
 		inline UInt const getOrder() const {return order_;}
-		//! A method returning the input order
+		//! A method returning the input search
+		inline UInt const getSearch() const {return search_;}
+		//! A method returning the input nFolds
 		inline UInt const getNFolds() const {return nFolds_;}
 		//! A method returning the method that should be used to compute the GCV:
 		//! 1: exact calculation

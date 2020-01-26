@@ -1,4 +1,4 @@
-CPP_smooth.volume.FEM.basis<-function(locations, observations, FEMbasis, lambda, covariates = NULL, incidence_matrix = NULL, ndim, mydim, BC = NULL, GCV,GCVMETHOD = 2, nrealizations = 100)
+CPP_smooth.volume.FEM.basis<-function(locations, observations, FEMbasis, lambda, covariates = NULL, incidence_matrix = NULL, ndim, mydim, BC = NULL, GCV,GCVMETHOD = 2, nrealizations = 100, search)
 {
   
   # C++ function for volumetric works with vectors not with matrices
@@ -66,10 +66,11 @@ CPP_smooth.volume.FEM.basis<-function(locations, observations, FEMbasis, lambda,
   
   storage.mode(nrealizations) <- "integer"
   storage.mode(GCVMETHOD) <- "integer"
+  storage.mode(search) <- "integer"
   
   ## Call C++ function
   bigsol <- .Call("regression_Laplace", locations, data, FEMbasis$mesh, FEMbasis$mesh$order, mydim, ndim, lambda, covariates,
-                  incidence_matrix, BC$BC_indices, BC$BC_values, GCV, GCVMETHOD, nrealizations, package = "fdaPDE")
+                  incidence_matrix, BC$BC_indices, BC$BC_values, GCV, GCVMETHOD, nrealizations, search, package = "fdaPDE")
   
   return(bigsol)
 }

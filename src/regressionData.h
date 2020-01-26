@@ -33,6 +33,7 @@ class  RegressionData{
 
 		//Other parameters
 		UInt order_;
+		UInt search_;
 		std::vector<Real> lambda_;
 		UInt GCVmethod_;
 		UInt nrealizations_;      // Number of relizations for the stochastic estimation of GCV
@@ -59,6 +60,7 @@ class  RegressionData{
 			\param Robservations an R-vector containing the values of the observations.
 			\param Rdesmat an R-matrix containing the design matrix for the regression.
 			\param Rorder an R-integer containing the order of the approximating basis.
+			\param Rsearch an R-integer to decide the search algorithm type (tree or naive or walking search algorithm).
 			\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
 			\param Rbindex an R-integer containing the indexes of the nodes the user want to apply a Dirichlet Condition,
 					the other are automatically considered in Neumann Condition.
@@ -72,6 +74,7 @@ class  RegressionData{
 			\param Robservations an R-vector containing the values of the observations.
 			\param Rdesmat an R-matrix containing the design matrix for the regression.
 			\param Rorder an R-integer containing the order of the approximating basis.
+			\param Rsearch an R-integer to decide the search algorithm type (tree or naive or walking search algorithm).
 			\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
 			\param Rbindex an R-integer vector containing the indexes of the nodes the user want to apply a Dirichlet Condition,
 					the other are automatically considered in Neumann Condition.
@@ -86,10 +89,11 @@ class  RegressionData{
 		#ifdef R_VERSION_
 		explicit RegressionData(SEXP Rlocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda, SEXP Rcovariates,
 								SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues, SEXP DOF, SEXP RGCVmethod,
-								SEXP Rnrealizations);
+								SEXP Rnrealizations, SEXP Rsearch);
 		#endif
 
-		explicit RegressionData(std::vector<Point>& locations, VectorXr& observations, UInt order, std::vector<Real> lambda, MatrixXr& covariates, MatrixXi& incidenceMatrix, std::vector<UInt>& bc_indices, std::vector<Real>& bc_values, bool DOF);
+		explicit RegressionData(std::vector<Point>& locations, VectorXr& observations, UInt order, std::vector<Real> lambda, 
+			MatrixXr& covariates, MatrixXi& incidenceMatrix, std::vector<UInt>& bc_indices, std::vector<Real>& bc_values, bool DOF, UInt search);
 
 
 		void printObservations(std::ostream & out) const;
@@ -116,6 +120,8 @@ class  RegressionData{
 		inline std::vector<Real> const & getLambda() const {return lambda_;}
 		//! A method returning the input order
 		inline UInt const getOrder() const {return order_;}
+		//! A method returning the input search
+		inline UInt const getSearch() const {return search_;}
 		//! A method returning the indexes of the nodes for which is needed to apply Dirichlet Conditions
 		inline std::vector<UInt> const & getDirichletIndices() const {return bc_indices_;}
 		//! A method returning the values to apply for Dirichlet Conditions
@@ -140,14 +146,14 @@ class  RegressionDataElliptic:public RegressionData
 		#ifdef R_VERSION_
 		explicit RegressionDataElliptic(SEXP Rlocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda, SEXP RK, 
 				SEXP Rbeta, SEXP Rc, SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues,
-				SEXP DOF,SEXP RGCVmethod, SEXP Rnrealizations);
+				SEXP DOF,SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch);
 		#endif
 
 		explicit RegressionDataElliptic(std::vector<Point>& locations, VectorXr& observations, UInt order,
 										std::vector<Real> lambda, Eigen::Matrix<Real,2,2>& K,
 										Eigen::Matrix<Real,2,1>& beta, Real c, MatrixXr& covariates,
 										MatrixXi& incidenceMatrix, std::vector<UInt>& bc_indices,
-										std::vector<Real>& bc_values, bool DOF);
+										std::vector<Real>& bc_values, bool DOF, UInt search);
 
 		inline Eigen::Matrix<Real,2,2> const & getK() const {return K_;}
 		inline Eigen::Matrix<Real,2,1> const & getBeta() const {return beta_;}
@@ -166,7 +172,7 @@ class RegressionDataEllipticSpaceVarying:public RegressionData
 		#ifdef R_VERSION_
 		explicit RegressionDataEllipticSpaceVarying(SEXP Rlocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda,
 				SEXP RK, SEXP Rbeta, SEXP Rc, SEXP Ru, SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices,
-				SEXP RBCValues, SEXP DOF, SEXP RGCVmethod, SEXP Rnrealizations);
+				SEXP RBCValues, SEXP DOF, SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch);
 		#endif
 
 
@@ -177,7 +183,7 @@ class RegressionDataEllipticSpaceVarying:public RegressionData
 													const std::vector<Real>& c, const std::vector<Real>& u,
 													MatrixXr& covariates, MatrixXi& incidenceMatrix,
 													std::vector<UInt>& bc_indices, std::vector<Real>& bc_values,
-													bool DOF);
+													bool DOF, UInt search);
 
 		inline Diffusivity const & getK() const {return K_;}
 		inline Advection const & getBeta() const {return beta_;}
