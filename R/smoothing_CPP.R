@@ -272,11 +272,7 @@ CPP_eval.FEM = function(FEM, locations, incidence_matrix, redundancy, ndim, mydi
   evalmat = matrix(0,max(nrow(locations),nrow(incidence_matrix)),ncol(coeff))
   for (i in 1:ncol(coeff)){
     evalmat[,i] <- .Call("eval_FEM_fd", FEMbasis$mesh, locations, incidence_matrix, coeff[,i],
-<<<<<<< HEAD
-                         FEMbasis$order, redundancy, mydim, ndim, search, package = "fdaPDE")
-=======
-                         FEMbasis$order, redundancy, mydim, ndim, PACKAGE = "fdaPDE")
->>>>>>> refs/remotes/AlessandraColli/master
+                         FEMbasis$order, redundancy, mydim, ndim, search, PACKAGE = "fdaPDE")
   }
   
   #Returning the evaluation matrix

@@ -1,4 +1,3 @@
-
 #define R_VERSION_
 
 #include "fdaPDE.h"
@@ -183,7 +182,6 @@ extern "C" {
 	\param Rdesmat an R-matrix containing the design matrix for the regression.
 	\param Rmesh an R-object containg the output mesh from Trilibrary
 	\param Rorder an R-integer containing the order of the approximating basis.
-	\param Rsearch an R-integer to decide the search algorithm type (tree or naive or walking search algorithm).
 	\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
 	\param Rcovariates an R-matrix of covariates for the regression model
 	\param RincidenceMatrix an R-matrix containing the incidence matrix defining the regions for the smooth regression with areal data
@@ -193,6 +191,7 @@ extern "C" {
 	\param DOF an R boolean indicating whether dofs of the model have to be computed or not
 	\param RGCVmethod an R-integer indicating the method to use to compute the dofs when DOF is TRUE, can be either 1 (exact) or 2 (stochastic)
 	\param Rnrealizations the number of random points used in the stochastic computation of the dofs
+	\param Rsearch an R-integer to decide the search algorithm type (tree or naive or walking search algorithm).
 	\return R-vector containg the coefficients of the solution
 */
 
@@ -220,9 +219,7 @@ SEXP regression_Laplace(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Ro
     return(NILSXP);
 }
 
-<<<<<<< HEAD
-SEXP regression_PDE(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim,
-=======
+
 /*!
 	This function is then called from R code.
 	\param Robservations an R-vector containing the values of the observations.
@@ -241,11 +238,11 @@ SEXP regression_PDE(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder
 	\param DOF an R boolean indicating whether dofs of the model have to be computed or not
 	\param RGCVmethod an R-integer indicating the method to use to compute the dofs when DOF is TRUE, can be either 1 (exact) or 2 (stochastic)
 	\param Rnrealizations the number of random points used in the stochastic computation of the dofs
+	\param Rsearch an R-integer to decide the search algorithm type (tree or naive or walking search algorithm).
 	\return R-vector containg the coefficients of the solution
 */
 
 SEXP regression_PDE(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder,SEXP Rmydim, SEXP Rndim,
->>>>>>> refs/remotes/AlessandraColli/master
 					SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc, SEXP Rcovariates, SEXP RincidenceMatrix,
 					SEXP RBCIndices, SEXP RBCValues, SEXP DOF, SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch)
 {
@@ -285,6 +282,7 @@ SEXP regression_PDE(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder
 	\param DOF an R boolean indicating whether dofs of the model have to be computed or not
 	\param RGCVmethod an R-integer indicating the method to use to compute the dofs when DOF is TRUE, can be either 1 (exact) or 2 (stochastic)
 	\param Rnrealizations the number of random points used in the stochastic computation of the dofs
+	\param Rsearch an R-integer to decide the search algorithm type (tree or naive or walking search algorithm).
 	\return R-vector containg the coefficients of the solution
 */
 
@@ -368,14 +366,9 @@ SEXP get_FEM_stiff_matrix(SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim)
 	return(NILSXP);
 }
 
-<<<<<<< HEAD
-SEXP get_FEM_PDE_matrix(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim, SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc,
-				   SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues, SEXP DOF,SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch)
-=======
 //! A utility, not used for system solution, may be used for debugging
 SEXP get_FEM_PDE_matrix(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder,SEXP Rmydim, SEXP Rndim, SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc,
-				   SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues, SEXP DOF,SEXP RGCVmethod, SEXP Rnrealizations)
->>>>>>> refs/remotes/AlessandraColli/master
+				   SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues, SEXP DOF,SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch)
 {
 	RegressionDataElliptic regressionData(Rlocations, Robservations, Rorder, Rlambda, RK, Rbeta, Rc, Rcovariates, RincidenceMatrix, RBCIndices, 
 		RBCValues, DOF, RGCVmethod, Rnrealizations, Rsearch);
@@ -434,11 +427,7 @@ SEXP get_FEM_PDE_space_varying_matrix(SEXP Rlocations, SEXP Robservations, SEXP 
 	\param Rlocations an R-matrix containing the location of the observations.
 	\param Rmesh an R-object containg the output mesh from Trilibrary
 	\param Rorder an R-integer containing the order of the approximating basis.
-<<<<<<< HEAD
-	\param Rsearch an R-integer to decide the search algorithm type (tree or naive or walking search algorithm).
-=======
 	\param RincidenceMatrix an R-matrix representing the incidence matrix defining regions in the model with areal data
->>>>>>> refs/remotes/AlessandraColli/master
 	\param Rmydim an R-integer containing the dimension of the problem we are considering.
 	\param Rndim an R-integer containing the dimension of the space in which the location are.
 	\param Rlambda an R-double containing the penalization term of the empirical evidence respect to the prior one.
@@ -447,24 +436,13 @@ SEXP get_FEM_PDE_space_varying_matrix(SEXP Rlocations, SEXP Robservations, SEXP 
 	\param RnFolds an R-integer specifying the number of folds to use if K-Fold cross validation method is chosen.		
 	\param RGCVmethod an R-integer specifying if the GCV computation has to be exact(if = 1) or stochastic (if = 2).		
 	\param Rnrealizations an R-integer specifying the number of realizations to use when computing the GCV stochastically.
-	
+	\param Rsearch an R-integer to decide the search algorithm type (tree or naive or walking search algorithm).
 	\return R-vector containg the coefficients of the solution
 */
 SEXP Smooth_FPCA(SEXP Rlocations, SEXP Rdatamatrix, SEXP Rmesh, SEXP Rorder, SEXP RincidenceMatrix, SEXP Rmydim, SEXP Rndim, 
 	SEXP Rlambda, SEXP RnPC, SEXP Rvalidation, SEXP RnFolds, SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch){
-//Set data   
-<<<<<<< HEAD
-//    #ifdef R_VERSION_
-//	Rprintf("Into: smooth_FPCA. \n Creating fPCAdata object \n");
-//	#endif               
+	//Set data                
 	FPCAData fPCAdata(Rlocations, Rdatamatrix, Rorder, RincidenceMatrix, Rlambda, RnPC, RnFolds, RGCVmethod, Rnrealizations, Rsearch);
-
-//     
-=======
-             
-	FPCAData fPCAdata(Rlocations, Rdatamatrix, Rorder, RincidenceMatrix, Rlambda, RnPC, RnFolds, RGCVmethod, Rnrealizations);
-   
->>>>>>> refs/remotes/AlessandraColli/master
 	UInt mydim=INTEGER(Rmydim)[0]; 
 	UInt ndim=INTEGER(Rndim)[0]; 
 

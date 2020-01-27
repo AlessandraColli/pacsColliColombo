@@ -233,13 +233,10 @@
 #' plot(solution$fit.FEM)
 #' image(solution$fit.FEM)
 
-<<<<<<< HEAD
-smooth.FEM.basis<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, PDE_parameters=NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100, search = "tree")
-=======
+
 smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda, 
                      covariates = NULL, PDE_parameters=NULL, incidence_matrix = NULL, 
-                     BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100)
->>>>>>> refs/remotes/AlessandraColli/master
+                     BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100, search = "tree")
 {
   if(class(FEMbasis$mesh) == "mesh.2D"){
     ndim = 2
@@ -304,7 +301,7 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
   
   ################## End checking parameters, sizes and conversion #############################
   
-  if(class(FEMbasis$mesh) == 'mesh.2D' & is.null(PDE_parameters)){	
+  if(class(FEMbasis$mesh) == 'mesh.2D' & is.null(PDE_parameters)){  
     
     bigsol = NULL
     print('C++ Code Execution')
@@ -325,7 +322,7 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
     
     numnodes = nrow(FEMbasis$mesh$nodes)
 
-  } else if(class(FEMbasis$mesh) == 'mesh.2D' & !is.null(PDE_parameters) & space_varying==TRUE){	
+  } else if(class(FEMbasis$mesh) == 'mesh.2D' & !is.null(PDE_parameters) & space_varying==TRUE){  
     
     bigsol = NULL
     print('C++ Code Execution')
@@ -340,13 +337,9 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
     
     bigsol = NULL  
     print('C++ Code Execution')
-<<<<<<< HEAD
-    bigsol = CPP_smooth.manifold.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations, search)
-=======
     if(!is.null(locations))
       stop("The option locations!=NULL for manifold domains is currently not implemented")
-    bigsol = CPP_smooth.manifold.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations)
->>>>>>> refs/remotes/AlessandraColli/master
+    bigsol = CPP_smooth.manifold.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations, search)
     
     numnodes = FEMbasis$mesh$nnodes
     
@@ -460,4 +453,3 @@ getGCV<-function(locations, observations, fit.FEM, covariates = NULL, incidence_
   
   return(list(stderr = stderr, GCV = GCV))
 }
-

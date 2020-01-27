@@ -239,13 +239,7 @@ bool Element<NNODES,2,3>::isPointInside(const Point& point) const
 {
 	Real eps = 2.2204e-016;
 	Real tolerance = 10 * eps;
-<<<<<<< HEAD
-	// First: check consistency trough Rouchè-Capelli theorem
-=======
-
-//THIS COMMENT IS FROM BERAHA, COSMO First: check consistency trough Rouchè-Capelli theorem 
-
->>>>>>> refs/remotes/AlessandraColli/master
+	//THIS COMMENT IS FROM BERAHA, COSMO First: check consistency trough Rouchè-Capelli theorem 
 	Element<NNODES,2,3> t=*this;
 
 	Eigen::Matrix<Real,3,2> A;
@@ -265,40 +259,15 @@ bool Element<NNODES,2,3>::isPointInside(const Point& point) const
 	b(2) = point[2]-t[0][2];
 
 	sol = A.colPivHouseholderQr().solve(b);
-	
-<<<<<<< HEAD
-//	bool exists_sol=b.isApprox(A*sol,1e-4);
-//	if(!exists_sol){
-//		#ifdef R_VERSION_
-//		Rprintf("solution to LS for this point does not exists\n");
-//		#endif
-//	}
-	
-	// #ifdef R_VERSION_
-	// Rprintf("err: %d , tolerance= %d \n",err(0)*err(0) + err(1)*err(1) + err(2)*err(2), tolerance);
-	// #endif
-
-	err = A*sol-b;
-	if (err(0)*err(0) < tolerance && err(1)*err(1) < tolerance && err(2)*err(2) < tolerance) {
-		return ((sol(0)+sol(1) <= 1+2*eps) && (sol(0) >= 0-eps) && (sol(1) >= 0-eps));
-	} else {
-		return 0;
-	}
-	// if((err(0)*err(0) + err(1)*err(1) + err(2)*err(2)) < tolerance ){
-	// 	return((sol(0)+sol(1)<=1) && (sol(0)>=0) && (sol(1)>=0));
-	// }else{
-	// 	return 0;}
-=======
 	err = A*sol-b;
 	
 	//Real tolerance = (A(0,0)*A(0,0) + A(1,0)*A(1,0) + A(2,0)*A(2,0) + A(0,1)*A(0,1) + A(1,1)*A(1,1) + A(2,1)*A(2,1))/4;
 
 	if( (err(0)*err(0)<tolerance) && (err(1)*err(1)<tolerance) && (err(2)*err(2)<tolerance) ){
 		return((sol(0)+sol(1)<=1+2*eps) && (sol(0)>=0-eps) && (sol(1)>=0-eps));
-	}else{
-
-		return 0;}
->>>>>>> refs/remotes/AlessandraColli/master
+	} else {
+		return 0;
+	}
 }
 
 

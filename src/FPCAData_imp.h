@@ -2,15 +2,10 @@
 #define __FPCADATA_IMP_HPP__
 
 FPCAData::FPCAData(std::vector<Point>& locations, MatrixXr& datamatrix, UInt order, MatrixXi& incidenceMatrix,
-<<<<<<< HEAD
 					std::vector<Real> lambda, UInt nPC, UInt nFolds, UInt search): 
-					locations_(locations), order_(order), incidenceMatrix_(incidenceMatrix), lambda_(lambda), datamatrix_(datamatrix), nPC_(nPC),
-					nFolds_(nFolds), search_(search)
-=======
-					std::vector<Real> lambda, UInt nPC, UInt nFolds): locations_(locations), datamatrix_(datamatrix), order_(order),
+					locations_(locations), datamatrix_(datamatrix), order_(order),
 					incidenceMatrix_(incidenceMatrix), lambda_(lambda),  nPC_(nPC),
-					nFolds_(nFolds)
->>>>>>> refs/remotes/AlessandraColli/master
+					nFolds_(nFolds), search_(search)
 {
 	nRegions_ = incidenceMatrix.rows();
 	if(locations.size()==0 && nRegions_==0)
@@ -169,4 +164,3 @@ void FPCAData::printIncidenceMatrix(std::ostream & out) const
 
 
 #endif
-

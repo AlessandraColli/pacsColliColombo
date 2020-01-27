@@ -45,11 +45,8 @@
 #' eval.FEM(FEMfunction, incidence_matrix = incidence_matrix)
 #' @export
 
-<<<<<<< HEAD
-eval.FEM <- function(FEM, locations, incidence_matrix = NULL, search = "tree")
-=======
-eval.FEM <- function(FEM, locations = NULL, incidence_matrix = NULL)
->>>>>>> refs/remotes/AlessandraColli/master
+
+eval.FEM <- function(FEM, locations = NULL, incidence_matrix = NULL, search = "tree")
 {
   if (is.null(FEM))
     stop("FEM required;  is NULL.")
@@ -93,28 +90,16 @@ eval.FEM <- function(FEM, locations = NULL, incidence_matrix = NULL)
   if(class(FEM$FEMbasis$mesh)=='mesh.2D'){
     ndim = 2
     mydim = 2
-<<<<<<< HEAD
-    res = CPP_eval.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search)  
-  }else if(class(FEM$FEMbasis$mesh)=='MESH.2.5D'){
-  ndim = 3
-  mydim = 2
-  res = CPP_eval.manifold.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search)
-  }else if(class(FEM$FEMbasis$mesh)=='MESH.3D'){
-  ndim = 3
-  mydim = 3
-  res = CPP_eval.volume.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search)
-=======
-    res = CPP_eval.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim)
+    res = CPP_eval.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search)
     
   }else if(class(FEM$FEMbasis$mesh)=='mesh.2.5D'){
     ndim = 3
     mydim = 2
-    res = CPP_eval.manifold.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim)
+    res = CPP_eval.manifold.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search)
   }else if(class(FEM$FEMbasis$mesh)=='mesh.3D'){
     ndim = 3
     mydim = 3
-    res = CPP_eval.volume.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim)
->>>>>>> refs/remotes/AlessandraColli/master
+    res = CPP_eval.volume.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search)
   }
   
   return(as.matrix(res))

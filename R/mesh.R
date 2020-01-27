@@ -419,8 +419,6 @@ create.mesh.2.5D<- function(nodes, triangles, order = 1)
   return(out)
 }
 
-<<<<<<< HEAD
-
 data.projection.2.5D<-function(mesh, locations) {
   if(class(mesh) !="MESH.2.5D")
   stop("Data projection is only available for 2.5D mesh ")
@@ -454,18 +452,7 @@ data.projection.2.5D<-function(mesh, locations) {
 
 }
 
-second.order.MESH.2.5D<-function(nodes, triangles){
 
-    toll=1e-5
-    # T = matrix(mesh$triangles,nrow=mesh$ntriangles,ncol=3, byrow = TRUE)
-    # V = matrix(mesh$nodes, nrow = mesh$nnodes, ncol= 3, byrow = TRUE)
-    T=triangles
-    V=nodes
-    T <- cbind(T, matrix(0,nrow=nrow(T),ncol=3))
-    nnodes=nrow(V)
-    index=nrow(V)
-    points = V[T[1,],]
-=======
 second.order.mesh.2.5D<-function(nodes, triangles){
   
   toll=1e-5
@@ -498,7 +485,6 @@ second.order.mesh.2.5D<-function(nodes, triangles){
   
   for (i in 2:nrow(T)){
     points = V[T[i,],]
->>>>>>> refs/remotes/AlessandraColli/master
     midpoints<-rbind((points[2,]+points[3,])/2,(points[1,]+points[3,])/2, (points[1,]+points[2,])/2);
     # if(!is.null(bc)){
     #   isBC<-c( any(bc==T[i,2]) & any(bc==T[i,3]),

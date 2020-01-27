@@ -263,18 +263,11 @@ MeshHandler<ORDER,2,3>::MeshHandler(SEXP mesh)
 	
 	num_nodes_ = INTEGER(VECTOR_ELT(mesh_,0))[0];
 	num_elements_ = INTEGER(VECTOR_ELT(mesh_,1))[0];
-<<<<<<< HEAD
 	ADTree<Element<3*ORDER,2,3>> tmp(points_, elements_, num_nodes_, num_elements_);
     tree_ = tmp;
 
     // points_.assign(REAL(VECTOR_ELT(mesh_, 2)) , REAL(VECTOR_ELT(mesh_, 2)) + 3*num_nodes_);
 	// elements_.assign(INTEGER(VECTOR_ELT(mesh_, 3)), INTEGER(VECTOR_ELT(mesh_, 3))+ 3*ORDER*num_elements_);
-	//	std::for_each(elements_.begin(), elements_.end(), [](int& i){i-=1;});
-=======
-	points_.assign(REAL(VECTOR_ELT(mesh_, 2)) , REAL(VECTOR_ELT(mesh_, 2)) + 3*num_nodes_);
-	elements_.assign(INTEGER(VECTOR_ELT(mesh_, 3)), INTEGER(VECTOR_ELT(mesh_, 3))+ 3*ORDER*num_elements_);
-
->>>>>>> refs/remotes/AlessandraColli/master
 }
 #endif
 
@@ -489,8 +482,6 @@ MeshHandler<ORDER,3,3>::MeshHandler(SEXP mesh)
 	elements_ = INTEGER(VECTOR_ELT(mesh_, 3));
 	num_nodes_ = INTEGER(VECTOR_ELT(mesh_,0))[0];
 	num_elements_ = INTEGER(VECTOR_ELT(mesh_,1))[0];
-<<<<<<< HEAD
-	
 	ADTree<Element<6*ORDER-2,3,3>> tmp(points_, elements_, num_nodes_, num_elements_);
     tree_ = tmp;
 
@@ -499,12 +490,6 @@ MeshHandler<ORDER,3,3>::MeshHandler(SEXP mesh)
 	// num_elements_ = INTEGER(VECTOR_ELT(mesh_,1))[0];
 	// points_.assign(REAL(VECTOR_ELT(mesh_, 2)) , REAL(VECTOR_ELT(mesh_, 2)) + 3*num_nodes_);
 	// elements_.assign(INTEGER(VECTOR_ELT(mesh_, 3)), INTEGER(VECTOR_ELT(mesh_, 3))+ (6*ORDER-2)*num_elements_);
-//	std::for_each(elements_.begin(), elements_.end(), [](int& i){i-=1;});
-=======
-	points_.assign(REAL(VECTOR_ELT(mesh_, 2)) , REAL(VECTOR_ELT(mesh_, 2)) + 3*num_nodes_);
-	elements_.assign(INTEGER(VECTOR_ELT(mesh_, 3)), INTEGER(VECTOR_ELT(mesh_, 3))+ (6*ORDER-2)*num_elements_);
-
->>>>>>> refs/remotes/AlessandraColli/master
 }
 #endif
 

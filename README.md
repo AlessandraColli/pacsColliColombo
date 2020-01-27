@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-This repository implements ADTree search algorithm on finite element mesh.
-It forks with the development version of fdaPDE package (future 2.0 version) and will be updated periodically with recent version.
-
-**The goal is to implement ADTree search algorithm over 2D, 2.5D, 3D domain.**
-=======
 # fdaPDE_dev
 
 This repository contains the development version of fdaPDE package (future 1.0 version).
@@ -27,5 +21,3 @@ Compiled in both Win RStudio and Ubuntu 18.04 using g++ compiler. If using a Lin
 1) the shift of indexes from R to C++ is done within the R functions smooth.FEM and FPCA.FEM Do not use C++ scripts directly on the R mesh objects, unless you take care of shifing indexes by yourself.
 
 2) This repo contains the code version using MUMPS.
- 
->>>>>>> refs/remotes/AlessandraColli/master
