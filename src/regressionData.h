@@ -229,4 +229,3 @@ class RegressionDataEllipticSpaceVarying:public RegressionData
 #include "regressionData_imp.h"
 
 #endif
->>>>>>> refs/remotes/AlessandraColli/master
