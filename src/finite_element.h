@@ -10,7 +10,7 @@
  * This class is the most important one of the entire code
  * and implements everything needed by a triangular or tetrahedral finite elemnt
  * 
- * It takes as a template parameter a class that implements the mathod used
+ * It takes as a template parameter a class that implements the method used
  * for determining the mass, stiff and grad matrices
 */
 

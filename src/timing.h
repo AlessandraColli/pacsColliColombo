@@ -5,6 +5,7 @@
 #include <Rdefines.h>
 #include <Rinternals.h> 
 
+//! a class to measure the code performance in terms of time 
 class timer {
 public:
   void start() {

@@ -71,7 +71,11 @@ CPP_smooth.manifold.FEM.basis<-function(locations, observations, FEMbasis, lambd
   
   ## Call C++ function
   bigsol <- .Call("regression_Laplace", locations, data, FEMbasis$mesh, FEMbasis$mesh$order, mydim, ndim, lambda, covariates,
+<<<<<<< HEAD
                   incidence_matrix, BC$BC_indices, BC$BC_values, GCV, GCVMETHOD, nrealizations, search, package = "fdaPDE")
+=======
+                  incidence_matrix, BC$BC_indices, BC$BC_values, GCV, GCVMETHOD, nrealizations, PACKAGE = "fdaPDE")
+>>>>>>> refs/remotes/AlessandraColli/master
   
   return(bigsol)
 }
@@ -109,7 +113,11 @@ CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, n
   evalmat = matrix(0,max(nrow(locations),nrow(incidence_matrix)),ncol(coeff))
   for (i in 1:ncol(coeff)){
     evalmat[,i] <- .Call("eval_FEM_fd", FEMbasis$mesh, locations, incidence_matrix, coeff[,i],
+<<<<<<< HEAD
                          FEMbasis$order, redundancy, mydim, ndim, search, package = "fdaPDE")
+=======
+                         FEMbasis$order, redundancy, mydim, ndim, PACKAGE = "fdaPDE")
+>>>>>>> refs/remotes/AlessandraColli/master
   }
   
   #Returning the evaluation matrix

@@ -90,26 +90,12 @@ class StiffAnys{
 template <>
 class StiffAnys<Eigen::Matrix<Real,2,2>>{
   private:
-    //! A reference to FiniteElement<Integrator>
-    /*!
-     * Stores a reference to the finite element where the stiffness operator is evaluated.
-     */
-    //FiniteElement<Integrator, ORDER>& currentfe_;
+
 	const Eigen::Matrix<Real,2,2>& K_;
   public:
 	//! A constructor.
-	/*!
-	 \param fe is a reference to FiniteElement<Integrator>
-	 */
     
     StiffAnys(const Eigen::Matrix<Real,2,2>& K): K_(K){};
-    //! A definition of operator () taking two arguments.
-    /*!
-     * Evaluates the stiffness operator (i,j) of the current finite elemente.
-     * \param i is an unsigned int, current finite element local index
-     * \param j is an unsigned int, current finite element local index
-     * returns a double.
-     */
 
      //! A definition of operator () taking four arguments.
     /*!
@@ -148,25 +134,13 @@ template<class Integrator, UInt ORDER>
 template <>
 class StiffAnys<Diffusivity>{
   private:
-    //! A reference to FiniteElement<Integrator>
-    /*!
-     * Stores a reference to the finite element where the stiffness operator is evaluated.
-     */
-    //FiniteElement<Integrator, ORDER>& currentfe_;
+
 	const Diffusivity& K_;
   public:
 	//! A constructor.
-	/*!
-	 \param fe is a reference to FiniteElement<Integrator>
-	 */
+
 	StiffAnys(const Diffusivity& K): K_(K){};
-    //! A definition of operator () taking two arguments.
-    /*!
-     * Evaluates the stiffness operator (i,j) of the current finite elemente.
-     * \param i is an unsigned int, current finite element local index
-     * \param j is an unsigned int, current finite element local index
-     * returns a double.
-     */
+
 
      //! A definition of operator () taking four arguments.
     /*!
@@ -640,59 +614,6 @@ class Assembler{
 
 
 };
-/*
-template<>
-class Assembler<2,2>{
-	private:
-
-	public:
-	  //! A constructor
-	  //Assembler (){};
-	  //! A template member taking three arguments: discretize differential operator
-	  //!
-	  // \param oper is a template expression : the differential operator to be discretized.
-	  // \param mesh is const reference to a MeshHandler<ORDER>: the mesh where we want to discretize the operator.
-	  // \param fe is a const reference to a FiniteElement
-	  // stores the discretization in SPoper_mat_
-	  
-
-	  //Return triplets vector
-	  template<UInt ORDER, typename Integrator, typename A>
-	  static void operKernel(EOExpr<A> oper,const MeshHandler<ORDER,2,2>& mesh,
-	  	                     FiniteElement<Integrator, ORDER,2,2>& fe, SpMat& OpMat);
-
-	  template<UInt ORDER, typename Integrator>
-	  static void forcingTerm(const MeshHandler<ORDER,2,2>& mesh, FiniteElement<Integrator, ORDER,2,2>& fe, const ForcingTerm& u, VectorXr& forcingTerm);
-
-	};
-	
-
-template<>
-class Assembler<2,3>{
-	private:
-
-	public:
-	  //! A constructor
-	  //Assembler (){};
-	  //! A template member taking three arguments: discretize differential operator
-	  //!
-	  // \param oper is a template expression : the differential operator to be discretized.
-	  // \param mesh is const reference to a MeshHandler<ORDER>: the mesh where we want to discretize the operator.
-	  // \param fe is a const reference to a FiniteElement
-	  // stores the discretization in SPoper_mat_
-	  //
-
-	  //Return triplets vector
-	  template<UInt ORDER, typename Integrator, typename A>
-	  static void operKernel(EOExpr<A> oper,const MeshHandler<ORDER,2,3>& mesh,
-	  	                     FiniteElement<Integrator, ORDER,2,3>& fe, SpMat& OpMat);
-
-	  template<UInt ORDER, typename Integrator>
-	  static void forcingTerm(const MeshHandler<ORDER,2,3>& mesh, FiniteElement<Integrator, ORDER,2,3>& fe, const ForcingTerm& u, VectorXr& forcingTerm);
-
-	};*/
-
-
 
 
 #include "matrix_assembler_imp.h"

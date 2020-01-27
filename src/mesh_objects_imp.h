@@ -154,7 +154,7 @@ template <UInt NNODES>
 Eigen::Matrix<Real,3,1> Element<NNODES,2,3>::getBaryCoordinates(const Point& point) const{
 
 
-//	Element<NNODES,2,3> t=*this;
+//	Element<NNODES,2,3> t=*this;            implementation trial using area ratios->does not work!
 //	Eigen::Matrix<Real,3,1> lambda;
 //	Real detJ_point;
 //	Eigen::Matrix<Real,3,2> M_J_point;
@@ -177,7 +177,7 @@ Eigen::Matrix<Real,3,1> Element<NNODES,2,3>::getBaryCoordinates(const Point& poi
 //
 //		G_J_point=M_J_point.transpose()*M_J_point;
 //
-//		detJ_point = G_J_point(0,0) * G_J_point(1,1) - G_J_point(1,0) * G_J_point(0,1);
+//		detJ_point = G_J_point(0,0) * G_J_point(1,1) - G_J_point(1,0) * G_J_point(0,1);  
 //		lambda[2-k]=std::sqrt(detJ_point)/(2*t.getArea());
 //
 //	}
@@ -185,7 +185,7 @@ Eigen::Matrix<Real,3,1> Element<NNODES,2,3>::getBaryCoordinates(const Point& poi
 //
 //	return lambda;
 
-    Element<NNODES,2,3> t=*this;
+    Element<NNODES,2,3> t=*this;         // implementation using the linear system-> not perfect but the best implementation so far
     Eigen::Matrix<Real,3,1> lambda;
     
 	Eigen::Matrix<Real,3,2> A;
@@ -206,6 +206,20 @@ Eigen::Matrix<Real,3,1> Element<NNODES,2,3>::getBaryCoordinates(const Point& poi
 
 	sol = A.colPivHouseholderQr().solve(b);
 	
+	err = A*sol-b;
+	
+//	Real tolerance = (A(0,0)*A(0,0) + A(1,0)*A(1,0) + A(2,0)*A(2,0) + A(0,1)*A(0,1) + A(1,1)*A(1,1) + A(2,1)*A(2,1))/4;  not clear why this tolerance should be used
+//	
+//	if((err(0)*err(0) + err(1)*err(1) + err(2)*err(2)) >= tolerance ){
+//		
+//		#ifdef R_VERSION_
+//		Rprintf("Warning: finding barycentric coordinates for this point is ill-conditioned");
+//		#else
+//		std::cout<<"Warning: finding barycentric coordinates for this point is ill-conditioned";
+//		#endif
+//	}
+
+	
 	lambda(0)=1-sol(0)-sol(1);
 	lambda(1)=sol(0);
 	lambda(2)=sol(1);
@@ -215,9 +229,9 @@ Eigen::Matrix<Real,3,1> Element<NNODES,2,3>::getBaryCoordinates(const Point& poi
 }
 
 
-// We solve 3 scalar equation in 2 unknowns(u,v)
+// THIS COMMENT IS FROM BERAHA, COSMO: We solve 3 scalar equation in 2 unknowns(u,v)
 // u*(P1-P0)+v*(P2-P0)=P-P0
-// if the system ins solveable, P is in the plane (P1,P2,P0), if in addition
+// if the system is solveable, P is in the plane (P1,P2,P0), if in addition
 // u,v>=0 and u+v<=1 then P is inside the triangle
 
 template <UInt NNODES>
@@ -225,7 +239,13 @@ bool Element<NNODES,2,3>::isPointInside(const Point& point) const
 {
 	Real eps = 2.2204e-016;
 	Real tolerance = 10 * eps;
+<<<<<<< HEAD
 	// First: check consistency trough Rouchè-Capelli theorem
+=======
+
+//THIS COMMENT IS FROM BERAHA, COSMO First: check consistency trough Rouchè-Capelli theorem 
+
+>>>>>>> refs/remotes/AlessandraColli/master
 	Element<NNODES,2,3> t=*this;
 
 	Eigen::Matrix<Real,3,2> A;
@@ -246,6 +266,7 @@ bool Element<NNODES,2,3>::isPointInside(const Point& point) const
 
 	sol = A.colPivHouseholderQr().solve(b);
 	
+<<<<<<< HEAD
 //	bool exists_sol=b.isApprox(A*sol,1e-4);
 //	if(!exists_sol){
 //		#ifdef R_VERSION_
@@ -267,6 +288,17 @@ bool Element<NNODES,2,3>::isPointInside(const Point& point) const
 	// 	return((sol(0)+sol(1)<=1) && (sol(0)>=0) && (sol(1)>=0));
 	// }else{
 	// 	return 0;}
+=======
+	err = A*sol-b;
+	
+	//Real tolerance = (A(0,0)*A(0,0) + A(1,0)*A(1,0) + A(2,0)*A(2,0) + A(0,1)*A(0,1) + A(1,1)*A(1,1) + A(2,1)*A(2,1))/4;
+
+	if( (err(0)*err(0)<tolerance) && (err(1)*err(1)<tolerance) && (err(2)*err(2)<tolerance) ){
+		return((sol(0)+sol(1)<=1+2*eps) && (sol(0)>=0-eps) && (sol(1)>=0-eps));
+	}else{
+
+		return 0;}
+>>>>>>> refs/remotes/AlessandraColli/master
 }
 
 

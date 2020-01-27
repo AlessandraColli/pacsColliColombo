@@ -18,71 +18,17 @@
 extern "C" {
 //! This function manages the various option for the solution evaluation.
 /*!
-	This function is than one called from R code.
-	Call's the walking algoritm for efficient point location inside the mesh.
+	This function is then called from R code.
+	Calls the walking algoritm for efficient point location inside the mesh in 2D.
 
 	\param Rmesh an R-object containg the output mesh from Trilibrary
-	\param RX an R-vector containing the x coordinates of the points to be evaluated
-	\param RY an R-vector containing the y coordinates of the points to be evaluated
-	\param RZ an R-vector containing the z coordinates of the points to be evaluated
-	\param Rcoef an R-vector the coeficients of the solution
+	\param Rlocations an R-matrix (seen as an array) containing the xyz coordinates of the points where the solution has to be evaluated
+	\param RincidenceMatrix an R-matrix for the incidence matrix defining the regions in the case of areal data
+	\param Rcoef an R-vector the coefficients of the solution
 	\param Rorder an R integer containg the order of the solution
 	\param Rfast an R integer 0 for Naive location algorithm, 1 for Walking Algorithm (can miss location for non convex meshes)
 */
 
-/*
-SEXP eval_FEM_fd(SEXP Rmesh, SEXP RX, SEXP RY, SEXP Rcoef, SEXP Rorder, SEXP Rfast, SEXP Rmydim, SEXP Rndim)
-{
-	//Declare pointer to access data from C++
-
-    double *X, *Y, *coef;
-	int order,mydim,ndim;
-	bool fast;
-
-	//int n_coef 	= Rf_length(Rcoef);
-	int n_X 	= Rf_length(RX);
-
-    // Cast all computation parameters
-    X 			= REAL(RX);
-    Y 			= REAL(RY);
-    coef 		= REAL(Rcoef);
-    order 		= INTEGER(Rorder)[0];
-    fast 		= INTEGER(Rfast)[0];
-    mydim               = INTEGER(Rmydim)[0];
-    ndim                = INTEGER(Rndim)[0];
-
-    SEXP result;
-	PROTECT(result=Rf_allocVector(REALSXP, n_X));
-	std::vector<bool> isinside(n_X);
-    //Set the mesh
-	//std::cout<<"Length "<<n_X<<"--X0 "<<X[0]<<"--Y0 "<<Y[0];
-    if(order == 1)
-    {
-    	MeshHandler<1,2,2> mesh(Rmesh);
-		Evaluator<1,2,2> evaluator(mesh);
-		//std::cout<<"Starting evaluation from FEMeval \n";
-		evaluator.eval(X, Y, n_X, coef, order, fast, REAL(result), isinside);
-	}
-	else if(order == 2)
-	{
-    	MeshHandler<2,2,2> mesh(Rmesh);
-    	Evaluator<2,2,2> evaluator(mesh);
-		evaluator.eval(X, Y, n_X, coef, order, fast, REAL(result), isinside);
-	}
-
-    for (int i=0; i<n_X;++i)
-    {
-    	if(!(isinside[i]))
-    	{
-    		REAL(result)[i]=NA_REAL;
-    	}
-
-    }
-
-	UNPROTECT(1);
-    // result list
-    return(result);
-}*/
 
 SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef, SEXP Rorder, SEXP Rfast, SEXP Rmydim, SEXP Rndim, SEXP Rsearch)
 {
@@ -136,18 +82,6 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 			incidenceMatrix[i][j] = INTEGER(RincidenceMatrix)[i+nRegions*j];
 		}
 	}
-
-//    #ifdef R_VERSION_
-//    Rprintf("n_X: %i\n", n_X);
-//    for( int i=0; i<n_X; i++)
-//     Rprintf("X[%i]=%d , Y[%i] =%d , Z[%i]=%d  \n", i,X[i],i,Y[i],i,Z[i]);
-//    
-//	Rprintf("printing incidence matrix: \n");
-//	for(int i = 0; i<nRegions; i++)
-//	 for(int j=0; j<nElements; j++)
-//	  Rprintf("[%i][%i]=%i , ", i,j,incidenceMatrix[i][j]);
-    
-//    #endif
 
     SEXP result;
 
@@ -233,10 +167,7 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 			MeshHandler<1,3,3> mesh(Rmesh);
 			Evaluator<1,3,3> evaluator(mesh);
 			evaluator.integrate(incidenceMatrix, nRegions, nElements, coef, REAL(result));
-//				#ifdef R_VERSION_
-//				for (int region=0; region<nRegions; region++)
-//				Rprintf("outside: result[%i] : %d \n", region, REAL(result)[region]);
-//				#endif
+
 		}
 	}
 

@@ -56,11 +56,9 @@ RegressionData::RegressionData(SEXP Rlocations, SEXP Robservations, SEXP Rorder,
 	search_ =  INTEGER(Rsearch)[0];
 	DOF_ = INTEGER(DOF)[0];
 	UInt length_indexes = Rf_length(RBCIndices);
-    //for (UInt i = 0; i<length_indexes; ++i)  bc_indices_.push_back(INTEGER(RBCIndices)[i]);
-    //for (UInt i = 0; i<length_indexes; ++i)  bc_values_.push_back(REAL(RBCValues)[i]);
+
 	bc_indices_.assign(INTEGER(RBCIndices), INTEGER(RBCIndices) +  length_indexes);
-    //conversion between R indices and c++ indices
-	//std::for_each(bc_indices_.begin(), bc_indices_.end(), [](int& i){i-=1;});
+
 	bc_values_.assign(REAL(RBCValues),REAL(RBCValues) + Rf_length(RBCIndices));
 
     UInt length_lambda = Rf_length(Rlambda);
