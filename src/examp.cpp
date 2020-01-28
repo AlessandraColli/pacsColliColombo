@@ -798,9 +798,6 @@ void Test_TreeNode_c(int *n){
 	Element<3,2,3> triangle2(2, vec2);
 	Element<3,3,3> tetrahedron(3, vec3);
 	
-	std::vector<int> key{3,2,1};
-	std::vector<int> key2{1,2,3}; //used below to set new key
-
 	std::vector<Real> coord{0,1,2,3}; //used below to set new coord
 	// {100, 24, 35, 21}; ************doesn't validate xmin, ymin, xmax, ymax
 	std::vector<Real> coord1 {1,1,4,3};
@@ -819,13 +816,13 @@ void Test_TreeNode_c(int *n){
 	TreeNode<Box<2>> treea; //1st
 	TreeNode<Box<3>> treeb; //2nd
 
-	TreeNode<Element<3,2,2>> treec(1, triangle, key); //3rd
-	TreeNode<Element<3,2,3>> treed(2, triangle2, key); //4th
-	TreeNode<Element<3,3,3>> treee(3, tetrahedron, key); //5th
+	TreeNode<Element<3,2,2>> treec(1, triangle); //3rd
+	TreeNode<Element<3,2,3>> treed(2, triangle2); //4th
+	TreeNode<Element<3,3,3>> treee(3, tetrahedron); //5th
 	
 
-	TreeNode<Box<2>> treef(2, ba, key); //6th
-	TreeNode<Box<3>> treeg(3, bb, key); //7th
+	TreeNode<Box<2>> treef(2, ba); //6th
+	TreeNode<Box<3>> treeg(3, bb); //7th
 
 
 	std::cout << "Print the 1st TreeNode (constructor default, NDIMP = 2):  " <<std::endl;
@@ -857,14 +854,6 @@ void Test_TreeNode_c(int *n){
 	std::cout << "change id of the treenode to 10:  " << std::endl;
 	treea.setid(10);
 	std::cout << treea.getid() <<std::endl;
-	std::cout << "keys child of the treenode:  " << std::endl;
-	for (size_t i=0; i<(treea.getkeys()).size(); ++i)
-		std::cout<< treea.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
-	std::cout << "change keys of the treenode to {1,2,3}:  " << std::endl;
-	treea.setkeys(key2);
-	for (size_t i=0; i<(treea.getkeys()).size(); ++i)
-		std::cout<< treea.getkeys()[i] <<" - ";
 	std::cout<<std::endl;
 	std::cout << "get Box:  " << std::endl;
 	tmp = treea.getbox();
@@ -900,15 +889,6 @@ void Test_TreeNode_c(int *n){
 	std::cout << "change id of the treenode:  " << std::endl;
 	treeb.setid(10);
 	std::cout << treeb.getid() <<std::endl;
-	std::cout << "keys child of the treenode:  " << std::endl;
-	for (size_t i=0; i<(treeb.getkeys()).size(); ++i)
-		std::cout<< treeb.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
-	std::cout << "change keys of the treenode:  " << std::endl;
-	treeb.setkeys(key2);
-	for (size_t i=0; i<(treeb.getkeys()).size(); ++i)
-		std::cout<< treeb.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
 	std::cout << "get Box:  " << std::endl;
 	tmp2 = treeb.getbox();
 	tmp2.print(std::cout);
@@ -943,15 +923,6 @@ void Test_TreeNode_c(int *n){
 	std::cout << "change id of the treenode:  " << std::endl;
 	treec.setid(10);
 	std::cout << treec.getid() <<std::endl;
-	std::cout << "keys child of the treenode:  " << std::endl;
-	for (size_t i=0; i<(treec.getkeys()).size(); ++i)
-		std::cout<< treec.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
-	std::cout << "change keys of the treenode:  " << std::endl;
-	treec.setkeys(key2);
-	for (size_t i=0; i<(treec.getkeys()).size(); ++i)
-		std::cout<< treec.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
 	std::cout << "get Box:  " << std::endl;
 	tmp = treec.getbox();
 	tmp.print(std::cout);
@@ -986,15 +957,6 @@ void Test_TreeNode_c(int *n){
 	std::cout << "change id of the treenode:  " << std::endl;
 	treed.setid(10);
 	std::cout << treed.getid() <<std::endl;
-	std::cout << "keys child of the treenode:  " << std::endl;
-	for (size_t i=0; i<(treed.getkeys()).size(); ++i)
-		std::cout<< treed.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
-	std::cout << "change keys of the treenode:  " << std::endl;
-	treed.setkeys(key2);
-	for (size_t i=0; i<(treed.getkeys()).size(); ++i)
-		std::cout<< treed.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
 	std::cout << "get Box:  " << std::endl;
 	tmp2 = treed.getbox();
 	tmp2.print(std::cout);
@@ -1029,15 +991,6 @@ void Test_TreeNode_c(int *n){
 	std::cout << "change id of the treenode:  " << std::endl;
 	treee.setid(10);
 	std::cout << treee.getid() <<std::endl;
-	std::cout << "keys child of the treenode:  " << std::endl;
-	for (size_t i=0; i<(treee.getkeys()).size(); ++i)
-		std::cout<< treee.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
-	std::cout << "change keys of the treenode:  " << std::endl;
-	treee.setkeys(key2);
-	for (size_t i=0; i<(treee.getkeys()).size(); ++i)
-		std::cout<< treee.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
 	std::cout << "get Box:  " << std::endl;
 	tmp2 = treee.getbox();
 	tmp2.print(std::cout);
@@ -1072,15 +1025,6 @@ void Test_TreeNode_c(int *n){
 	std::cout << "change id of the treenode:  " << std::endl;
 	treef.setid(10);
 	std::cout << treef.getid() <<std::endl;
-	std::cout << "keys child of the treenode:  " << std::endl;
-	for (size_t i=0; i<(treef.getkeys()).size(); ++i)
-		std::cout<< treef.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
-	std::cout << "change keys of the treenode:  " << std::endl;
-	treef.setkeys(key2);
-	for (size_t i=0; i<(treef.getkeys()).size(); ++i)
-		std::cout<< treef.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
 	std::cout << "get Box:  " << std::endl;
 	tmp = treef.getbox();
 	tmp.print(std::cout);
@@ -1116,15 +1060,6 @@ void Test_TreeNode_c(int *n){
 	std::cout << "change id of the treenode:  " << std::endl;
 	treeg.setid(10);
 	std::cout << treeg.getid() <<std::endl;
-	std::cout << "keys child of the treenode:  " << std::endl;
-	for (size_t i=0; i<(treeg.getkeys()).size(); ++i)
-		std::cout<< treeg.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
-	std::cout << "change keys of the treenode:  " << std::endl;
-	treeg.setkeys(key2);
-	for (size_t i=0; i<(treeg.getkeys()).size(); ++i)
-		std::cout<< treeg.getkeys()[i] <<" - ";
-	std::cout<<std::endl;
 	std::cout << "get Box:  " << std::endl;
 	tmp2 = treeg.getbox();
 	tmp2.print(std::cout);
@@ -1181,11 +1116,11 @@ void Test_TreeHeader_c(int *n){
 	Tree_Header<Box<3>> THe; //5th
 	
 	//Default consturctor with createtreeheader function
-	Tree_Header<Element<3,2,2>> THf = createtreeheader(1, 0, mydomb); //6th
-	Tree_Header<Element<3,2,3>> THg = createtreeheader(2, 0, mydomc); //7th
-	Tree_Header<Element<3,3,3>> THh = createtreeheader(3, 0, mydomd); //8th
-	Tree_Header<Box<2>> THi = createtreeheader(4, 0,mydome); //9th
-	Tree_Header<Box<3>> THj = createtreeheader(5, 0,mydomf); //10th
+	Tree_Header<Element<3,2,2>> THf = createtreeheader(1, mydomb); //6th
+	Tree_Header<Element<3,2,3>> THg = createtreeheader(2, mydomc); //7th
+	Tree_Header<Element<3,3,3>> THh = createtreeheader(3, mydomd); //8th
+	Tree_Header<Box<2>> THi = createtreeheader(4, mydome); //9th
+	Tree_Header<Box<3>> THj = createtreeheader(5, mydomf); //10th
 
 	std::cout << "Print the 1st tree_header (constructor default, shape = Triangle, NDIMP=2):  " <<std::endl;
 	std::cout << THa <<std::endl;
@@ -1203,8 +1138,6 @@ void Test_TreeHeader_c(int *n){
 	std::cout  << THa.getndimp() <<std::endl;
 	std::cout << "search dimension: " << std::endl;
 	std::cout  << THa.getndimt() <<std::endl;
-	std::cout << "number of pieces of information carried: " << std::endl;
-	std::cout  << THa.getnkey() <<std::endl;
 	std::cout << "number of location currently used: " << std::endl;
 	std::cout  << THa.getnele() <<std::endl;
 	std::cout << "change number of location currently used to 2: " << std::endl;
@@ -1239,8 +1172,6 @@ void Test_TreeHeader_c(int *n){
 	std::cout  << THb.getndimp() <<std::endl;
 	std::cout << "search dimension: " << std::endl;
 	std::cout  << THb.getndimt() <<std::endl;
-	std::cout << "number of pieces of information carried: " << std::endl;
-	std::cout  << THb.getnkey() <<std::endl;
 	std::cout << "number of location currently used: " << std::endl;
 	std::cout  << THb.getnele() <<std::endl;
 	std::cout << "change number of location currently used to 2: " << std::endl;
@@ -1275,8 +1206,6 @@ void Test_TreeHeader_c(int *n){
 	std::cout  << THc.getndimp() <<std::endl;
 	std::cout << "search dimension: " << std::endl;
 	std::cout  << THc.getndimt() <<std::endl;
-	std::cout << "number of pieces of information carried: " << std::endl;
-	std::cout  << THc.getnkey() <<std::endl;
 	std::cout << "number of location currently used: " << std::endl;
 	std::cout  << THc.getnele() <<std::endl;
 	std::cout << "change number of location currently used to 2: " << std::endl;
@@ -1311,8 +1240,6 @@ void Test_TreeHeader_c(int *n){
 	std::cout  << THd.getndimp() <<std::endl;
 	std::cout << "search dimension: " << std::endl;
 	std::cout  << THd.getndimt() <<std::endl;
-	std::cout << "number of pieces of information carried: " << std::endl;
-	std::cout  << THd.getnkey() <<std::endl;
 	std::cout << "number of location currently used: " << std::endl;
 	std::cout  << THd.getnele() <<std::endl;
 	std::cout << "change number of location currently used: " << std::endl;
@@ -1347,8 +1274,6 @@ void Test_TreeHeader_c(int *n){
 	std::cout  << THe.getndimp() <<std::endl;
 	std::cout << "search dimension: " << std::endl;
 	std::cout  << THe.getndimt() <<std::endl;
-	std::cout << "number of pieces of information carried: " << std::endl;
-	std::cout  << THe.getnkey() <<std::endl;
 	std::cout << "number of location currently used: " << std::endl;
 	std::cout  << THe.getnele() <<std::endl;
 	std::cout << "change number of location currently used: " << std::endl;
@@ -1383,8 +1308,6 @@ void Test_TreeHeader_c(int *n){
 	std::cout  << THf.getndimp() <<std::endl;
 	std::cout << "search dimension: " << std::endl;
 	std::cout  << THf.getndimt() <<std::endl;
-	std::cout << "number of pieces of information carried: " << std::endl;
-	std::cout  << THf.getnkey() <<std::endl;
 	std::cout << "number of location currently used: " << std::endl;
 	std::cout  << THf.getnele() <<std::endl;
 	std::cout << "change number of location currently used to 2: " << std::endl;
@@ -1419,8 +1342,6 @@ void Test_TreeHeader_c(int *n){
 	std::cout  << THg.getndimp() <<std::endl;
 	std::cout << "search dimension: " << std::endl;
 	std::cout  << THg.getndimt() <<std::endl;
-	std::cout << "number of pieces of information carried: " << std::endl;
-	std::cout  << THg.getnkey() <<std::endl;
 	std::cout << "number of location currently used: " << std::endl;
 	std::cout  << THg.getnele() <<std::endl;
 	std::cout << "change number of location currently used to 2: " << std::endl;
@@ -1455,8 +1376,6 @@ void Test_TreeHeader_c(int *n){
 	std::cout  << THh.getndimp() <<std::endl;
 	std::cout << "search dimension: " << std::endl;
 	std::cout  << THh.getndimt() <<std::endl;
-	std::cout << "number of pieces of information carried: " << std::endl;
-	std::cout  << THh.getnkey() <<std::endl;
 	std::cout << "number of location currently used: " << std::endl;
 	std::cout  << THh.getnele() <<std::endl;
 	std::cout << "change number of location currently used to 2: " << std::endl;
@@ -1491,8 +1410,6 @@ void Test_TreeHeader_c(int *n){
 	std::cout  << THi.getndimp() <<std::endl;
 	std::cout << "search dimension: " << std::endl;
 	std::cout  << THi.getndimt() <<std::endl;
-	std::cout << "number of pieces of information carried: " << std::endl;
-	std::cout  << THi.getnkey() <<std::endl;
 	std::cout << "number of location currently used: " << std::endl;
 	std::cout  << THi.getnele() <<std::endl;
 	std::cout << "change number of location currently used: " << std::endl;
@@ -1527,8 +1444,6 @@ void Test_TreeHeader_c(int *n){
 	std::cout  << THj.getndimp() <<std::endl;
 	std::cout << "search dimension: " << std::endl;
 	std::cout  << THj.getndimt() <<std::endl;
-	std::cout << "number of pieces of information carried: " << std::endl;
-	std::cout  << THj.getnkey() <<std::endl;
 	std::cout << "number of location currently used: " << std::endl;
 	std::cout  << THj.getnele() <<std::endl;
 	std::cout << "change number of location currently used: " << std::endl;
@@ -1596,9 +1511,7 @@ void Test_ADTree1_c(int *n){
 					   3, 4, 4, 5, 6, 7, 7, 8}; //total 24
 
 	std::vector<Real> coord = {0.3,0.3,0.3,0.6,0.6,0.3};
-	std::vector<int> keys(0);	
 	std::vector<Real> coord2;
-	std::vector<int> key2;
 	Id id; //id2;
 	std::vector<Real> region1 = {0.5,0.5,0.5,0.5};
 	std::vector<Real> region2 = {1.,1.,1.,1.};
@@ -1660,13 +1573,10 @@ void Test_ADTree1_c(int *n){
 	}
 
 	std::cout << "visualize information about a node, for example node number 5: " << std::endl;
-	ADTk.gettri(5, key2, coord2, id);
+	ADTk.gettri(5, coord2, id);
 	std::cout << "coordinate:  " ;
 	for (size_t i = 0; i < coord2.size(); i++)
 		std::cout << " - " << coord2[i] << " - ";
-	std::cout << std::endl;
-	for (size_t i = 0; i < key2.size(); i++)
-		std::cout << " - " << key2[i] << " - ";
 	std::cout << std::endl;
 	std::cout << "Id :  " << id << std::endl;
 	std::cout << "treenode:  " << std::endl;
@@ -1705,85 +1615,6 @@ void Test_ADTree1_c(int *n){
 	}
 	std::cout << std::endl << std::endl;
 	
-	// std::cout << "add and visualize a treenode: " << std::endl;
-	// loc = ADTk.addtreenode(100, coord, keys);
-	// std::cout << loc <<std::endl;
-	// std::cout << "treenode:  " << std::endl;
-	// (ADTk.gettreenode(loc)).print(std::cout);
-	// std::cout << "father treenode:  " << std::endl;
-	// loc = (ADTk.gettreenode(loc)).getfather();
-	// (ADTk.gettreenode(loc)).print(std::cout);
-	// std::cout << "print all the treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTk.gettreeheader()).getnele()+2; i++)
-	// (ADTk.gettreenode(i)).print(std::cout);
-
-	// **************delete to be tested!!!
-	// ADTk.deltreenode(3);
-	// std::cout << "print all the treenodes as a vector after deleting node number 3:  " << std::endl;
-	// for (int i = 0; i < (ADTk.gettreeheader()).getnele()+2; i++)
-	// (ADTk.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
-	// std::cout << "******************************************* " << std::endl;
-	// std::cout << "Print the 2nd ADTree (construct from header, Shape = Box<2>):  " <<std::endl;
-	// std::cout << ADTb <<std::endl;
-	// std::cout << "print number of nodes (location) occupied:  " <<std::endl;
-	// std::cout << "tree head + " << (ADTb.gettreeheader()).getnele() << " tree nodes" <<std::endl;
-	// std::cout << "treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTb.gettreeheader()).getnele()+1; i++)
-	// (ADTb.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
-
-	// std::cout << "******************************************* " << std::endl;
-	// std::cout << "Print the 3rd ADTree (construct from header, Shape = Box<3>):  " <<std::endl;
-	// std::cout << ADTc <<std::endl;
-	// std::cout << "print number of nodes (location) occupied:  " <<std::endl;
-	// std::cout << "tree head + " << (ADTc.gettreeheader()).getnele() << " tree nodes" <<std::endl;
-	// std::cout << "treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTc.gettreeheader()).getnele()+1; i++)
-	// (ADTc.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
-
-	// std::cout << "******************************************* " << std::endl;
-	// std::cout << "Print the 4th ADTree (construct from header, Shape = Triangle<3>):  " <<std::endl;
-	// std::cout << ADTd <<std::endl;
-	// std::cout << "print number of nodes (location) occupied:  " <<std::endl;
-	// std::cout << "tree head + " << (ADTd.gettreeheader()).getnele() << " tree nodes" <<std::endl;
-	// std::cout << "treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTd.gettreeheader()).getnele()+1; i++)
-	// (ADTd.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
-
-	// std::cout << "******************************************* " << std::endl;
-	// std::cout << "Print the 5th ADTree (construct default, Shape = Triangle<3>):  " <<std::endl;
-	// std::cout << ADTe <<std::endl;
-	// std::cout << "print number of nodes (location) occupied:  " <<std::endl;
-	// std::cout << "tree head + " << (ADTe.gettreeheader()).getnele() << " tree nodes" <<std::endl;
-	// std::cout << "treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTe.gettreeheader()).getnele()+1; i++)
-	// (ADTe.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
-	// std::cout << "******************************************* " << std::endl;
-	// ADTe = ADTa;
-	// std::cout << "ADTree operator = (from the 1st ADTree, Shape = Triangle<3>):  " <<std::endl;
-	// std::cout << ADTe <<std::endl;
-	// std::cout << "print number of nodes (location) occupied:  " <<std::endl;
-	// std::cout << "tree head + " << (ADTe.gettreeheader()).getnele() << " tree nodes" <<std::endl;
-	// std::cout << "treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTe.gettreeheader()).getnele()+2; i++)
-	// (ADTe.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
 	*n = 0;
 	}
 	catch(...)
@@ -1847,9 +1678,7 @@ void Test_ADTree2_c(int *n){
 					   6, 6, 7, 7, 8, 8, 9, 9, 11, 11, 12, 12,13, 13, 14, 14, 16, 16, 17, 17, 18, 18, 19, 19, 21, 21, 22, 22, 23, 23, 24, 24}; //total 32*3=96
 
 	std::vector<Real> coord = {0.3,0.3,0.3,0.6,0.6,0.3};
-	std::vector<int> keys(0);	
 	std::vector<Real> coord2;
-	std::vector<int> key2;
 	Id id; //, id2;
 	std::vector<Real> region1 = {0.5,0.5,0.5,0.5};
 	std::vector<Real> region2 = {1.,1.,1.,1.};
@@ -1911,13 +1740,10 @@ void Test_ADTree2_c(int *n){
 	}
 
 	std::cout << "visualize information about a node, for example node number 5: " << std::endl;
-	ADTk.gettri(5, key2, coord2, id);
+	ADTk.gettri(5, coord2, id);
 	std::cout << "coordinate:  " ;
 	for (size_t i = 0; i < coord2.size(); i++)
 		std::cout << " - " << coord2[i] << " - ";
-	std::cout << std::endl;
-	for (size_t i = 0; i < key2.size(); i++)
-		std::cout << " - " << key2[i] << " - ";
 	std::cout << std::endl;
 	std::cout << "Id :  " << id << std::endl;
 	std::cout << "treenode:  " << std::endl;
@@ -1956,90 +1782,6 @@ void Test_ADTree2_c(int *n){
 	}
 	std::cout << std::endl << std::endl;
 	
-	// std::cout << "add and visualize a treenode: " << std::endl;
-	// loc = ADTk.addtreenode(100, coord, keys);
-	// std::cout << loc <<std::endl;
-	// std::cout << "treenode:  " << std::endl;
-	// (ADTk.gettreenode(loc)).print(std::cout);
-	// std::cout << "father treenode:  " << std::endl;
-	// loc = (ADTk.gettreenode(loc)).getfather();
-	// (ADTk.gettreenode(loc)).print(std::cout);
-	// std::cout << "print all the treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTk.gettreeheader()).getnele()+2; i++)
-	// (ADTk.gettreenode(i)).print(std::cout);
-
-	// **************delete to be tested!!!
-	// ADTk.deltreenode(3);
-	// std::cout << "print all the treenodes as a vector after deleting node number 3:  " << std::endl;
-	// for (int i = 0; i < (ADTk.gettreeheader()).getnele()+2; i++)
-	// (ADTk.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
-
-
-
-
-
-	// std::cout << "******************************************* " << std::endl;
-	// std::cout << "Print the 2nd ADTree (construct from header, Shape = Box<2>):  " <<std::endl;
-	// std::cout << ADTb <<std::endl;
-	// std::cout << "print number of nodes (location) occupied:  " <<std::endl;
-	// std::cout << "tree head + " << (ADTb.gettreeheader()).getnele() << " tree nodes" <<std::endl;
-	// std::cout << "treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTb.gettreeheader()).getnele()+1; i++)
-	// (ADTb.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
-
-	// std::cout << "******************************************* " << std::endl;
-	// std::cout << "Print the 3rd ADTree (construct from header, Shape = Box<3>):  " <<std::endl;
-	// std::cout << ADTc <<std::endl;
-	// std::cout << "print number of nodes (location) occupied:  " <<std::endl;
-	// std::cout << "tree head + " << (ADTc.gettreeheader()).getnele() << " tree nodes" <<std::endl;
-	// std::cout << "treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTc.gettreeheader()).getnele()+1; i++)
-	// (ADTc.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
-
-	// std::cout << "******************************************* " << std::endl;
-	// std::cout << "Print the 4th ADTree (construct from header, Shape = Triangle<3>):  " <<std::endl;
-	// std::cout << ADTd <<std::endl;
-	// std::cout << "print number of nodes (location) occupied:  " <<std::endl;
-	// std::cout << "tree head + " << (ADTd.gettreeheader()).getnele() << " tree nodes" <<std::endl;
-	// std::cout << "treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTd.gettreeheader()).getnele()+1; i++)
-	// (ADTd.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
-
-	// std::cout << "******************************************* " << std::endl;
-	// std::cout << "Print the 5th ADTree (construct default, Shape = Triangle<3>):  " <<std::endl;
-	// std::cout << ADTe <<std::endl;
-	// std::cout << "print number of nodes (location) occupied:  " <<std::endl;
-	// std::cout << "tree head + " << (ADTe.gettreeheader()).getnele() << " tree nodes" <<std::endl;
-	// std::cout << "treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTe.gettreeheader()).getnele()+1; i++)
-	// (ADTe.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
-	// std::cout << "******************************************* " << std::endl;
-	// ADTe = ADTa;
-	// std::cout << "ADTree operator = (from the 1st ADTree, Shape = Triangle<3>):  " <<std::endl;
-	// std::cout << ADTe <<std::endl;
-	// std::cout << "print number of nodes (location) occupied:  " <<std::endl;
-	// std::cout << "tree head + " << (ADTe.gettreeheader()).getnele() << " tree nodes" <<std::endl;
-	// std::cout << "treenodes as a vector:  " << std::endl;
-	// for (int i = 0; i < (ADTe.gettreeheader()).getnele()+2; i++)
-	// (ADTe.gettreenode(i)).print(std::cout);
-	// std::cout << std::endl << std::endl;
-
-
 	*n = 0;
 	}
 	catch(...)

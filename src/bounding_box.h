@@ -60,6 +60,10 @@ public:
 	 */
 	void set(std::vector<Real> const & data);
 
+	/** Gets coordinate values.
+	 */
+	std::vector<Real> get() const {return x_; };
+
 	/** print minimum box point and maximum box point
 	*/
 	void print(std::ostream & out) const;

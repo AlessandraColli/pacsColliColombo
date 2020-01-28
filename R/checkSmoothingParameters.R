@@ -14,8 +14,6 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
     stop('For mesh classes different from mesh.2D, anysotropic regularization is not yet implemented. 
          Use Laplacian regularization instead')
   
-  
-  
   if(!is.null(locations))
   {
     if(any(is.na(locations)))
@@ -30,10 +28,8 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
     }
 
   }
-  
-  if (is.null(locations))
-    warning("No search algorithm is used because the location coincides with the nodes.")
-    
+   
+
   if (is.null(observations))
     stop("observations required;  is NULL.")
   
@@ -114,6 +110,8 @@ checkSmoothingParametersSize<-function(locations = NULL, observations, FEMbasis,
     stop("'observations' must be a column vector")
   if(nrow(observations) < 1)
     stop("'observations' must contain at least one element")
+
+
   if(is.null(locations))
   {
     if(class(FEMbasis$mesh) == "mesh.2D"){
@@ -124,26 +122,33 @@ checkSmoothingParametersSize<-function(locations = NULL, observations, FEMbasis,
         stop("Size of 'observations' is larger then the size of 'nodes' in the mesh")
     }
   }
+
+
   if(!is.null(locations))
   {
     if(ncol(locations) != ndim)
       stop("'locations' must be a ndim-columns matrix;")
     if(nrow(locations) != nrow(observations))
       stop("'locations' and 'observations' have incompatible size;")
-    if(dim(locations)[1]==dim(FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEMbasis$mesh$nodes)[2])
-      warning("The locations matrix has the same dimensions as the mesh nodes. If the locations you are using are the 
-              mesh nodes, set locations=NULL instead")
+    # when only dimensions are the same and locations are not the mesh nodes
+    if(dim(locations)[1]==dim(FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEMbasis$mesh$nodes)[2] & !(sum(abs(locations[,1]))==sum(abs(FEMbasis$mesh$nodes[,1])) & sum(abs(locations[,2]))==sum(abs(FEMbasis$mesh$nodes[,2]))) )
+      warning("The locations matrix has the same dimensions as the mesh nodes. If the locations you are using are the mesh nodes, set locations=NULL instead")
   }
+
+
   if(ncol(lambda) != 1)
     stop("'lambda' must be a column vector")
   if(nrow(lambda) < 1)
     stop("'lambda' must contain at least one element")
+
+
   if(!is.null(covariates))
   {
     if(nrow(covariates) != nrow(observations))
       stop("'covariates' and 'observations' have incompatible size;")
   }
   
+
   if (!is.null(incidence_matrix))
   {
     if (nrow(incidence_matrix) != nrow(observations))
@@ -156,6 +161,7 @@ checkSmoothingParametersSize<-function(locations = NULL, observations, FEMbasis,
       stop("'incidence_matrix' must be a ntetrahedrons-columns matrix;") 
   }
   
+
   if(!is.null(BC))
   {
     if(ncol(BC$BC_indices) != 1)
@@ -173,6 +179,7 @@ checkSmoothingParametersSize<-function(locations = NULL, observations, FEMbasis,
     }
   }
   
+
   if(!is.null(PDE_parameters) & space_varying==FALSE)
   {
     if(!all.equal(dim(PDE_parameters$K), c(2,2)))
@@ -183,9 +190,9 @@ checkSmoothingParametersSize<-function(locations = NULL, observations, FEMbasis,
       stop("'c' in 'PDE_parameters must be a double")
   }
   
+
   if(!is.null(PDE_parameters) & space_varying==TRUE)
   {
-    
     n_test_points = min(nrow(FEMbasis$mesh$nodes), 5)
     test_points = FEMbasis$mesh$nodes[1:n_test_points, ]
     

@@ -113,7 +113,6 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationWalking(const Point& po
 
 template <UInt ORDER>
 Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationTree(const Point& point) const {
-		// std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
 		std::vector<Real> region(4);
 		bool result;
 		std::set<int> found;
@@ -126,7 +125,6 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationTree(const Point& point
 	
 		result = tree_.search(region, found);
 		if(result == 0) {
-			// std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
 			return Element<3*ORDER,2,2>();
 		}
 		for (std::set<int>::iterator i = found.begin(); i != found.end(); i++) {
@@ -135,11 +133,9 @@ Element<3*ORDER,2,2> MeshHandler<ORDER,2,2>::findLocationTree(const Point& point
 	  		tmp = this -> getElement(index);
 			result = tmp.isPointInside(point);
 			if(result == 1) {
-				// std::cout << "findLocationTree returns the right Element!" <<std::endl;
 				return tmp;
 			}
 		}
-	// std::cout << "findLocationTree returns 0!" <<std::endl;
 	return Element<3*ORDER,2,2>();
 }
 
@@ -386,7 +382,6 @@ Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationNaive(Point point) cons
 
 template <UInt ORDER>
 Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationTree(const Point& point) const {
-	// std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
 	std::vector<Real> region(6);
 	bool result;
 	std::set<int> found;
@@ -401,7 +396,6 @@ Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationTree(const Point& point
 
 	result = tree_.search(region, found);
 	if(result == 0) {
-		// std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
 		return Element<3*ORDER,2,3>();
 	}
 	for (std::set<int>::iterator i = found.begin(); i != found.end(); i++) {
@@ -410,11 +404,9 @@ Element<3*ORDER,2,3> MeshHandler<ORDER,2,3>::findLocationTree(const Point& point
   		tmp = this -> getElement(index);
 		result = tmp.isPointInside(point);
 		if(result == 1) {
-			// std::cout << "findLocationTree returns the right Element!" <<std::endl;
 			return tmp;
 		}
 	}
-	// std::cout << "findLocationTree returns 0!" <<std::endl;
 	return Element<3*ORDER,2,3>();
 }
 
@@ -536,7 +528,6 @@ Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::findLocationNaive(Point point) co
 
 template <UInt ORDER>
 Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::findLocationTree(const Point& point) const {
-	// std::cout << "Hello! I'm using findLocationTree!" <<std::endl;
 	std::vector<Real> region(6);
 	bool result;
 	std::set<int> found;
@@ -551,7 +542,6 @@ Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::findLocationTree(const Point& poi
 
 	result = tree_.search(region, found);
 	if(result == 0) {
-		// std::cout << "findLocationTree returns 0 (result =0) !" <<std::endl;
 		return Element<6*ORDER-2,3,3>();
 	}
 	for (std::set<int>::iterator i = found.begin(); i != found.end(); i++) {
@@ -560,11 +550,9 @@ Element<6*ORDER-2,3,3> MeshHandler<ORDER,3,3>::findLocationTree(const Point& poi
   		tmp = this -> getElement(index);
 		result = tmp.isPointInside(point);
 		if(result == 1) {
-			// std::cout << "findLocationTree returns the right Element!" <<std::endl;
 			return tmp;
 		}
 	}
-	// std::cout << "findLocationTree returns 0!" <<std::endl;
 	return Element<6*ORDER-2,3,3>();
 }
 

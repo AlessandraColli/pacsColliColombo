@@ -269,7 +269,6 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
     stop("search must be either tree or naive.")
   }
   
-  space_varying=checkSmoothingParameters(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, BC, GCV, PDE_parameters, GCVMETHOD , nrealizations, search)
   
   ## Coverting to format for internal usage
   if(!is.null(locations))
@@ -285,6 +284,17 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
     BC$BC_indices = as.matrix(BC$BC_indices)
     BC$BC_values = as.matrix(BC$BC_values)
   }
+  
+  # Check whether the locations coincide with the mesh nodes
+  if (!is.null(locations)) {
+    if(dim(locations)[1]==dim(FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEMbasis$mesh$nodes)[2] & sum(abs(locations[,1]))==sum(abs(FEMbasis$mesh$nodes[,1])) & sum(abs(locations[,2]))==sum(abs(FEMbasis$mesh$nodes[,2])) ) {
+      message("No search algorithm is used because the location coincides with the nodes.")
+      locations = NULL
+    }
+  } 
+  
+
+  space_varying=checkSmoothingParameters(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, BC, GCV, PDE_parameters, GCVMETHOD , nrealizations, search)
   
   # if I have PDE non-sv case I need (constant) matrices as parameters
   
@@ -336,8 +346,9 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
     
     bigsol = NULL  
     print('C++ Code Execution')
-    if(!is.null(locations))
-      stop("The option locations!=NULL for manifold domains is currently not implemented")
+    ################# CHECK
+    #if(!is.null(locations))
+    #  stop("The option locations!=NULL for manifold domains is currently not implemented")
     bigsol = CPP_smooth.manifold.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations, search)
     
     numnodes = FEMbasis$mesh$nnodes

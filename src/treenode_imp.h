@@ -13,9 +13,6 @@ void TreeNode<T>::print(std::ostream & out) const
 	out << "Right Children:  " << children_[1] << std::endl;
 	out << "Box: ";
 	box_.print(std::cout);
-	out << "Keys:  - ";
-	for (size_t i=0; i<keys_.size(); ++i)
-		out<< keys_[i] <<" - ";
 	out<<std::endl;
 }
 

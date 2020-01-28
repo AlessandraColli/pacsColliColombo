@@ -11,11 +11,10 @@ ADTree<Shape>::ADTree(Tree_Header<Shape> const & header): header_(header) {
    */
   data_.reserve(header_.gettreeloc()+1);
 
-  // Id, obj, foo_k are arbitrary parameters. Remember that data_[0] is the head, not a tree node.
-  std::vector<int> foo_k(header_.getnkey(), 0);
+  // Id, obj are arbitrary parameters. Remember that data_[0] is the head, not a tree node.
   Shape obj;
   Id id = std::numeric_limits<UInt>::max();
-  data_.push_back(TreeNode<Shape>(id,obj, foo_k));
+  data_.push_back(TreeNode<Shape>(id,obj));
 
 }
 
@@ -67,7 +66,7 @@ ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, co
     
     //expect to have 'num_triangle' number of TreeNode
     //domain is extracted from 'points' array
-    Tree_Header<Shape> myhead = createtreeheader<Shape>(num_triangle, 0, mydom); 
+    Tree_Header<Shape> myhead = createtreeheader<Shape>(num_triangle, mydom); 
 
 
 
@@ -79,11 +78,10 @@ ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, co
      */
     header_ = myhead;
     data_.reserve(header_.gettreeloc()+1);
-    // Id, obj, foo_k are arbitrary parameters. Remember that data_[0] is the head, not a tree node.
-    std::vector<int> foo_k(header_.getnkey(), 0);
+    // Id, obj are arbitrary parameters. Remember that data_[0] is the head, not a tree node.
     Shape obj;
     Id id = std::numeric_limits<UInt>::max();
-    data_.push_back(TreeNode<Shape>(id, obj, foo_k)); //uso costruttore di default
+    data_.push_back(TreeNode<Shape>(id, obj)); //uso costruttore di default
     
 
     // Fill the tree.
@@ -121,18 +119,15 @@ ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, co
       // point[4] = points[idpt];
       // point[5] = points[idpt+num_nodes];
 
-
-      std::vector<int> key;
-
       //insert Element into tree
-      this -> addtreenode(i ,point, key);
+      this -> addtreenode(i ,point);
      } //end of for loop
      
   }
 
 
 template<class Shape>
-int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords, std::vector<int> const & keys) {
+int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords) {
   /*
    * We will trasverse the tree in preorder fashion.
    * ipoi and ifth will store the location of the current node
@@ -219,11 +214,10 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords, std::vect
      * The list of available node is empty, so we have to put the new node
      * in the yet unassigned portion of the vector storing the tree.
      */
-    data_.push_back(TreeNode<Shape>(shapeid, shapeobj, keys)); // push dummy object to be changed
+    data_.push_back(TreeNode<Shape>(shapeid, shapeobj)); // push dummy object to be changed
   } else {
     std::vector<Real> bcoords = {shapebox[0], shapebox[1], shapebox[2], shapebox[3]};
     data_[iava].setcoords(bcoords);
-    data_[iava].setkeys(keys);
   }
 
   int neletmp = nele;
@@ -285,9 +279,9 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords, std::vect
 }
 
 template<class Shape>
-int ADTree<Shape>::handledomerr(Id shapeid, std::vector<Real> const & coords, std::vector<int> const & keys) {
+int ADTree<Shape>::handledomerr(Id shapeid, std::vector<Real> const & coords) {
   try {
-    int iloc = adtrb(shapeid, coords, keys);
+    int iloc = adtrb(shapeid, coords);
     return iloc;
   }
   catch(TreeDomainError<Shape> de) {
@@ -302,9 +296,9 @@ int ADTree<Shape>::handledomerr(Id shapeid, std::vector<Real> const & coords, st
 }
 
 template<class Shape>
-int ADTree<Shape>::handletreealloc(Id shapeid, std::vector<Real> const & coords, std::vector<int> const & keys) {
+int ADTree<Shape>::handletreealloc(Id shapeid, std::vector<Real> const & coords) {
   try {
-    int iloc = handledomerr(shapeid, coords, keys);
+    int iloc = handledomerr(shapeid, coords);
     return iloc;
   }
   catch(TreeAlloc<Shape>) {
@@ -319,15 +313,15 @@ int ADTree<Shape>::handletreealloc(Id shapeid, std::vector<Real> const & coords,
       std::exit(EXIT_FAILURE);
     }
     data_.resize(header_.gettreeloc()+1);
-    int iloc = handledomerr(shapeid, coords, keys);
+    int iloc = handledomerr(shapeid, coords);
     return iloc;
   }
 }
 
 template<class Shape>
-int ADTree<Shape>::handleleverr(Id shapeid, std::vector<Real> const & coords, std::vector<int> const & keys) {
+int ADTree<Shape>::handleleverr(Id shapeid, std::vector<Real> const & coords) {
   try {
-    int iloc = handletreealloc(shapeid, coords, keys);
+    int iloc = handletreealloc(shapeid, coords);
     return iloc;
   }
   catch(LevRuntimeError<Shape>) {
@@ -337,19 +331,18 @@ int ADTree<Shape>::handleleverr(Id shapeid, std::vector<Real> const & coords, st
     std::cout << "setting the new limit to" << int(LevRuntimeError<Shape>::getmaxtreelev() * 1.1) << std::endl;
     LevRuntimeError<Shape>::setmaxtreelev(int(LevRuntimeError<Shape>::getmaxtreelev() * 1.1));
 
-    int iloc = handletreealloc(shapeid, coords, keys);
+    int iloc = handletreealloc(shapeid, coords);
     return iloc;
   }
 }
 
 template<class Shape>
-int ADTree<Shape>::addtreenode(Id shapeid, std::vector<Real> const & coords, std::vector<int> const & keys) {
-  return handleleverr(shapeid, coords, keys);
+int ADTree<Shape>::addtreenode(Id shapeid, std::vector<Real> const & coords) {
+  return handleleverr(shapeid, coords);
 }
 
 template<class Shape>
-void ADTree<Shape>::gettri(int const & loc, std::vector<int> & info, std::vector<Real> & coord, Id & id) {
-  info = data_[loc].getkeys();
+void ADTree<Shape>::gettri(int const & loc, std::vector<Real> & coord, Id & id) {
   coord.clear();
   coord.reserve(Shape::dt());
   for (int i = 0; i< Shape::dt(); ++i) {

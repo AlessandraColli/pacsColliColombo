@@ -37,8 +37,6 @@ protected:
 	int tree_lev_;
 	/// Number of physical space dimensions (typically 2 or 3).
 	int ndimp_;
-	/// Number of pieces of information carried by the tree. The size of each node is nkey+2 words.
-	int nkey_;
 	/// Number of dimensions used for the search (2*ndimp because we use box).
 	int ndimt_;
 	///	Number of logical locations currently used in the tree. Initialized to 0.
@@ -67,13 +65,12 @@ protected:
 	/**	A protected constructor.
 	 *
 	 *	\param[in] ntree Tree dimension needed.
-	 *	\param[in] nk Number of pieces of information carried by the tree.
 	 *	\param[in] d Tree's domain.
 	 *
 	 *	Public function createtreeheader must be used to create an object of Header class.
 	 *	This avoids the creation of a tree with more memory locations than a fixed limit.
 	 */
-	Tree_Header(int const & ntree, int const & nk, Domain<T> const & d);
+	Tree_Header(int const & ntree, Domain<T> const & d);
 	/// Tries to set the number of tree memory locations (throws a LocLengthError exception if nt is out of range).
 	void stml(int const & nt);
 public:
@@ -81,7 +78,7 @@ public:
 	 *
 	 * 	It's fundamental in creating an ADTree object from a MeshFile::ff2dmesh or a MeshFile::ff3dmesh object.
 	 */
-	Tree_Header():tree_loc_(0), tree_lev_(0), ndimp_(T::dp()), nkey_(0), ndimt_(T::dt()), nele_(0), iava_(1), iend_(1), tree_domain_(){}
+	Tree_Header():tree_loc_(0), tree_lev_(0), ndimp_(T::dp()), ndimt_(T::dt()), nele_(0), iava_(1), iend_(1), tree_domain_(){}
 	/// Gets the number of tree memory locations.
 	inline int gettreeloc() const { return tree_loc_; }
 	/// Sets the number of tree memory locations (handles a LocLengthError exception).
@@ -92,8 +89,6 @@ public:
 	inline void settreelev(int const & nl) { tree_lev_ = nl; }
 	/// Gets the number of physical space dimension.
 	inline int getndimp() const { return ndimp_; }
-	/// Gets the number of pieces of information carried by the tree.
-	inline int getnkey() const { return nkey_; }
 	/// Gets the number of dimensions used for the search.
 	inline int getndimt() const { return ndimt_; }
 	///	Gets the number of logical locations currently used in the tree.
@@ -133,7 +128,7 @@ public:
 	 *	\param[in] d Tree's domain.
 	 */
 	template<class S>
-	friend Tree_Header<S> createtreeheader(int const & nt, int const & nk, Domain<S> const & d);
+	friend Tree_Header<S> createtreeheader(int const & nt, Domain<S> const & d);
 };
 
 #include "tree_header_imp.h"

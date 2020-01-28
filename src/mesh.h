@@ -109,7 +109,6 @@ public:
     */ 
     const ADTree<Element<3*ORDER,2,2>> &  getTree() const {return tree_;};
 
-
     void printPoints(std::ostream & out);
     void printEdges(std::ostream & out);
     void printElements(std::ostream & out);
@@ -150,9 +149,6 @@ public:
     */
     Real elementMeasure(Id id) const;
 
-    //int readMesh(std::string const & file);
-  //double measure()const;
-  //bool checkmesh()const;
 private:
   #ifdef R_VERSION_
   SEXP mesh_;
@@ -162,12 +158,9 @@ private:
   UInt *elements_;
   UInt *neighbors_;
 
-  UInt *border_edges; //contiene lista id_edges al bordo
+  UInt *border_edges; //contains the list of edge_id at the border
   UInt num_nodes_, num_edges_, num_elements_;
-  /// flag_ = 1 -> adtree is built, flag_ = 0 -> adtree is empty
-  // bool flag_;  //se flag_=1 l'adtree contiene tutte le info della mesh
-  /// is the adtree associated to the mesh
-  ADTree<Element<3*ORDER,2,2>> tree_; //contiene l'albero, se inizializzato si può usare per Point_Location
+  ADTree<Element<3*ORDER,2,2>> tree_; // adtree associated to the mesh
 
 };
 
@@ -177,8 +170,6 @@ private:
 /*!
  * The template parameters specify the order of its elements.
 */
-
-
 template <UInt ORDER>
 class MeshHandler<ORDER,2,3> {
 public:
@@ -191,14 +182,13 @@ public:
         tree_ = tmp;  
       };
   
-  //! A constructor.
+    //! A constructor.
     /*!
       * The constructor permits the initialization of the mesh from a .csv file, useful for
       * debugging purposes
     */
   
     MeshHandler(std::string &filename){
-
        if(filename.find(".csv") != std::string::npos){
           importfromCSV(filename);
        }
@@ -207,7 +197,7 @@ public:
 
     void importfromCSV(std::string &filename);
   
-  //! A constructor.
+    //! A constructor.
     /*!
       * The constructor permits the initialization of the mesh from an R object
     */
@@ -217,13 +207,13 @@ public:
 
   ~MeshHandler(){};
 
-  //! A normal member returning an unsigned integer value.
+    //! A normal member returning an unsigned integer value.
     /*!
       \return The number of nodes in the mesh
     */
     UInt num_nodes() const {return num_nodes_;}
 
-  //! A normal member returning an unsigned integer value.
+    //! A normal member returning an unsigned integer value.
     /*!
       \return The number of elements in the mesh
     */
@@ -242,6 +232,12 @@ public:
       \return The element with order coerent to that of the mesh with the specified id
     */
     Element<3*ORDER,2,3>  getElement(Id id) const;
+
+    //! A normal member returning the ADTree
+    /*!
+     *  \return The ADTree, the nodes contain the index of the triangle in the mesh
+    */ 
+    const ADTree<Element<3*ORDER,2,3>> &  getTree() const {return tree_;};
 
     void printPoints(std::ostream & out);
     void printElements(std::ostream & out);
@@ -283,10 +279,7 @@ private:
     
 
   UInt num_nodes_, num_elements_;
-  /// flag_ = 1 -> adtree is built, flag_ = 0 -> adtree is empty
-  // bool flag_;  //se flag_=1 l'adtree contiene tutte le info della mesh
-  /// is the adtree associated to the mesh
-  ADTree<Element<3*ORDER,2,3>> tree_; //contiene l'albero, se inizializzato si può usare per Point_Location
+  ADTree<Element<3*ORDER,2,3>> tree_; //adtree associated to the mesh
 
 };
 
@@ -296,8 +289,6 @@ private:
 /*!
  * The template parameters specify the order of its elements.
 */
-
-
 template <UInt ORDER>
 class MeshHandler<ORDER,3,3> {
 public:
@@ -346,6 +337,12 @@ public:
     */
     Element<6*ORDER-2,3,3>  getElement(Id id) const;
 
+    //! A normal member returning the ADTree
+    /*!
+     *  \return The ADTree, the nodes contain the index of the triangle in the mesh
+    */ 
+    const ADTree<Element<6*ORDER-2,3,3>> &  getTree() const {return tree_;};
+
     void printPoints(std::ostream & out);
     void printElements(std::ostream & out);
    
@@ -384,17 +381,9 @@ private:
   Real *points_;
   UInt *elements_;
 
-
   UInt num_nodes_, num_elements_;
-  /// flag_ = 1 -> adtree is built, flag_ = 0 -> adtree is empty
-  // bool flag_;  //se flag_=1 l'adtree contiene tutte le info della mesh
-  /// is the adtree associated to the mesh
-  ADTree<Element<6*ORDER-2,3,3>> tree_; //contiene l'albero, se inizializzato si può usare per Point_Location
-
+  ADTree<Element<6*ORDER-2,3,3>> tree_; //adtree associated to the mesh
 };
-
-
-
 
 
 #include "mesh_imp.h"

@@ -24,11 +24,6 @@ protected:
    * 	It's used by the algorithm for deleting a tree node.
    */
   int father_;
-  /** Additional informations to be stored in the node.
-   *
-   *  Maybe a more sophisticated object than a std::vector<int> can be more useful.
-   */
-  std::vector<int> keys_;
   ///Bounding Box of the object to be stored
   Box<Shape::dp()> box_;
   /// Positions of left and right children.
@@ -59,7 +54,7 @@ public:
    *
    * 	Shape is the shape from the id, it's need the constructor for box, from shape! it works with Triangle, or Box, it can be extended
    */
-  TreeNode(Id const id, Shape shape, std::vector<int> const & keys): father_(0), keys_(keys), box_(shape) {
+  TreeNode(Id const id, Shape shape): father_(0), box_(shape) {
     children_[0] = 0;
     children_[1] = 0;
     id_ = id;
@@ -97,16 +92,6 @@ public:
   inline void setid(Id id) { id_=id; }
   /// Gets id stored in the node.
   inline Id getid() const { return id_; }
-  /// Gets the i-th coordinate value of the p-th vertex.
-  //  non utile avendo usato bbox anzichè shape
-  //  inline Real getvertex(int const & p, int const & i) //{ return _shape.vertex(p, i); }
-  /// Sets the additional informations to be stored in the node.
-  inline void setkeys(std::vector<int> const & k) { keys_ = k; }
-  /// Gets the additional informations stored in the node.
-  inline std::vector<int> getkeys() const {
-    std::vector<int> info(keys_);
-    return info;
-  }
   /// Returns a reference to box_.
   inline Box<Shape::dp()> & getbox() { return box_; }
   ///print information about the treenode

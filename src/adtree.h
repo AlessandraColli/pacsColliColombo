@@ -41,13 +41,13 @@ protected:
    * 	<li> a LevRuntimeError if you exceed the limit set for the tree levels due to the inclusion of the node.
    * 	</ul>
    */
-  int adtrb(Id shapeid, std::vector<Real> const & coords, std::vector<int> const & keys);
+  int adtrb(Id shapeid, std::vector<Real> const & coords);
   /// Handles a TreeDomainError exception.
-  int handledomerr(Id shapeid, std::vector<Real> const & coords, std::vector<int> const & keys);
+  int handledomerr(Id shapeid, std::vector<Real> const & coords);
   /// Handles a TreeAlloc exception.
-  int handletreealloc(Id shapeid, std::vector<Real> const & coords, std::vector<int> const & keys);
+  int handletreealloc(Id shapeid, std::vector<Real> const & coords);
   /// Handles a LevRuntimeError exception.
-  int handleleverr(Id shapeid, std::vector<Real> const & coords, std::vector<int> const & keys);
+  int handleleverr(Id shapeid, std::vector<Real> const & coords);
   /** Searches dimension associated to a given level.
    *
    * 	\param[in] lev The given level.
@@ -78,11 +78,10 @@ public:
      */
    	data_.reserve(header_.gettreeloc()+1);
 
-    // Id, obj, foo_k are arbitrary parameters. Remember that data_[0] is the head, not a tree node.
-  	std::vector<int> foo_k(header_.getnkey(), 0);
+    // Id, obj are arbitrary parameters. Remember that data_[0] is the head, not a tree node.
   	Shape obj;
   	Id id = std::numeric_limits<UInt>::max();
-  	data_.push_back(TreeNode<Shape>(id, obj, foo_k));
+  	data_.push_back(TreeNode<Shape>(id, obj));
 	};
 
   /**	A base constructor.
@@ -103,18 +102,17 @@ public:
    * 	It calls the handlers of the exceptions that can be thrown by adtrb().
    *
    * 	\param[in] coords Coordinates of the point.
-   *	\param[in] keys Additional informations associated to the point.
    *
    *	The location of the current node in the tree is returned.
    */
-  int addtreenode(Id shapeid, std::vector<Real> const & coords, std::vector<int> const & keys);
+  int addtreenode(Id shapeid, std::vector<Real> const & coords);
   /** Gets out the informations stored at a given node.
    *
    * 	\param[in] loc Location of the searched node.
-   * 	\param[out] info Additional informations stored in the searched node.
    * 	\param[out] coord Bounding box coordinates of the object stored in the loc-th location.
+   *  \param[out] id Id of searched node.
    */
-  inline void gettri(int const & loc, std::vector<int> & info, std::vector<Real> & coord, Id & id);
+  inline void gettri(int const & loc, std::vector<Real> & coord, Id & id);
   /** Gets out the node stored at a given location.
    *
    * 	\param[in] loc Location of the searched node.

@@ -3,8 +3,8 @@
 
 
 template<class T>
-Tree_Header<T>::Tree_Header(int const & ntree,int const & nk, Domain<T> const & d):
-	tree_loc_(ntree), tree_lev_(0), ndimp_(T::dp()), nkey_(nk), ndimt_(T::dt()), nele_(0), iava_(1), iend_(1), tree_domain_(d) {
+Tree_Header<T>::Tree_Header(int const & ntree,Domain<T> const & d):
+	tree_loc_(ntree), tree_lev_(0), ndimp_(T::dp()), ndimt_(T::dt()), nele_(0), iava_(1), iend_(1), tree_domain_(d) {
 
 	std::vector<TreeNode<T> > foo;
 	if(foo.max_size() < unsigned(tree_loc_ + 1))
@@ -32,7 +32,6 @@ std::ostream & operator<<(std::ostream & ostr, Tree_Header<T> const & head) {
 	ostr << "Tree memory locations: " << head.tree_loc_ << std::endl;
 	ostr << "Number of tree levels: " << head.tree_lev_ << std::endl;
 	ostr << "Number of physical space dimension: " << head.ndimp_ << std::endl;
-	ostr << "Number of pieces of information carried by the tree: " << head.nkey_ << std::endl;
 	ostr << "Number of dimensions used for the search: " << head.ndimt_ << std::endl;
 	ostr << "Number of logical locations currently used in the tree: " << head.nele_ << std::endl;
 	ostr << head.tree_domain_;
@@ -42,9 +41,9 @@ std::ostream & operator<<(std::ostream & ostr, Tree_Header<T> const & head) {
 }
 
 template<class T>
-Tree_Header<T> createtreeheader(int const & nt, int const & nk, Domain<T> const & d) {
+Tree_Header<T> createtreeheader(int const & nt, Domain<T> const & d) {
 	try {
-		Tree_Header<T> hd(nt, nk, d);
+		Tree_Header<T> hd(nt, d);
 		return hd;
 	}
 	catch(LocLengthError<T> lo) {
