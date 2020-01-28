@@ -420,11 +420,8 @@ create.mesh.2.5D<- function(nodes, triangles, order = 1)
 }
 
 data.projection.2.5D<-function(mesh, locations) {
-  if(class(mesh) !="MESH.2.5D")
+  if(class(mesh) !="mesh.2.5D")
   stop("Data projection is only available for 2.5D mesh ")
-
-  ################# ALSO CHECK FOR num of locations
-  ##################### CHECK WHETHER THE INSIDE POINTS CAN ALSO BE PROJECTED
 
   # C++ function for 2.5D works with vectors not with matrices
   mesh$triangles=c(t(mesh$triangles))
@@ -443,7 +440,6 @@ data.projection.2.5D<-function(mesh, locations) {
   storage.mode(mesh$neighbors) <- "integer"
 
   ## Call C++ function
-  ###################evalmat = matrix(0, nrow(locations), ncol(locations))
   evalmat <- .Call("data_projection", mesh, locations, package = "fdaPDE")
   
   #Returning the evaluation matrix

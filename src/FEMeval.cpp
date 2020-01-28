@@ -202,15 +202,6 @@ SEXP data_projection(SEXP Rmesh, SEXP Rlocations)
 		Y = REAL(Rlocations)[i + n_X*1];
 		Z = REAL(Rlocations)[i + n_X*2];
 		deData_[i]=Point(X,Y,Z);
-
-		if (i==0) {
-			Rprintf("Rlocation_0: %f\n", REAL(Rlocations)[i + n_X*0]);
-			Rprintf("Rlocation_1: %f\n", REAL(Rlocations)[i + n_X*1]);
-			Rprintf("Rlocation_2: %f\n", REAL(Rlocations)[i + n_X*2]);
-			Rprintf("X= %f\n", X);
-			Rprintf("Y= %f\n", Y);
-			Rprintf("Z= %f\n", Z);
-		}
 	}
 
     SEXP result;
@@ -218,7 +209,8 @@ SEXP data_projection(SEXP Rmesh, SEXP Rlocations)
 	if (n_X>0) //pointwise data
 	{
 		PROTECT(result = Rf_allocMatrix(REALSXP, n_X, 3));
-		//default order: 1 *************************
+		
+		//order: 1
 		MeshHandler<1,2,3> mesh(Rmesh);
 		projection<1,2,3> projector(mesh, deData_);
 		prjData_ = projector.computeProjection();
@@ -229,16 +221,6 @@ SEXP data_projection(SEXP Rmesh, SEXP Rlocations)
 		REAL(result)[i + n_X*0]=prjData_[i][0];
 		REAL(result)[i + n_X*1]=prjData_[i][1];
 		REAL(result)[i + n_X*2]=prjData_[i][2];
-
-		if (i==0) {
-			Rprintf("prjData_[i][0]= %f\n", prjData_[i][0]);
-			Rprintf("prjData_[i][1]= %f\n", prjData_[i][1]);
-			Rprintf("prjData_[i][2]= %f\n", prjData_[i][2]);
-			Rprintf("result_0: %f\n", REAL(result)[i + n_X*0]);
-			Rprintf("result_1: %f\n", REAL(result)[i + n_X*1]);
-			Rprintf("result_2: %f\n", REAL(result)[i + n_X*2]);
-
-		}
 	}
 
 	UNPROTECT(1);

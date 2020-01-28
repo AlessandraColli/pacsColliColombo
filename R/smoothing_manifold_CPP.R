@@ -105,6 +105,12 @@ CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, n
   storage.mode(redundancy) <- "integer"
   storage.mode(search) <- "integer"
   
+  if (search == 1) { #use Naive search
+    print('This is Naive Search')
+  } else if (search == 2)  { #use Tree search (default)
+    print('This is Tree Search')
+  }
+
   #Calling the C++ function "eval_FEM_fd" in RPDE_interface.cpp
   evalmat = matrix(0,max(nrow(locations),nrow(incidence_matrix)),ncol(coeff))
   for (i in 1:ncol(coeff)){

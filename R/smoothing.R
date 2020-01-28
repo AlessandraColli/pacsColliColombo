@@ -268,9 +268,8 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
   else{
     stop("search must be either tree or naive.")
   }
-
   
-  space_varying=checkSmoothingParameters(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, BC, GCV, PDE_parameters, GCVMETHOD , nrealizations)
+  space_varying=checkSmoothingParameters(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, BC, GCV, PDE_parameters, GCVMETHOD , nrealizations, search)
   
   ## Coverting to format for internal usage
   if(!is.null(locations))

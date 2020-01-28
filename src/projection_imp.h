@@ -206,7 +206,7 @@ std::vector<Point> projection<ORDER,2,3>::computeProjection()
     std::pair<Real, UInt> min_dist (computeDistance(deData_[d], mesh_.getPoint(0)), 0);
     Real dist;
     for(UInt n=1; n<mesh_.num_nodes(); n++){
-      dist = computeDistance(deData_[d], mesh_.getPoint(n));
+      dist = computeDistance(deData_[d], mesh_.getPoint(3*n));
       if(dist < min_dist.first) min_dist = std::make_pair(dist, n);
     }
     nearest_node.push_back(min_dist.second);

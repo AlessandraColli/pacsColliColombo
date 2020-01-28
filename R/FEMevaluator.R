@@ -68,16 +68,18 @@ eval.FEM <- function(FEM, locations = NULL, incidence_matrix = NULL, search = "t
     search=2
   else if(search == "walking" || search == 3)
     search=3
-  else{
-    stop("search must be either tree or naive or walking.")
-  }
 
-  if(class(FEM$FEMbasis$mesh)=='MESH.2.5D' & search ==3){
+  if(class(FEM$FEMbasis$mesh)=='mesh.2.5D' & search ==3){
   stop("2.5D search must be either tree or naive.")
   }
-  if(class(FEM$FEMbasis$mesh)=='MESH.3D' & search ==3){
+
+  if(class(FEM$FEMbasis$mesh)=='mesh.3D' & search ==3){
   stop("3D search must be either tree or naive.")
   }
+
+  if (search != 1 || search != 2 || search != 3)
+    stop("search must be either tree or naive or walking.")
+
 
   
   if (is.null(locations))
@@ -90,8 +92,7 @@ eval.FEM <- function(FEM, locations = NULL, incidence_matrix = NULL, search = "t
   if(class(FEM$FEMbasis$mesh)=='mesh.2D'){
     ndim = 2
     mydim = 2
-    res = CPP_eval.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search)
-    
+    res = CPP_eval.FEM(FEM, locations, incidence_matrix, TRUE, ndim, mydim, search) 
   }else if(class(FEM$FEMbasis$mesh)=='mesh.2.5D'){
     ndim = 3
     mydim = 2

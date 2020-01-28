@@ -68,13 +68,6 @@ void MixedFEFPCABase<Integrator, ORDER, mydim, ndim>::computeBasisEvaluations()
 		Eigen::Matrix<Real,Nodes,1> coefficients;
 
 		Real evaluator;
-
-		if (fpcaData_.getSearch() == 1) { //use Naive search
-		std::cout << "This is Naive Search" << std::endl;
-		} else if (fpcaData_.getSearch() == 2)  { //use Tree search (default)
-		std::cout << "This is Tree Search" << std::endl;
-		}
-
 		for(UInt i=0; i<nlocations;i++)
 		{
 

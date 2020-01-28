@@ -346,7 +346,7 @@ void MeshHandler<ORDER,2,3>::importfromCSV(std::string &filename){
 template <UInt ORDER>
 Point MeshHandler<ORDER,2,3>::getPoint(Id id)
 {
-	Point point(id, Identifier::NVAL, points_[id], points_[id+1],points_[id+2]);
+	Point point(id, Identifier::NVAL, points_[id], points_[id+1], points_[id+2]);
 	return point;
 }
 

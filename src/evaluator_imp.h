@@ -10,14 +10,6 @@ void Evaluator<ORDER,2,2>::eval(Real* X, Real *Y, UInt length, const Real *coef,
 	Point current_point;
 	Eigen::Matrix<Real,Nodes,1> coefficients;
 
-	if (search == 1) { //use Naive search
-		std::cout << "This is Naive Search" << std::endl;
-	} else if (search == 2)  { //use Tree search (default)
-		std::cout << "This is Tree Search" << std::endl;
-	} else if (search == 3) { //use Walking search
-		std::cout << "This is Walking Search" << std::endl;
-	}
-
 	for (int i = 0; i<length; ++i) {
 		current_point = Point(X[i],Y[i]);
 
@@ -60,12 +52,6 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 	Point current_point;
 
 	Eigen::Matrix<Real,Nodes,1> coefficients;
-
-	if (search == 1) { //use Naive search
-		std::cout << "This is Naive Search" << std::endl;
-	} else if (search == 2)  { //use Tree search (default)
-		std::cout << "This is Tree Search" << std::endl;
-	}
 	
 	for (int i = 0; i<length; ++i) {
 		current_point = Point(X[i],Y[i],Z[i]);
@@ -100,12 +86,6 @@ void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 	Point current_point;
 
 	Eigen::Matrix<Real,Nodes,1> coefficients;
-
-	if (search == 1) { //use Naive search
-		std::cout << "This is Naive Search" << std::endl;
-	} else if (search == 2)  { //use Tree search (default)
-		std::cout << "This is Tree Search" << std::endl;
-	}
 
 	for (int i = 0; i<length; ++i) {
 		current_point = Point(X[i],Y[i],Z[i]);

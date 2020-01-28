@@ -1,4 +1,4 @@
-checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, PDE_parameters=NULL,GCVmethod = 2,nrealizations = 100)
+checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, PDE_parameters=NULL, GCVmethod = 2, nrealizations = 100, search)
 {
   #################### Parameter Check #########################
  
@@ -22,6 +22,13 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
       stop("Missing values not admitted in 'locations'.")
     if(any(is.na(observations)))
       stop("Missing values not admitted in 'observations' when 'locations' are specified.")
+
+    if (search == 1) { #use Naive search
+      print('This is Naive Search')
+    } else if (search == 2)  { #use Tree search (default)
+      print('This is Tree Search')
+    }
+
   }
   
   if (is.null(locations))
