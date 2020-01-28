@@ -77,7 +77,7 @@ eval.FEM <- function(FEM, locations = NULL, incidence_matrix = NULL, search = "t
   stop("3D search must be either tree or naive.")
   }
 
-  if (search != 1 || search != 2 || search != 3)
+  if (search != 1 & search != 2 & search != 3)
     stop("search must be either tree or naive or walking.")
 
 

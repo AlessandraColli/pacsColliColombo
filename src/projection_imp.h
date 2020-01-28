@@ -187,17 +187,6 @@ std::vector<Point> projection<ORDER,2,3>::computeProjection()
   std::vector<Point> res;
   res.resize(getNumPoints());
 
-  //******************************
-  Rprintf("getNumPoints= %d\n", getNumPoints());
-  Rprintf("mesh_.num_nodes()= %d\n", mesh_.num_nodes());
-
-  mesh_.getPoint(0).print(std::cout);
-  mesh_.getPoint(1).print(std::cout);
-  mesh_.getPoint(2).print(std::cout);
-  mesh_.getPoint(3).print(std::cout);
-  //******************************
-
-
   // (1): nearest node to each point
   std::vector<UInt> nearest_node;
   nearest_node.reserve(getNumPoints());
