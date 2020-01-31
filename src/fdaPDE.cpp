@@ -20,40 +20,7 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 {
 	MeshHandler<ORDER, mydim, ndim> mesh(Rmesh);
 
-	//********************component of the mesh
-	if (mydim == 2 & ndim == 2) {
-		std::cout << "Tree_Header components: " <<  std::endl;
-		std::cout << "gettreeloc : " << mesh.getTree().gettreeheader().gettreeloc() <<  std::endl; //this seems to be the number of elements
-		std::cout << "gettreelev : " << mesh.getTree().gettreeheader().gettreelev() <<  std::endl;
-		std::cout << "getndimp : " << mesh.getTree().gettreeheader().getndimp() <<  std::endl;
-		std::cout << "getndimt : " << mesh.getTree().gettreeheader().getndimt() <<  std::endl;
-		std::cout << "getnele : " << mesh.getTree().gettreeheader().getnele() <<  std::endl;
-		std::cout << "getiava : " << mesh.getTree().gettreeheader().getiava() <<  std::endl;
-		std::cout << "getiend : " << mesh.getTree().gettreeheader().getiend() <<  std::endl;
-		std::cout << "Domain (Tree_Header components) : " <<  std::endl;
-		for (int i=0;i<2;i++) {
-			std::cout << "domainorig : " << mesh.getTree().gettreeheader().domainorig(i) <<  std::endl;
-			std::cout << "domainscal : " << mesh.getTree().gettreeheader().domainscal(i) <<  std::endl;
-		}
-
-		std::cout<< "Tree_Node components: " <<  std::endl;
-		for (int i=0; i<10; i++) {
-			std::cout << "getfather : " << mesh.getTree().gettreenode(i).getfather() <<  std::endl;
-			std::cout << "getchild(0) : " << mesh.getTree().gettreenode(i).getchild(0) <<  std::endl;
-			std::cout << "getchild(1) : " << mesh.getTree().gettreenode(i).getchild(1) <<  std::endl;
-			std::cout << "getid : " << mesh.getTree().gettreenode(i).getid() <<  std::endl;
-			std::cout << "Box (Tree_Node components) : " <<  std::endl;
-			std::cout << "getbox min x coord: " << mesh.getTree().gettreenode(i).getbox().get()[0]  <<  std::endl;
-			std::cout << "getbox min y coord : " << mesh.getTree().gettreenode(i).getbox().get()[1]  <<  std::endl;
-			std::cout << "getbox max x coord: " << mesh.getTree().gettreenode(i).getbox().get()[2]  <<  std::endl;
-			std::cout << "getbox max y coord : " << mesh.getTree().gettreenode(i).getbox().get()[3]  <<  std::endl;
-		}
-	}
-	//********************component of the mesh	
-
-
 	MixedFERegression<InputHandler, Integrator,ORDER, mydim, ndim> regression(mesh,regressionData);
-	
 	regression.apply();
 
 	const std::vector<VectorXr>& solution = regression.getSolution();
@@ -61,7 +28,8 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 
 	//Copy result in R memory                
 	SEXP result = NILSXP;
-	result = PROTECT(Rf_allocVector(VECSXP, 2));
+	//result = PROTECT(Rf_allocVector(VECSXP, 2)); //**************will be divided to if/ else if there is saveTreeFlag option
+	result = PROTECT(Rf_allocVector(VECSXP, 7));
 	SET_VECTOR_ELT(result, 0, Rf_allocMatrix(REALSXP, solution[0].size(), solution.size()));
 	SET_VECTOR_ELT(result, 1, Rf_allocVector(REALSXP, solution.size()));
 	Real *rans = REAL(VECTOR_ELT(result, 0));
@@ -71,11 +39,57 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 			rans[i + solution[0].size()*j] = solution[j][i];
 	}
 
-	Real *rans2 = REAL(VECTOR_ELT(result, 1));
+	Real *rans1 = REAL(VECTOR_ELT(result, 1));
 	for(UInt i = 0; i < solution.size(); i++)
 	{
-		rans2[i] = dof[i];
+		rans1[i] = dof[i];
 	}
+
+	//**************ADDED
+	SET_VECTOR_ELT(result, 2, Rf_allocVector(INTSXP, 7)); //tree_header information
+	int *rans2 = INTEGER(VECTOR_ELT(result, 2));
+	rans2[0] = mesh.getTree().gettreeheader().gettreeloc();
+	rans2[1] = mesh.getTree().gettreeheader().gettreelev();
+	rans2[2] = mesh.getTree().gettreeheader().getndimp();
+	rans2[3] = mesh.getTree().gettreeheader().getndimt();
+	rans2[4] = mesh.getTree().gettreeheader().getnele();
+	rans2[5] = mesh.getTree().gettreeheader().getiava();
+	rans2[6] = mesh.getTree().gettreeheader().getiend();
+
+	SET_VECTOR_ELT(result, 3, Rf_allocVector(REALSXP, ndim*2)); //tree_header domain origin
+	Real *rans3 = REAL(VECTOR_ELT(result, 3));
+	for(UInt i = 0; i < ndim*2; i++)
+		rans3[i] = mesh.getTree().gettreeheader().domainorig(i);
+
+	SET_VECTOR_ELT(result, 4, Rf_allocVector(REALSXP, ndim*2)); //tree_header domain scale
+	Real *rans4 = REAL(VECTOR_ELT(result, 4));
+	for(UInt i = 0; i < ndim*2; i++)
+		rans4[i] = mesh.getTree().gettreeheader().domainscal(i);
+
+
+	UInt num_tree_nodes = mesh.num_elements()+1; //Be careful! This is not equal to number of elements
+	SET_VECTOR_ELT(result, 5, Rf_allocMatrix(INTSXP, num_tree_nodes, 3)); //treenode information
+	int *rans5 = INTEGER(VECTOR_ELT(result, 5));
+	for(UInt i = 0; i < num_tree_nodes; i++)
+			rans5[i] = mesh.getTree().gettreenode(i).getid();
+
+	for(UInt i = 0; i < num_tree_nodes; i++)
+			rans5[i + num_tree_nodes*1] = mesh.getTree().gettreenode(i).getchild(0);
+
+	for(UInt i = 0; i < num_tree_nodes; i++)
+			rans5[i + num_tree_nodes*2] = mesh.getTree().gettreenode(i).getchild(1);
+
+	SET_VECTOR_ELT(result, 6, Rf_allocMatrix(REALSXP, num_tree_nodes, ndim*2)); //treenode box coordinate
+	Real *rans6 = REAL(VECTOR_ELT(result, 6));
+	for(UInt j = 0; j < ndim*2; j++)
+	{
+		for(UInt i = 0; i < num_tree_nodes; i++)
+			rans6[i + num_tree_nodes*j] = mesh.getTree().gettreenode(i).getbox().get()[j];
+	}
+	//********************
+
+
+
 	UNPROTECT(1);
 	return(result);
 }
@@ -249,6 +263,7 @@ SEXP regression_Laplace(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Ro
 		return(regression_skeleton<RegressionData,IntegratorTriangleP4, 2, 2, 3>(regressionData, Rmesh));
 	else if(regressionData.getOrder()==1 && mydim==3 && ndim==3)
 		return(regression_skeleton<RegressionData,IntegratorTetrahedronP2, 1, 3, 3>(regressionData, Rmesh));
+
     return(NILSXP);
 }
 

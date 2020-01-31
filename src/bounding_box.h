@@ -17,7 +17,7 @@ class Box {
 protected:
 	/** A vector of rectangle corner coordinates.
 	 * 	First NDIMP values are the coordinates of the rectangle corner with minimum coordinates,
-	 *  followed by the coordinates of the opposite corner.
+	 *  followed by the coordinates of the opposite corner. (2D: xmin, xmax, ymin, ymax)
 	 */
 	std::vector<Real> x_;
 

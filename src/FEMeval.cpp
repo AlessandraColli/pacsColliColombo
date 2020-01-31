@@ -14,7 +14,6 @@
 #include "mesh.h"
 #include "evaluator.h"
 #include "projection.h"
-#include <chrono>  // for high_resolution_clock
 
 extern "C" {
 //! This function manages the various option for the solution evaluation.
@@ -61,7 +60,6 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 		for (int i=0; i<n_X; i++)
 		{
 			X[i] = REAL(Rlocations)[i + n_X*0];
-			//Rprintf("X[%i]= %d", i, X[i]);
 			Y[i] = REAL(Rlocations)[i + n_X*1];
 			Z[i] = REAL(Rlocations)[i + n_X*2];
 		}
@@ -97,33 +95,35 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 			Evaluator<1,2,2> evaluator(mesh);
 			evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside, search);
 
+			//APPPPPLLLYYYY SAME WITH fdaPDE.cpp
 			//********************component of the mesh
-			std::cout << "Tree_Header components: " <<  std::endl;
-			std::cout << "gettreeloc : " << mesh.getTree().gettreeheader().gettreeloc() <<  std::endl; //this seems to be the number of elements
-			std::cout << "gettreelev : " << mesh.getTree().gettreeheader().gettreelev() <<  std::endl;
-			std::cout << "getndimp : " << mesh.getTree().gettreeheader().getndimp() <<  std::endl;
-			std::cout << "getndimt : " << mesh.getTree().gettreeheader().getndimt() <<  std::endl;
-			std::cout << "getnele : " << mesh.getTree().gettreeheader().getnele() <<  std::endl;
-			std::cout << "getiava : " << mesh.getTree().gettreeheader().getiava() <<  std::endl;
-			std::cout << "getiend : " << mesh.getTree().gettreeheader().getiend() <<  std::endl;
-			std::cout << "Domain (Tree_Header components) : " <<  std::endl;
-			for (int i=0;i<2;i++) {
-				std::cout << "domainorig : " << mesh.getTree().gettreeheader().domainorig(i) <<  std::endl;
-				std::cout << "domainscal : " << mesh.getTree().gettreeheader().domainscal(i) <<  std::endl;
-			}
+			// std::cout << "FEMeval.cpp " <<  std::endl;
+			// std::cout << "Tree_Header components: " <<  std::endl;
+			// std::cout << "gettreeloc : " << mesh.getTree().gettreeheader().gettreeloc() <<  std::endl; //this seems to be the number of elements
+			// std::cout << "gettreelev : " << mesh.getTree().gettreeheader().gettreelev() <<  std::endl;
+			// std::cout << "getndimp : " << mesh.getTree().gettreeheader().getndimp() <<  std::endl;
+			// std::cout << "getndimt : " << mesh.getTree().gettreeheader().getndimt() <<  std::endl;
+			// std::cout << "getnele : " << mesh.getTree().gettreeheader().getnele() <<  std::endl;
+			// std::cout << "getiava : " << mesh.getTree().gettreeheader().getiava() <<  std::endl;
+			// std::cout << "getiend : " << mesh.getTree().gettreeheader().getiend() <<  std::endl;
+			// std::cout << "Domain (Tree_Header components) : " <<  std::endl;
+			// for (int i=0;i<2;i++) {
+			// 	std::cout << "domainorig : " << mesh.getTree().gettreeheader().domainorig(i) <<  std::endl;
+			// 	std::cout << "domainscal : " << mesh.getTree().gettreeheader().domainscal(i) <<  std::endl;
+			// }
 
-			std::cout<< "Tree_Node components: " <<  std::endl;
-			for (int i=0; i<10; i++) {
-				std::cout << "getfather : " << mesh.getTree().gettreenode(i).getfather() <<  std::endl;
-				std::cout << "getchild(0) : " << mesh.getTree().gettreenode(i).getchild(0) <<  std::endl;
-				std::cout << "getchild(1) : " << mesh.getTree().gettreenode(i).getchild(1) <<  std::endl;
-				std::cout << "getid : " << mesh.getTree().gettreenode(i).getid() <<  std::endl;
-				std::cout << "Box (Tree_Node components) : " <<  std::endl;
-				std::cout << "getbox min x coord: " << mesh.getTree().gettreenode(i).getbox().get()[0]  <<  std::endl;
-				std::cout << "getbox min y coord : " << mesh.getTree().gettreenode(i).getbox().get()[1]  <<  std::endl;
-				std::cout << "getbox max x coord: " << mesh.getTree().gettreenode(i).getbox().get()[2]  <<  std::endl;
-				std::cout << "getbox max y coord : " << mesh.getTree().gettreenode(i).getbox().get()[3]  <<  std::endl;
-			}
+			// std::cout<< "Tree_Node components: " <<  std::endl;
+			// for (int i=0; i<10; i++) {
+			// 	std::cout << "getid : " << mesh.getTree().gettreenode(i).getid() <<  std::endl;
+			// 	std::cout << "getchild(0) : " << mesh.getTree().gettreenode(i).getchild(0) <<  std::endl;
+			// 	std::cout << "getchild(1) : " << mesh.getTree().gettreenode(i).getchild(1) <<  std::endl;
+				
+			// 	std::cout << "Box (Tree_Node components) : " <<  std::endl;
+			// 	std::cout << "getbox min x coord: " << mesh.getTree().gettreenode(i).getbox().get()[0]  <<  std::endl;
+			// 	std::cout << "getbox min y coord : " << mesh.getTree().gettreenode(i).getbox().get()[1]  <<  std::endl;
+			// 	std::cout << "getbox max x coord: " << mesh.getTree().gettreenode(i).getbox().get()[2]  <<  std::endl;
+			// 	std::cout << "getbox max y coord : " << mesh.getTree().gettreenode(i).getbox().get()[3]  <<  std::endl;
+			// }
 			//********************component of the mesh			
 		}
 		else if(order==2 && mydim==2 && ndim==2)
@@ -149,29 +149,6 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 			MeshHandler<1,3,3> mesh(Rmesh);
 			Evaluator<1,3,3> evaluator(mesh);
 			evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside, search);
-
-			//************TEST: calculate time for 30 iterations average
-			int iteration = 30;
-			double time = 0;
-			for (int i=0; i<iteration; i++) {
-				auto start = std::chrono::high_resolution_clock::now();
-				MeshHandler<1,3,3> mesh(Rmesh);
-				auto finish = std::chrono::high_resolution_clock::now();
-				std::chrono::duration<double> elapsed = finish - start;
-				time += elapsed.count();
-			}
-			std::cout<< "tree construction time: " << time/iteration << std::endl;
-
-			time = 0;
-			for (int i=0; i<iteration; i++) {
-				auto start = std::chrono::high_resolution_clock::now();
-				evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside, search);
-				auto finish = std::chrono::high_resolution_clock::now();
-				std::chrono::duration<double> elapsed = finish - start;
-				time += elapsed.count();
-			}
-			std::cout<< "search time: " << time/iteration << std::endl;
-			//*********************************
 		}
 
 		for (int i=0; i<n_X; ++i)

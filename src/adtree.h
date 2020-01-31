@@ -32,7 +32,7 @@ protected:
    */
   Tree_Header<Shape> header_;
   /// Vector of tree nodes.
-  std::vector<TreeNode<Shape> > data_;
+  std::vector<TreeNode<Shape>> data_;
   /** \brief Adds a point to the tree.
    * 	It throws:
    * 	<ul>
@@ -90,6 +90,9 @@ public:
    *	locations to store tree nodes. It doesn't fill the tree.
    */
   ADTree(Tree_Header<Shape> const & header);
+
+  // constructor in case there is already tree information
+  ADTree(Tree_Header<Shape> const & header, std::vector<TreeNode<Shape>> const & data):header_(header), data_(data) {};
   
   /** It fills all the locations of the tree. Object's coordinates are stored to perform searching operations. 
    * 	See mesh_handler to verify what points and triangle must contain.
@@ -128,7 +131,7 @@ public:
    */
   bool search(std::vector<Real> const & region, std::set<int> & found)const;
   /// Deletes a specified location in the tree.
-  void deltreenode(int const & index);
+  //void deltreenode(int const & index);
   /// Gets the j-th coordinate of the bounding box of the p-th object stored in the node.
   inline Real pointcoord(int const & p, int const & j) const { return data_[p].getcoord(j); }
   /// Gets the the Id of the original object of the p-th treenode.

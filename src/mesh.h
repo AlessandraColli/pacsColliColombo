@@ -272,8 +272,6 @@ private:
   SEXP mesh_;
   #endif
 
-  // std::vector<Real> points_;
-  // std::vector<UInt> elements_;
     Real *points_;
     UInt *elements_;
     
@@ -376,8 +374,6 @@ private:
   SEXP mesh_;
   #endif
 
-  // std::vector<Real> points_;
-  // std::vector<UInt> elements_;
   Real *points_;
   UInt *elements_;
 

@@ -93,7 +93,6 @@ Domain<T>::Domain(std::vector<std::vector<Real> > const & coord) {
 
 		// 	// Add the tolerance.
 		// 	double delta = scalingfactors_[i] - origin_[i];
-		// 	//************shoudn't this be double like above??
 		// 	origin_[i] -= delta*gettolerance();
 		// 	scalingfactors_[i] += delta*gettolerance();
 

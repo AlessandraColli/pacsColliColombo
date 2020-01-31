@@ -19,11 +19,8 @@
 template<class Shape>
 class TreeNode{
 protected:
-  /** Position of the father node.
-   *
-   * 	It's used by the algorithm for deleting a tree node.
-   */
-  int father_;
+  // Position of the father node. (It's used by the algorithm for deleting a tree node.)
+  //`int father_;
   ///Bounding Box of the object to be stored
   Box<Shape::dp()> box_;
   /// Positions of left and right children.
@@ -45,7 +42,7 @@ public:
    *
    *	It's fundamental in creating a vector of TreeNode objects.
    */
-  TreeNode(): father_(0), box_() {
+  TreeNode(): box_() { //father_(0),
     children_[0] = 0;
     children_[1] = 0;
     id_ = std::numeric_limits<UInt>::max();
@@ -54,13 +51,23 @@ public:
    *
    * 	Shape is the shape from the id, it's need the constructor for box, from shape! it works with Triangle, or Box, it can be extended
    */
-  TreeNode(Id const id, Shape shape): father_(0), box_(shape) {
+  TreeNode(Id const id, Shape shape): box_(shape) { //father_(0), 
     children_[0] = 0;
     children_[1] = 0;
     id_ = id;
   }
+
+  // constructor in case there is already tree information
+  TreeNode(Box<Shape::dp()> const & box, Id const & id, int const & left_child, int const & right_child): 
+    box_(box), id_(id) { 
+    children_[0] = left_child;
+    children_[1] = right_child;
+    //father_(0)
+    
+  }
   /// Sets the father.
-  inline void setfather(int const & ifth) { father_ = ifth; }
+  //inline void setfather(int const & ifth) { father_ = ifth; }
+
   /**	\brief Sets a child.
    *
    * 	\param[in] flag Index of the child to be set. \n
@@ -73,7 +80,7 @@ public:
    */
   inline void setchild(short int const & flag, int const & child) { children_[flag] = child; }
   /// Returns the father.
-  inline int getfather() const { return father_; }
+  //inline int getfather() const { return father_; }
   /**	\brief Returns a child.
    *
    * 	\param[in] flag Index of the child to be returned. \n

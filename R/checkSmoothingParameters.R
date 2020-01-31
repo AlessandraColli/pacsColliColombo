@@ -4,7 +4,7 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
  
   if (is.null(FEMbasis))
     stop("FEMbasis required;  is NULL.")
-  if(class(FEMbasis)!= "FEMbasis")
+  if(class(FEMbasis)!= "FEMbasis" && class(FEMbasis)!= "treeFEMbasis")
     stop("'FEMbasis' is not class 'FEMbasis'")
   
   if(class(FEMbasis$mesh)!='mesh.2D' & class(FEMbasis$mesh) != "mesh.2.5D" & class(FEMbasis$mesh) != "mesh.3D")

@@ -827,11 +827,11 @@ void Test_TreeNode_c(int *n){
 
 	std::cout << "Print the 1st TreeNode (constructor default, NDIMP = 2):  " <<std::endl;
 	treea.print(std::cout);
-	std::cout << "father of the treenode: " << std::endl;
-	std::cout << treea.getfather() <<std::endl;
-	std::cout << "change father to 3: " << std::endl;
-	treea.setfather(3);
-	std::cout << treea.getfather() <<std::endl;
+	// std::cout << "father of the treenode: " << std::endl;
+	// std::cout << treea.getfather() <<std::endl;
+	// std::cout << "change father to 3: " << std::endl;
+	// treea.setfather(3);
+	// std::cout << treea.getfather() <<std::endl;
 	std::cout << "left child of the treenode:  " << std::endl;
 	std::cout << treea.getchild(0) <<std::endl;
 	std::cout << "change left child of the treenode to 1:  " << std::endl;
@@ -862,11 +862,11 @@ void Test_TreeNode_c(int *n){
 
 	std::cout << "Print the 2nd TreeNode (constructor default, NDIMP = 3):  " <<std::endl;
 	treeb.print(std::cout);
-	std::cout << "father of the treenode: " << std::endl;
-	std::cout << treeb.getfather() <<std::endl;
-	std::cout << "change father: " << std::endl;
-	treeb.setfather(3);
-	std::cout << treeb.getfather() <<std::endl;
+	// std::cout << "father of the treenode: " << std::endl;
+	// std::cout << treeb.getfather() <<std::endl;
+	// std::cout << "change father: " << std::endl;
+	// treeb.setfather(3);
+	// std::cout << treeb.getfather() <<std::endl;
 	std::cout << "left child of the treenode:  " << std::endl;
 	std::cout << treeb.getchild(0) <<std::endl;
 	std::cout << "change left child of the treenode:  " << std::endl;
@@ -896,11 +896,11 @@ void Test_TreeNode_c(int *n){
 
 	std::cout << "Print the 3rd TreeNode (constructor from Triangle, points a(1,1), b(3,1), c(2,2), NDIMP = 2):  " <<std::endl;
 	treec.print(std::cout);
-	std::cout << "father of the treenode: " << std::endl;
-	std::cout << treec.getfather() <<std::endl;
-	std::cout << "change father: " << std::endl;
-	treec.setfather(3);
-	std::cout << treec.getfather() <<std::endl;
+	// std::cout << "father of the treenode: " << std::endl;
+	// std::cout << treec.getfather() <<std::endl;
+	// std::cout << "change father: " << std::endl;
+	// treec.setfather(3);
+	// std::cout << treec.getfather() <<std::endl;
 	std::cout << "left child of the treenode:  " << std::endl;
 	std::cout << treec.getchild(0) <<std::endl;
 	std::cout << "change left child of the treenode:  " << std::endl;
@@ -930,11 +930,11 @@ void Test_TreeNode_c(int *n){
 
 	std::cout << "Print the 4th TreeNode (constructor from Triangle, points a(1,1,1), b(3,1,1), c(2,1,3), NDIMP = 3):  " <<std::endl;
 	treed.print(std::cout);
-	std::cout << "father of the treenode: " << std::endl;
-	std::cout << treed.getfather() <<std::endl;
-	std::cout << "change father: " << std::endl;
-	treed.setfather(3);
-	std::cout << treed.getfather() <<std::endl;
+	// std::cout << "father of the treenode: " << std::endl;
+	// std::cout << treed.getfather() <<std::endl;
+	// std::cout << "change father: " << std::endl;
+	// treed.setfather(3);
+	// std::cout << treed.getfather() <<std::endl;
 	std::cout << "left child of the treenode:  " << std::endl;
 	std::cout << treed.getchild(0) <<std::endl;
 	std::cout << "change left child of the treenode:  " << std::endl;
@@ -964,11 +964,11 @@ void Test_TreeNode_c(int *n){
 
 	std::cout << "Print the 5th TreeNode (constructor from Tetrahedron, points a(1,1,1), b(3,1,1), c(2,1,3), d(4,1,7) NDIMP = 3):  " <<std::endl;
 	treee.print(std::cout);
-	std::cout << "father of the treenode: " << std::endl;
-	std::cout << treee.getfather() <<std::endl;
-	std::cout << "change father: " << std::endl;
-	treee.setfather(3);
-	std::cout << treee.getfather() <<std::endl;
+	// std::cout << "father of the treenode: " << std::endl;
+	// std::cout << treee.getfather() <<std::endl;
+	// std::cout << "change father: " << std::endl;
+	// treee.setfather(3);
+	// std::cout << treee.getfather() <<std::endl;
 	std::cout << "left child of the treenode:  " << std::endl;
 	std::cout << treee.getchild(0) <<std::endl;
 	std::cout << "change left child of the treenode:  " << std::endl;
@@ -998,11 +998,11 @@ void Test_TreeNode_c(int *n){
 
 	std::cout << "Print the 6th TreeNode (constructor from Box, {1,1,4,3}, NDIMP = 2):  " <<std::endl;
 	treef.print(std::cout);
-	std::cout << "father of the treenode: " << std::endl;
-	std::cout << treef.getfather() <<std::endl;
-	std::cout << "change father: " << std::endl;
-	treef.setfather(3);
-	std::cout << treef.getfather() <<std::endl;
+	// std::cout << "father of the treenode: " << std::endl;
+	// std::cout << treef.getfather() <<std::endl;
+	// std::cout << "change father: " << std::endl;
+	// treef.setfather(3);
+	// std::cout << treef.getfather() <<std::endl;
 	std::cout << "left child of the treenode:  " << std::endl;
 	std::cout << treef.getchild(0) <<std::endl;
 	std::cout << "change left child of the treenode:  " << std::endl;
@@ -1033,11 +1033,11 @@ void Test_TreeNode_c(int *n){
 
 	std::cout << "Print the 7th TreeNode (constructor from Box {1,1,1,4,3,5}, NDIMP = 3):  " <<std::endl;
 	treeg.print(std::cout);
-	std::cout << "father of the treenode: " << std::endl;
-	std::cout << treeg.getfather() <<std::endl;
-	std::cout << "change father: " << std::endl;
-	treeg.setfather(3);
-	std::cout << treeg.getfather() <<std::endl;
+	// std::cout << "father of the treenode: " << std::endl;
+	// std::cout << treeg.getfather() <<std::endl;
+	// std::cout << "change father: " << std::endl;
+	// treeg.setfather(3);
+	// std::cout << treeg.getfather() <<std::endl;
 	std::cout << "left child of the treenode:  " << std::endl;
 	std::cout << treeg.getchild(0) <<std::endl;
 	std::cout << "change left child of the treenode:  " << std::endl;
@@ -1567,7 +1567,7 @@ void Test_ADTree1_c(int *n){
 	std::cout << "Treenodes visualize as a vector:  " << std::endl;
 	for (int i = 0; i < (ADTk.gettreeheader()).getnele()+1; i++) {
 		(ADTk.gettreenode(i)).print(std::cout);
-		std::cout << "Shape id of father: " << ADTk.pointId(ADTk.gettreenode(i).getfather()) << std::endl;
+		//std::cout << "Shape id of father: " << ADTk.pointId(ADTk.gettreenode(i).getfather()) << std::endl;
 		std::cout << "Shape id of left child: " << ADTk.pointId(ADTk.gettreenode(i).getchild(0)) << std::endl;
 		std::cout << "Shape id of right child: " << ADTk.pointId(ADTk.gettreenode(i).getchild(1)) << std::endl;
 	}
@@ -1734,7 +1734,7 @@ void Test_ADTree2_c(int *n){
 	std::cout << "Treenodes visualize as a vector:  " << std::endl;
 	for (int i = 0; i < (ADTk.gettreeheader()).getnele()+1; i++) {
 		(ADTk.gettreenode(i)).print(std::cout);
-		std::cout << "Shape id of father: " << ADTk.pointId(ADTk.gettreenode(i).getfather()) << std::endl;
+		//std::cout << "Shape id of father: " << ADTk.pointId(ADTk.gettreenode(i).getfather()) << std::endl;
 		std::cout << "Shape id of left child: " << ADTk.pointId(ADTk.gettreenode(i).getchild(0)) << std::endl;
 		std::cout << "Shape id of right child: " << ADTk.pointId(ADTk.gettreenode(i).getchild(1)) << std::endl;
 	}

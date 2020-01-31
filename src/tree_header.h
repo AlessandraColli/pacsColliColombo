@@ -33,17 +33,22 @@ class Tree_Header {
 protected:
 	/// Tree memory locations.
 	int tree_loc_;
+
 	/// Tree levels.
 	int tree_lev_;
+
 	/// Number of physical space dimensions (typically 2 or 3).
 	int ndimp_;
+
 	/// Number of dimensions used for the search (2*ndimp because we use box).
 	int ndimt_;
+
 	///	Number of logical locations currently used in the tree. Initialized to 0.
 	int nele_;
+
 	/**	@name Tree indices
-	 *	The use of iava and iend avoids the necessity of initializing the stack of available
-	 *	locations. In fact, the stack contains only locations that have been previously deleted from the tree.
+	 *	The use of iava and iend avoids the necessity of initializing the stack of available locations. 
+	 * In fact, the stack contains only locations that have been previously deleted from the tree.
 	 */
 	//@{
 	/**	Next available location in the stack. Initialized to 1.
@@ -51,10 +56,11 @@ protected:
 	 *	The stack of available nodes is a linked list with all nodes that have been previously deleted. If iava=0 the stack is empty.
 	 */
 	int iava_;
+
 	/**	Next available location in the yet not allocated part of the tree ("tree free store"). Initialized to 1.
 	 *
 	 *	The "tree free store" is the yet unassigned portion of the vector storing the tree.
-	 *	It effectively acts as a free storage area. If iend=1, the free storage is at his maximum size. iend never decreases.
+	 *	It effectively acts as a free storage area. If iend_=1, the free storage is at his maximum size. iend never decreases.
 	 *	It may increase during insertions and will always remain unaltered after deletions.
 	 *	It isn't equal to nele.
 	 */
@@ -79,6 +85,13 @@ public:
 	 * 	It's fundamental in creating an ADTree object from a MeshFile::ff2dmesh or a MeshFile::ff3dmesh object.
 	 */
 	Tree_Header():tree_loc_(0), tree_lev_(0), ndimp_(T::dp()), ndimt_(T::dt()), nele_(0), iava_(1), iend_(1), tree_domain_(){}
+	
+	// constructor in case there is already tree information
+	Tree_Header(int const & tree_loc, int const & tree_lev, int const & ndimp, int const & ndimt, 
+		int const & nele, int const & iava, int const & iend, Domain<T> const & tree_domain):
+			tree_loc_(tree_loc), tree_lev_(tree_lev), ndimp_(ndimp), ndimt_(ndimt), 
+			nele_(nele), iava_(iava), iend_(iend), tree_domain_(tree_domain){}
+	
 	/// Gets the number of tree memory locations.
 	inline int gettreeloc() const { return tree_loc_; }
 	/// Sets the number of tree memory locations (handles a LocLengthError exception).

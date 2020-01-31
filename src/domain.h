@@ -20,8 +20,10 @@ template<class Shape>
 class Domain {
 protected:
 	/// Origin of the object's bounding box = min(coord(*,1:number of points)).
+	// ex) 2D: xmin, ymin, xmin, ymin
 	std::vector<Real> origin_;
 	/// Scaling factors = 1./(max(coord(*,1:number of points)) - min(coord(*,1:number of points))).
+	// ex) 2D: xscale, yscale, xscale, yscale
 	std::vector<Real> scalingfactors_;
 	/// Tolerance being applied to the object's bounding box.
 	static Real tolerance_;
@@ -40,6 +42,9 @@ public:
 	 *  Repeats the limits if the tree dimension is 2 * physical space dimension.
 	 *  This is an useful trick. For example, when you have to scale dimensions.
 	 */
+
+	// constructor in case there is already tree information
+	Domain(std::vector<Real> const & origin, std::vector<Real> const & scalingfactors):origin_(origin), scalingfactors_(scalingfactors) {};
 	Domain(std::vector<std::vector<Real> > const & coord);
 	
 	/// Sets the tolerance being applied to the object's bounding box.

@@ -22,14 +22,6 @@ ADTree<Shape>::ADTree(Tree_Header<Shape> const & header): header_(header) {
 //Shape is given as Element<NNODES,myDim,nDim> from mesh.h
 template<class Shape>
 ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, const UInt num_nodes, const UInt num_triangle) {
-  // if(typeid(Shape) != typeid(Triangle<3>) && typeid(Shape) != typeid(Triangle<6>)) {
-  //   std::cout << std::endl << std::endl;
-  //   std::cout << "error! ADTree<Shape>::ADTree(Real const * const points, Uint const * const triangle, Uint num_nodes, Uint num_triangle) : bad template parameter" << std::endl << std::endl;
-  //   std::cout << "In order to build the tree associated to a 2D (triangle) mesh object" << std::endl;
-  //   std::cout << "template parameter must be equal to 'Triangle<3>' or 'Triangle<6>' and not to " << typeid(Shape).name() << std::endl;
-  //   std::exit(EXIT_FAILURE);
-  // } else {
-
     int ndimp = Shape::dp(); //physical dimension
     int nvertex = Shape::numVertices; //number of nodes at each Element (not total number of nodes!)
 
@@ -190,7 +182,6 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords) {
      * the tree. Then we recursively multiply by 2 the coordinate.
      */
     
-
     x[id] *= 2.;
     ifth = ipoi;
     
@@ -215,10 +206,11 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords) {
      * in the yet unassigned portion of the vector storing the tree.
      */
     data_.push_back(TreeNode<Shape>(shapeid, shapeobj)); // push dummy object to be changed
-  } else {
-    std::vector<Real> bcoords = {shapebox[0], shapebox[1], shapebox[2], shapebox[3]};
-    data_[iava].setcoords(bcoords);
   }
+  // else {
+  //   std::vector<Real> bcoords = {shapebox[0], shapebox[1], shapebox[2], shapebox[3]};
+  //   data_[iava].setcoords(bcoords);
+  // }
 
   int neletmp = nele;
   // Add the node in the next available location.
@@ -262,7 +254,7 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords) {
   //0 means it is empty so the children of terminal node should be 0
   data_[ipoi].setchild(0, 0);
   data_[ipoi].setchild(1, 0);
-  data_[ipoi].setfather(ifth);
+  //data_[ipoi].setfather(ifth);
 
   // Store back header informations.
   header_.setiend(iend);
@@ -353,6 +345,7 @@ void ADTree<Shape>::gettri(int const & loc, std::vector<Real> & coord, Id & id) 
 
 template<class Shape>
 bool ADTree<Shape>::search(std::vector<Real> const & region, std::set<int> & found) const {
+
   // This function returns true if it has completed successfully, false otherwise.
 
   // Start preorder traversal at level 0 (root).
@@ -376,6 +369,7 @@ bool ADTree<Shape>::search(std::vector<Real> const & region, std::set<int> & fou
   for(int i = 0; i < dimp; ++i) {
     double orig = header_.domainorig(i);
     double scal = header_.domainscal(i);
+
     if(region[i] > orig+(1./scal)) { //region[i]: min of what we are searching for, orig+(1./scal): max of our domain
       return 0;
     }
@@ -520,69 +514,69 @@ bool ADTree<Shape>::search(std::vector<Real> const & region, std::set<int> & fou
   return !found.empty(); //if empty, return False; if not empty, return True
 }
 
-template<class Shape>
-void ADTree<Shape>::deltreenode(int const & index) {
-  if(index < header_.getiend()) {
-    int nele = header_.getnele();
-    int ipoi = index;
-    int iava = header_.getiava();
-    int ifth = data_[ipoi].getfather();
+// template<class Shape>
+// void ADTree<Shape>::deltreenode(int const & index) {
+//   if(index < header_.getiend()) {
+//     int nele = header_.getnele();
+//     int ipoi = index;
+//     int iava = header_.getiava();
+//     int ifth = data_[ipoi].getfather();
 
-    --nele;
-    int lchild = data_[ipoi].getchild(0);
-    int rchild = data_[ipoi].getchild(1);
-    int whichchild;
+//     --nele;
+//     int lchild = data_[ipoi].getchild(0);
+//     int rchild = data_[ipoi].getchild(1);
+//     int whichchild;
 
-    if(data_[ifth].getchild(0) == ipoi) {
-      whichchild = 0;
-    } else {
-      whichchild = 1;
-    }
+//     if(data_[ifth].getchild(0) == ipoi) {
+//       whichchild = 0;
+//     } else {
+//       whichchild = 1;
+//     }
 
-    if( (lchild == 0) && (rchild == 0) ) {
-      // If the location is already a leaf, we can just release it.
-      data_[ifth].setchild(whichchild, 0);
-    } else {
-        int ipoiNext = ipoi;
-        int flag = 0;
-        int il = data_[ipoiNext].getchild(0);
-        int ir = data_[ipoiNext].getchild(1);
-        // Traverse the tree to find an empty leaf.
-        while( (il != 0) || (ir != 0) ) {
-          il = data_[ipoiNext].getchild(0);
-          ir = data_[ipoiNext].getchild(1);
-          if(il != 0) {
-            flag = 0;
-            ipoiNext = il;
-          } else if(ir != 0) {
-            flag = 1;
-            ipoiNext = ir;
-          }
-        }
+//     if( (lchild == 0) && (rchild == 0) ) {
+//       // If the location is already a leaf, we can just release it.
+//       data_[ifth].setchild(whichchild, 0);
+//     } else {
+//         int ipoiNext = ipoi;
+//         int flag = 0;
+//         int il = data_[ipoiNext].getchild(0);
+//         int ir = data_[ipoiNext].getchild(1);
+//         // Traverse the tree to find an empty leaf.
+//         while( (il != 0) || (ir != 0) ) {
+//           il = data_[ipoiNext].getchild(0);
+//           ir = data_[ipoiNext].getchild(1);
+//           if(il != 0) {
+//             flag = 0;
+//             ipoiNext = il;
+//           } else if(ir != 0) {
+//             flag = 1;
+//             ipoiNext = ir;
+//           }
+//         }
 
-        data_[ifth].setchild(whichchild, ipoiNext);
-        int foo_f = data_[ipoiNext].getfather();
-        data_[foo_f].setchild(flag, 0);
-        data_[ipoiNext].setfather(ifth);
-        if(ipoiNext != lchild) {
-          data_[ipoiNext].setchild(0, lchild);
-          data_[lchild].setfather(ipoiNext);
-        }
-        if(ipoiNext != rchild) {
-          data_[ipoiNext].setchild(1, rchild);
-          data_[rchild].setfather(ipoiNext);
-        }
-      }
+//         data_[ifth].setchild(whichchild, ipoiNext);
+//         int foo_f = data_[ipoiNext].getfather();
+//         data_[foo_f].setchild(flag, 0);
+//         data_[ipoiNext].setfather(ifth);
+//         if(ipoiNext != lchild) {
+//           data_[ipoiNext].setchild(0, lchild);
+//           data_[lchild].setfather(ipoiNext);
+//         }
+//         if(ipoiNext != rchild) {
+//           data_[ipoiNext].setchild(1, rchild);
+//           data_[rchild].setfather(ipoiNext);
+//         }
+//       }
 
-    // Add the erased location to iava
-    data_[ipoi].setchild(0, iava);
-    data_[ipoi].setchild(1, 0);
+//     // Add the erased location to iava
+//     data_[ipoi].setchild(0, iava);
+//     data_[ipoi].setchild(1, 0);
 
-    // Store back header informations.
-    header_.setiava(ipoi);
-    header_.setnele(nele);
-  }
-}
+//     // Store back header informations.
+//     header_.setiava(ipoi);
+//     header_.setnele(nele);
+//   }
+// }
 
 template<class S>
 std::ostream & operator<<(std::ostream & ostr, ADTree<S> const & myadt) {

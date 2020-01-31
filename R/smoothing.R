@@ -273,8 +273,8 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
   ## Coverting to format for internal usage
   if(!is.null(locations))
     locations = as.matrix(locations)
-  observations = as.matrix(observations)
-  lambda = as.matrix(lambda)
+    observations = as.matrix(observations)
+    lambda = as.matrix(lambda)
   if(!is.null(covariates))
     covariates = as.matrix(covariates)
   if(!is.null(incidence_matrix))
@@ -319,6 +319,7 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
                                   BC=BC, GCV=GCV,GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
   
     numnodes = nrow(FEMbasis$mesh$nodes)
+    numelements = nrow(FEMbasis$mesh$triangles)
     
   } else if(class(FEMbasis$mesh) == 'mesh.2D' & !is.null(PDE_parameters) & space_varying==FALSE){
     
@@ -330,6 +331,7 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
                                       BC=BC, GCV=GCV,GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
     
     numnodes = nrow(FEMbasis$mesh$nodes)
+    numelements = nrow(FEMbasis$mesh$triangles)
 
   } else if(class(FEMbasis$mesh) == 'mesh.2D' & !is.null(PDE_parameters) & space_varying==TRUE){  
     
@@ -341,6 +343,7 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
                                          BC=BC, GCV=GCV,GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
   
     numnodes = nrow(FEMbasis$mesh$nodes)
+    numelements = nrow(FEMbasis$mesh$triangles)
   
   }else if(class(FEMbasis$mesh) == 'mesh.2.5D'){
     
@@ -352,6 +355,7 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
     bigsol = CPP_smooth.manifold.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations, search)
     
     numnodes = FEMbasis$mesh$nnodes
+    numelements = FEMbasis$mesh$ntriangles
     
   }else if(class(FEMbasis$mesh) == 'mesh.3D'){
     
@@ -360,23 +364,60 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
     bigsol = CPP_smooth.volume.FEM.basis(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, ndim, mydim, BC, GCV,GCVMETHOD, nrealizations, search)
     
     numnodes = FEMbasis$mesh$nnodes
+    numelements = FEMbasis$mesh$ntetrahedrons
   }
   
   f = bigsol[[1]][1:numnodes,]
   g = bigsol[[1]][(numnodes+1):(2*numnodes),]
   
-  # Make Functional objects object
+  # Make Functional objects
   fit.FEM  = FEM(f, FEMbasis)
   PDEmisfit.FEM = FEM(g, FEMbasis)
+
+  # Save information of Tree Mesh
+  tree_mesh = list(
+    treeloc = bigsol[[3]][1],
+    treelev = bigsol[[3]][2],
+    ndimp = bigsol[[3]][3],
+    ndimt = bigsol[[3]][4],
+    nele = bigsol[[3]][5],
+    iava = bigsol[[3]][6],
+    iend =bigsol[[3]][7],
+    header_orig= bigsol[[4]], 
+    header_scale = bigsol[[5]],
+    node_id = bigsol[[6]][,1],
+    node_left_child = bigsol[[6]][,2],
+    node_right_child = bigsol[[6]][,3],
+    node_box= bigsol[[7]])
+
+  if (class(FEMbasis) != "treeFEMbasis") {
+    treeFEMbasis = FEMbasis
+    treeFEMbasis$mesh = append(FEMbasis$mesh, tree_mesh)
+    class(treeFEMbasis$mesh) = class(FEMbasis$mesh)
+    class(treeFEMbasis) = "treeFEMbasis"
+  }
+
+  # tree.fit.FEM = append(tree_mesh, fit.FEM)
+  # class(tree.fit.FEM) = "tree.FEM" ### MAYBE R ABORTED BECAUSE THE DATA IS TOO HEAVY???
   
   reslist = NULL
   beta = getBetaCoefficients(locations, observations, fit.FEM, covariates, incidence_matrix, ndim, mydim, search)
-  if(GCV == TRUE)
-  {
+  if(GCV == TRUE) {
     seq=getGCV(locations = locations, observations = observations, fit.FEM = fit.FEM, covariates = covariates, incidence_matrix = incidence_matrix, edf = bigsol[[2]], ndim, mydim, search)
-    reslist=list(fit.FEM = fit.FEM, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV)
-  }else{
-    reslist=list(fit.FEM = fit.FEM, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta)
+    
+    if (class(FEMbasis) != "treeFEMbasis") {
+    reslist=list(fit.FEM = fit.FEM, treeFEMbasis = treeFEMbasis, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV)
+    } else { #already exists treeFEMbasis
+      reslist=list(fit.FEM = fit.FEM, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV)
+    }
+
+
+  }else{ #GCV == FALSE
+    if (class(FEMbasis) != "treeFEMbasis") {
+      reslist=list(fit.FEM = fit.FEM, treeFEMbasis = treeFEMbasis, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta)
+    } else { #already exists treeFEMbasis
+      reslist=list(fit.FEM = fit.FEM, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta)
+    }
   }
   
   return(reslist)
