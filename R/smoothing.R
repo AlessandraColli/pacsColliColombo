@@ -292,7 +292,8 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
       locations = NULL
     }
   } 
-  
+  #***************************** if 'locations' is 'barycenter' attribute, make it as locations=NULL and make barycenter object
+  #******************
 
   space_varying=checkSmoothingParameters(locations, observations, FEMbasis, lambda, covariates, incidence_matrix, BC, GCV, PDE_parameters, GCVMETHOD , nrealizations, search)
   
@@ -406,17 +407,21 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
     seq=getGCV(locations = locations, observations = observations, fit.FEM = fit.FEM, covariates = covariates, incidence_matrix = incidence_matrix, edf = bigsol[[2]], ndim, mydim, search)
     
     if (class(FEMbasis) != "treeFEMbasis") {
-    reslist=list(fit.FEM = fit.FEM, treeFEMbasis = treeFEMbasis, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV)
+    reslist=list(fit.FEM = fit.FEM, treeFEMbasis = treeFEMbasis, barycenter = bigsol[[8]],
+      PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV)
     } else { #already exists treeFEMbasis
-      reslist=list(fit.FEM = fit.FEM, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV)
+      reslist=list(fit.FEM = fit.FEM, barycenter = bigsol[[8]],
+        PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV)
     }
 
 
   }else{ #GCV == FALSE
     if (class(FEMbasis) != "treeFEMbasis") {
-      reslist=list(fit.FEM = fit.FEM, treeFEMbasis = treeFEMbasis, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta)
+      reslist=list(fit.FEM = fit.FEM, treeFEMbasis = treeFEMbasis, barycenter = bigsol[[8]],
+        PDEmisfit.FEM = PDEmisfit.FEM, beta = beta)
     } else { #already exists treeFEMbasis
-      reslist=list(fit.FEM = fit.FEM, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta)
+      reslist=list(fit.FEM = fit.FEM, barycenter = bigsol[[8]],
+        PDEmisfit.FEM = PDEmisfit.FEM, beta = beta)
     }
   }
   

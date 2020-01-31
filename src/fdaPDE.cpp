@@ -21,15 +21,17 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 	MeshHandler<ORDER, mydim, ndim> mesh(Rmesh);
 
 	MixedFERegression<InputHandler, Integrator,ORDER, mydim, ndim> regression(mesh,regressionData);
-	regression.apply();
+	regression.apply(); //***********at this moment, search algorithm is applied to the locations!
 
 	const std::vector<VectorXr>& solution = regression.getSolution();
 	const std::vector<Real>& dof = regression.getDOF();
+	const MatrixXr & barycenters = regression.getBarycenters(); //#######################
+
 
 	//Copy result in R memory                
 	SEXP result = NILSXP;
 	//result = PROTECT(Rf_allocVector(VECSXP, 2)); //**************will be divided to if/ else if there is saveTreeFlag option
-	result = PROTECT(Rf_allocVector(VECSXP, 7));
+	result = PROTECT(Rf_allocVector(VECSXP, 2+5+1));
 	SET_VECTOR_ELT(result, 0, Rf_allocMatrix(REALSXP, solution[0].size(), solution.size()));
 	SET_VECTOR_ELT(result, 1, Rf_allocVector(REALSXP, solution.size()));
 	Real *rans = REAL(VECTOR_ELT(result, 0));
@@ -45,7 +47,7 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 		rans1[i] = dof[i];
 	}
 
-	//**************ADDED
+	//TREE INFORMATION
 	SET_VECTOR_ELT(result, 2, Rf_allocVector(INTSXP, 7)); //tree_header information
 	int *rans2 = INTEGER(VECTOR_ELT(result, 2));
 	rans2[0] = mesh.getTree().gettreeheader().gettreeloc();
@@ -86,9 +88,15 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 		for(UInt i = 0; i < num_tree_nodes; i++)
 			rans6[i + num_tree_nodes*j] = mesh.getTree().gettreenode(i).getbox().get()[j];
 	}
-	//********************
-
-
+	
+	//BARYCENTER INFORMATION
+	SET_VECTOR_ELT(result, 7, Rf_allocMatrix(REALSXP, barycenters.rows(), barycenters.cols()));
+	Real *rans7 = REAL(VECTOR_ELT(result, 7));
+	for(UInt j = 0; j < barycenters.cols(); j++)
+	{
+		for(UInt i = 0; i < barycenters.rows(); i++)
+			rans7[i + barycenters.rows()*j] = barycenters(i,j);
+	}
 
 	UNPROTECT(1);
 	return(result);

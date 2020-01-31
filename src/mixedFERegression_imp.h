@@ -56,7 +56,7 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::setPsi()
 		auto k = regressionData_.getObservationsIndices();
 		tripletAll.reserve(k.size());
 		for (int i = 0; i< k.size(); ++i){
-			tripletAll.push_back(coeff(i,k[i],1.0));
+			tripletAll.push_back(coeff(i,k[i],1.0)); //i and k[i] are same values
 		}
 		psi_.setFromTriplets(tripletAll.begin(),tripletAll.end());
 		psi_.makeCompressed();
@@ -68,15 +68,22 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::setPsi()
 		Eigen::Matrix<Real,Nodes,1> coefficients;
 
 		Real evaluator;
+		this->barycenters_.resize(nlocations, Nodes); //#####################
 		for(UInt i=0; i<nlocations;i++)
 		{
-
 			if (regressionData_.getSearch() == 1) { //use Naive search
-				tri_activated = mesh_.findLocationNaive(regressionData_.getLocations()[i]);
+				tri_activated = mesh_.findLocationNaive(regressionData_.getLocations()[i]); 
 			} else if (regressionData_.getSearch() == 2) { //use Tree search (default)
 				tri_activated = mesh_.findLocationTree(regressionData_.getLocations()[i]);
 			}
+			//regressionData_.getLocations(): return vector<Point> 
+			// Element.getBaryCoordinates(Point): return vector of lambda (if triangle: 3 lambdas, if tetrahedron: 4 lambdas)
 
+			std::cout << "ith location : " << i << std::endl;
+			// for (UInt j=0;j<Nodes;j++) {
+			// 	std::cout<< "jth lambda: "<<tri_activated.getBaryCoordinates(regressionData_.getLocations()[i])[j]<<std::endl;
+			// }
+			
 			if(tri_activated.getId() == Identifier::NVAL)
 			{
 				#ifdef R_VERSION_
@@ -91,11 +98,13 @@ void MixedFERegressionBase<InputHandler,Integrator,ORDER, mydim, ndim>::setPsi()
 					coefficients = Eigen::Matrix<Real,Nodes,1>::Zero();
 					coefficients(node) = 1; //Activates only current base
 					evaluator = evaluate_point<Nodes,mydim,ndim>(tri_activated, regressionData_.getLocations()[i], coefficients);
+					std::cout<< "evaluator: "<<evaluator<<std::endl;
+					barycenters_(i,node)=evaluator; ///############################
 					psi_.insert(i, tri_activated[node].getId()) = evaluator;
 				}
 			}
 		} //end of for loop
-
+		std::cout << "barycenters_.size() : " << barycenters_.size() << std::endl;
 		psi_.makeCompressed();
 	}
 	else //areal data

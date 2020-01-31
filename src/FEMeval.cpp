@@ -93,38 +93,7 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 		{
 			MeshHandler<1,2,2> mesh(Rmesh);
 			Evaluator<1,2,2> evaluator(mesh);
-			evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside, search);
-
-			//APPPPPLLLYYYY SAME WITH fdaPDE.cpp
-			//********************component of the mesh
-			// std::cout << "FEMeval.cpp " <<  std::endl;
-			// std::cout << "Tree_Header components: " <<  std::endl;
-			// std::cout << "gettreeloc : " << mesh.getTree().gettreeheader().gettreeloc() <<  std::endl; //this seems to be the number of elements
-			// std::cout << "gettreelev : " << mesh.getTree().gettreeheader().gettreelev() <<  std::endl;
-			// std::cout << "getndimp : " << mesh.getTree().gettreeheader().getndimp() <<  std::endl;
-			// std::cout << "getndimt : " << mesh.getTree().gettreeheader().getndimt() <<  std::endl;
-			// std::cout << "getnele : " << mesh.getTree().gettreeheader().getnele() <<  std::endl;
-			// std::cout << "getiava : " << mesh.getTree().gettreeheader().getiava() <<  std::endl;
-			// std::cout << "getiend : " << mesh.getTree().gettreeheader().getiend() <<  std::endl;
-			// std::cout << "Domain (Tree_Header components) : " <<  std::endl;
-			// for (int i=0;i<2;i++) {
-			// 	std::cout << "domainorig : " << mesh.getTree().gettreeheader().domainorig(i) <<  std::endl;
-			// 	std::cout << "domainscal : " << mesh.getTree().gettreeheader().domainscal(i) <<  std::endl;
-			// }
-
-			// std::cout<< "Tree_Node components: " <<  std::endl;
-			// for (int i=0; i<10; i++) {
-			// 	std::cout << "getid : " << mesh.getTree().gettreenode(i).getid() <<  std::endl;
-			// 	std::cout << "getchild(0) : " << mesh.getTree().gettreenode(i).getchild(0) <<  std::endl;
-			// 	std::cout << "getchild(1) : " << mesh.getTree().gettreenode(i).getchild(1) <<  std::endl;
-				
-			// 	std::cout << "Box (Tree_Node components) : " <<  std::endl;
-			// 	std::cout << "getbox min x coord: " << mesh.getTree().gettreenode(i).getbox().get()[0]  <<  std::endl;
-			// 	std::cout << "getbox min y coord : " << mesh.getTree().gettreenode(i).getbox().get()[1]  <<  std::endl;
-			// 	std::cout << "getbox max x coord: " << mesh.getTree().gettreenode(i).getbox().get()[2]  <<  std::endl;
-			// 	std::cout << "getbox max y coord : " << mesh.getTree().gettreenode(i).getbox().get()[3]  <<  std::endl;
-			// }
-			//********************component of the mesh			
+			evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside, search);		
 		}
 		else if(order==2 && mydim==2 && ndim==2)
 		{
