@@ -21,6 +21,11 @@ class  RegressionData{
 		std::vector<UInt> observations_indices_;
 		bool locations_by_nodes_;
 
+		//barycenter information
+		MatrixXr barycenters_; //barycenter information
+		VectorXi element_ids_; //elements id information
+		bool locations_by_barycenter_;
+
 
 		//Design matrix
 		MatrixXr covariates_;
@@ -46,6 +51,7 @@ class  RegressionData{
 
 		#ifdef R_VERSION_
 		void setLocations(SEXP Rlocations);
+		void setBaryLocations(SEXP RbaryLocations);
 		void setObservations(SEXP Robservations);
 		void setCovariates(SEXP Rcovariates);
 		void setNrealizations(SEXP Rnrealizations);
@@ -77,7 +83,7 @@ class  RegressionData{
 
 
 		#ifdef R_VERSION_
-		explicit RegressionData(SEXP Rlocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda, SEXP Rcovariates,
+		explicit RegressionData(SEXP Rlocations, SEXP RbaryLocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda, SEXP Rcovariates,
 								SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues, SEXP DOF, SEXP RGCVmethod,
 								SEXP Rnrealizations, SEXP Rsearch);
 		#endif
@@ -103,8 +109,6 @@ class  RegressionData{
 		inline std::vector<Point> const & getLocations() const {return locations_;}
 		//! A method returning the number of regions
 		inline UInt const getNumberOfRegions() const {return nRegions_;}
-		inline bool isLocationsByNodes() const {return locations_by_nodes_;}
-		inline bool computeDOF() const {return DOF_;}
 		inline std::vector<UInt> const & getObservationsIndices() const {return observations_indices_;}
 		//! A method returning the the penalization term
 		inline std::vector<Real> const & getLambda() const {return lambda_;}
@@ -122,6 +126,15 @@ class  RegressionData{
 		inline UInt const & getGCVmethod() const {return GCVmethod_;}
 		//! A method returning the number of vectors to use to stochastically estimate the edf
 		inline UInt const & getNrealizations() const {return nrealizations_;}
+		inline MatrixXr const & getBarycenters() const {return barycenters_;}
+		inline VectorXi const & getElementIds() const {return element_ids_;}
+		inline Real const & getBarycenter(int i, int j) const {return barycenters_(i,j);}
+		inline UInt const & getElementId(Id i) const {return element_ids_(i);}
+
+		inline bool isLocationsByNodes() const {return locations_by_nodes_;}
+		inline bool isLocationsByBarycenter() const {return locations_by_barycenter_;}
+		inline bool computeDOF() const {return DOF_;}
+		
 };
 
 
@@ -154,7 +167,7 @@ class  RegressionDataElliptic:public RegressionData
 	        \param Rsearch an R-integer to decide the search algorithm type (tree or naive or walking search algorithm).
 		*/
 		#ifdef R_VERSION_
-		explicit RegressionDataElliptic(SEXP Rlocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda, SEXP RK, 
+		explicit RegressionDataElliptic(SEXP Rlocations, SEXP RbaryLocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda, SEXP RK, 
 				SEXP Rbeta, SEXP Rc, SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues,
 				SEXP DOF,SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch);
 		#endif
@@ -203,7 +216,7 @@ class RegressionDataEllipticSpaceVarying:public RegressionData
 			
 		*/
 		#ifdef R_VERSION_
-		explicit RegressionDataEllipticSpaceVarying(SEXP Rlocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda,
+		explicit RegressionDataEllipticSpaceVarying(SEXP Rlocations, SEXP RbaryLocations, SEXP Robservations, SEXP Rorder, SEXP Rlambda,
 				SEXP RK, SEXP Rbeta, SEXP Rc, SEXP Ru, SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices,
 				SEXP RBCValues, SEXP DOF, SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch);
 		#endif

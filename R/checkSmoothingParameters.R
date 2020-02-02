@@ -26,8 +26,7 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
     } else if (search == 2)  { #use Tree search (default)
       print('This is Tree Search')
     }
-
-  }
+  } # end of locations
    
 
   if (is.null(observations))

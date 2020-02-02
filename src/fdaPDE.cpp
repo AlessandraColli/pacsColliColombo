@@ -21,17 +21,18 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 	MeshHandler<ORDER, mydim, ndim> mesh(Rmesh);
 
 	MixedFERegression<InputHandler, Integrator,ORDER, mydim, ndim> regression(mesh,regressionData);
-	regression.apply(); //***********at this moment, search algorithm is applied to the locations!
+	regression.apply();
 
 	const std::vector<VectorXr>& solution = regression.getSolution();
 	const std::vector<Real>& dof = regression.getDOF();
-	const MatrixXr & barycenters = regression.getBarycenters(); //#######################
+	const MatrixXr & barycenters = regression.getBarycenters();
+	const VectorXi & elementIds = regression.getElementIds();
 
 
 	//Copy result in R memory                
 	SEXP result = NILSXP;
 	//result = PROTECT(Rf_allocVector(VECSXP, 2)); //**************will be divided to if/ else if there is saveTreeFlag option
-	result = PROTECT(Rf_allocVector(VECSXP, 2+5+1));
+	result = PROTECT(Rf_allocVector(VECSXP, 2+5+2));
 	SET_VECTOR_ELT(result, 0, Rf_allocMatrix(REALSXP, solution[0].size(), solution.size()));
 	SET_VECTOR_ELT(result, 1, Rf_allocVector(REALSXP, solution.size()));
 	Real *rans = REAL(VECTOR_ELT(result, 0));
@@ -90,13 +91,18 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 	}
 	
 	//BARYCENTER INFORMATION
-	SET_VECTOR_ELT(result, 7, Rf_allocMatrix(REALSXP, barycenters.rows(), barycenters.cols()));
+	SET_VECTOR_ELT(result, 7, Rf_allocMatrix(REALSXP, barycenters.rows(), barycenters.cols())); //barycenter information (matrix)
 	Real *rans7 = REAL(VECTOR_ELT(result, 7));
 	for(UInt j = 0; j < barycenters.cols(); j++)
 	{
 		for(UInt i = 0; i < barycenters.rows(); i++)
 			rans7[i + barycenters.rows()*j] = barycenters(i,j);
 	}
+
+	SET_VECTOR_ELT(result, 8, Rf_allocVector(INTSXP, elementIds.rows())); //element id of the locations point (vector)
+	int *rans8 = INTEGER(VECTOR_ELT(result, 8));
+	for(UInt i = 0; i < elementIds.rows(); i++)
+		rans8[i] = elementIds(i);
 
 	UNPROTECT(1);
 	return(result);
@@ -250,12 +256,13 @@ extern "C" {
 	\return R-vector containg the coefficients of the solution
 */
 
-SEXP regression_Laplace(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim,
+SEXP regression_Laplace(SEXP Rlocations, SEXP RbaryLocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim,
 					SEXP Rlambda, SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues,
 					SEXP DOF, SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch)
 {
+    
     //Set input data
-	RegressionData regressionData(Rlocations, Robservations, Rorder, Rlambda, Rcovariates, RincidenceMatrix, RBCIndices, 
+	RegressionData regressionData(Rlocations, RbaryLocations, Robservations, Rorder, Rlambda, Rcovariates, RincidenceMatrix, RBCIndices, 
 			RBCValues, DOF, RGCVmethod, Rnrealizations, Rsearch);
 	
 	UInt mydim=INTEGER(Rmydim)[0];
@@ -298,11 +305,11 @@ SEXP regression_Laplace(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Ro
 	\return R-vector containg the coefficients of the solution
 */
 
-SEXP regression_PDE(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder,SEXP Rmydim, SEXP Rndim,
+SEXP regression_PDE(SEXP Rlocations, SEXP RbaryLocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder,SEXP Rmydim, SEXP Rndim,
 					SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc, SEXP Rcovariates, SEXP RincidenceMatrix,
 					SEXP RBCIndices, SEXP RBCValues, SEXP DOF, SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch)
 {
-	RegressionDataElliptic regressionData(Rlocations, Robservations, Rorder, Rlambda, RK, Rbeta, Rc, Rcovariates, RincidenceMatrix, 
+	RegressionDataElliptic regressionData(Rlocations, RbaryLocations, Robservations, Rorder, Rlambda, RK, Rbeta, Rc, Rcovariates, RincidenceMatrix, 
 		RBCIndices, RBCValues, DOF, RGCVmethod, Rnrealizations, Rsearch);
 	
 	UInt mydim=INTEGER(Rmydim)[0];
@@ -343,12 +350,12 @@ SEXP regression_PDE(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder
 */
 
 
-SEXP regression_PDE_space_varying(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim,
+SEXP regression_PDE_space_varying(SEXP Rlocations, SEXP RbaryLocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim,
 								SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc, SEXP Ru, SEXP Rcovariates, SEXP RincidenceMatrix,
 								SEXP RBCIndices, SEXP RBCValues, SEXP DOF, SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch)
 {
     //Set data 
-	RegressionDataEllipticSpaceVarying regressionData(Rlocations, Robservations, Rorder, Rlambda, RK, Rbeta, Rc, Ru, Rcovariates, 
+	RegressionDataEllipticSpaceVarying regressionData(Rlocations, RbaryLocations, Robservations, Rorder, Rlambda, RK, Rbeta, Rc, Ru, Rcovariates, 
 		RincidenceMatrix, RBCIndices, RBCValues, DOF,  RGCVmethod, Rnrealizations, Rsearch);
 	
 	UInt mydim=INTEGER(Rmydim)[0];
@@ -423,10 +430,10 @@ SEXP get_FEM_stiff_matrix(SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim)
 }
 
 //! A utility, not used for system solution, may be used for debugging
-SEXP get_FEM_PDE_matrix(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder,SEXP Rmydim, SEXP Rndim, SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc,
+SEXP get_FEM_PDE_matrix(SEXP Rlocations, SEXP RbaryLocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder,SEXP Rmydim, SEXP Rndim, SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc,
 				   SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues, SEXP DOF,SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch)
 {
-	RegressionDataElliptic regressionData(Rlocations, Robservations, Rorder, Rlambda, RK, Rbeta, Rc, Rcovariates, RincidenceMatrix, RBCIndices, 
+	RegressionDataElliptic regressionData(Rlocations, RbaryLocations, Robservations, Rorder, Rlambda, RK, Rbeta, Rc, Rcovariates, RincidenceMatrix, RBCIndices, 
 		RBCValues, DOF, RGCVmethod, Rnrealizations, Rsearch);
 	
 	//Get mydim and ndim
@@ -449,10 +456,10 @@ SEXP get_FEM_PDE_matrix(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Ro
 }
 
 //! A utility, not used for system solution, may be used for debugging
-SEXP get_FEM_PDE_space_varying_matrix(SEXP Rlocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim, SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc, SEXP Ru,
+SEXP get_FEM_PDE_space_varying_matrix(SEXP Rlocations, SEXP RbaryLocations, SEXP Robservations, SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim, SEXP Rlambda, SEXP RK, SEXP Rbeta, SEXP Rc, SEXP Ru,
 		   SEXP Rcovariates, SEXP RincidenceMatrix, SEXP RBCIndices, SEXP RBCValues, SEXP DOF,SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch)
 {
-	RegressionDataEllipticSpaceVarying regressionData(Rlocations, Robservations, Rorder, Rlambda, RK, Rbeta, Rc, Ru, Rcovariates, 
+	RegressionDataEllipticSpaceVarying regressionData(Rlocations, RbaryLocations, Robservations, Rorder, Rlambda, RK, Rbeta, Rc, Ru, Rcovariates, 
 		RincidenceMatrix, RBCIndices, RBCValues, DOF, RGCVmethod, Rnrealizations, Rsearch);
 	
 	//Get mydim and ndim

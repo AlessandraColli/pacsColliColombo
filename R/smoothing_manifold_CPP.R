@@ -1,4 +1,4 @@
-CPP_smooth.manifold.FEM.basis<-function(locations, observations, FEMbasis, lambda, covariates = NULL, incidence_matrix = NULL, ndim, mydim, BC = NULL, GCV,GCVMETHOD = 2, nrealizations = 100, search)
+CPP_smooth.manifold.FEM.basis<-function(locations, bary.locations, observations, FEMbasis, lambda, covariates = NULL, incidence_matrix = NULL, ndim, mydim, BC = NULL, GCV,GCVMETHOD = 2, nrealizations = 100, search)
 {
   
   # C++ function for manifold works with vectors not with matrices
@@ -46,7 +46,7 @@ CPP_smooth.manifold.FEM.basis<-function(locations, observations, FEMbasis, lambd
   ## Set propr type for correct C++ reading
   locations <- as.matrix(locations)
   storage.mode(locations) <- "double"
-  data <- as.vector(observations)
+  observations <- as.vector(observations)
   storage.mode(observations) <- "double"
   storage.mode(FEMbasis$mesh$order) <- "integer"
   storage.mode(FEMbasis$mesh$nnodes) <- "integer"
@@ -70,7 +70,7 @@ CPP_smooth.manifold.FEM.basis<-function(locations, observations, FEMbasis, lambd
   storage.mode(search) <- "integer"
   
   ## Call C++ function
-  bigsol <- .Call("regression_Laplace", locations, data, FEMbasis$mesh, FEMbasis$mesh$order, mydim, ndim, lambda, covariates,
+  bigsol <- .Call("regression_Laplace", locations, bary.locations, observations, FEMbasis$mesh, FEMbasis$mesh$order, mydim, ndim, lambda, covariates,
                   incidence_matrix, BC$BC_indices, BC$BC_values, GCV, GCVMETHOD, nrealizations, search, PACKAGE = "fdaPDE")
   
   return(bigsol)

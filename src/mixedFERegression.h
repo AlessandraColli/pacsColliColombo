@@ -32,7 +32,9 @@ class MixedFERegressionBase
 	MatrixXr U_;	//! psi^T * W or psi^T * A * W padded with zeros, needed for Woodbury decomposition
 	MatrixXr V_;   //! W^T*psi, if pointwise data is U^T, needed for Woodbury decomposition
 	VectorXr z_; //! Observations
-	MatrixXr barycenters_; // //barycenter information	
+
+	MatrixXr barycenters_; //barycenter information
+	VectorXi element_ids_; //elements id information
 		
 	Eigen::SparseLU<SpMat> matrixNoCovdec_; // Stores the factorization of matrixNoCov_
 	Eigen::PartialPivLU<MatrixXr> Gdec_;	// Stores factorization of G =  C + [V * matrixNoCov^-1 * U]
@@ -87,7 +89,8 @@ class MixedFERegressionBase
 	
 	public:
 	//!A Constructor.
-	MixedFERegressionBase(const MeshHandler<ORDER,mydim,ndim>& mesh, const InputHandler& regressionData): mesh_(mesh), regressionData_(regressionData) {};
+	MixedFERegressionBase(const MeshHandler<ORDER,mydim,ndim>& mesh, const InputHandler& regressionData): 
+		mesh_(mesh), regressionData_(regressionData) {};
 
 	//! The function solving the system, used by the children classes. Saves the result in _solution
 	/*!
@@ -103,13 +106,16 @@ class MixedFERegressionBase
 	inline std::vector<Real> const & getDOF() const{return _dof;};
 	//! A function returning the computed barycenters of the locationss
 	inline MatrixXr const & getBarycenters() const{return barycenters_;};
+	//! A function returning the element ids of the locations
+	inline VectorXi const & getElementIds() const{return element_ids_;};
 };
 
 template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 class MixedFERegression : public MixedFERegressionBase<InputHandler, Integrator, ORDER, mydim, ndim>
 {
 public:
-	MixedFERegression(const MeshHandler<ORDER, ndim, mydim>& mesh, const InputHandler& regressionData):MixedFERegressionBase<InputHandler, Integrator, ORDER, mydim, ndim>(mesh, regressionData){};
+	MixedFERegression(const MeshHandler<ORDER, ndim, mydim>& mesh, const InputHandler& regressionData):
+		MixedFERegressionBase<InputHandler, Integrator, ORDER, mydim, ndim>(mesh, regressionData){};
 
 	void apply()
 	{
