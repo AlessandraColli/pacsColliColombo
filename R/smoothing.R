@@ -317,9 +317,7 @@ smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMb
                                   covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim,
                                   BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
   
-    numnodes = nrow(FEMbasis$mesh$nodes)
-    numelements = nrow(FEMbasis$mesh$triangles)
-    
+    numnodes = nrow(FEMbasis$mesh$nodes) 
   } else if(class(FEMbasis$mesh) == 'mesh.2D' & !is.null(PDE_parameters) & space_varying==FALSE){
     
     bigsol = NULL
@@ -330,8 +328,6 @@ smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMb
                                       BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
     
     numnodes = nrow(FEMbasis$mesh$nodes)
-    numelements = nrow(FEMbasis$mesh$triangles)
-
   } else if(class(FEMbasis$mesh) == 'mesh.2D' & !is.null(PDE_parameters) & space_varying==TRUE){  
     
     bigsol = NULL
@@ -341,9 +337,7 @@ smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMb
                                          covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim,
                                          BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
   
-    numnodes = nrow(FEMbasis$mesh$nodes)
-    numelements = nrow(FEMbasis$mesh$triangles)
-  
+    numnodes = nrow(FEMbasis$mesh$nodes) 
   }else if(class(FEMbasis$mesh) == 'mesh.2.5D'){
     
     bigsol = NULL  
@@ -356,8 +350,6 @@ smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMb
                                           BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
     
     numnodes = FEMbasis$mesh$nnodes
-    numelements = FEMbasis$mesh$ntriangles
-    
   }else if(class(FEMbasis$mesh) == 'mesh.3D'){
     
     bigsol = NULL  
@@ -367,7 +359,6 @@ smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMb
                                         BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
     
     numnodes = FEMbasis$mesh$nnodes
-    numelements = FEMbasis$mesh$ntetrahedrons
   }
   
   f = bigsol[[1]][1:numnodes,]
@@ -400,6 +391,7 @@ smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMb
     class(treeFEMbasis) = "treeFEMbasis"
   }
 
+  # Save information of Barycenter
   bary.locations = list(barycenters = bigsol[[8]], element_ids = bigsol[[9]])
   class(bary.locations) = "bary.locations"
   

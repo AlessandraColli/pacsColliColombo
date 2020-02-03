@@ -16,6 +16,10 @@ class  FPCAData{
 	
 		std::vector<Point> locations_;
 
+		//barycenter information
+		MatrixXr barycenters_; //barycenter information
+		VectorXi element_ids_; //elements id information
+		bool locations_by_barycenter_;
 	
 		//Design matrix
 		MatrixXr datamatrix_;
@@ -48,8 +52,9 @@ class  FPCAData{
 		bool locations_by_nodes_;
 		
 		#ifdef R_VERSION_
-		void setDatamatrix(SEXP Rdatamatrix);
 		void setLocations(SEXP Rlocations);
+		void setBaryLocations(SEXP RbaryLocations);
+		void setDatamatrix(SEXP Rdatamatrix);
 		void setNrealizations(SEXP Rnrealizations);
 		void setIncidenceMatrix(SEXP RincidenceMatrix);
 		#endif
@@ -84,7 +89,7 @@ class  FPCAData{
 		FPCAData(){};
 
 		#ifdef R_VERSION_
-		explicit FPCAData(SEXP Rlocations, SEXP Rdatamatrix, SEXP Rorder, SEXP RincidenceMatrix,
+		explicit FPCAData(SEXP Rlocations, SEXP RbaryLocations, SEXP Rdatamatrix, SEXP Rorder, SEXP RincidenceMatrix,
 		SEXP Rlambda, SEXP RnPC, SEXP RnFolds, SEXP RGCVmethod, SEXP Rnrealizations, SEXP Rsearch);
 		#endif
 
@@ -135,6 +140,12 @@ class  FPCAData{
 		inline UInt const & getGCVmethod() const {return GCVmethod_;}
 		//! A method returning the number of vectors to use to stochastically estimate the edf
 		inline UInt const & getNrealizations() const {return nrealizations_;}
+		inline MatrixXr const & getBarycenters() const {return barycenters_;}
+		inline VectorXi const & getElementIds() const {return element_ids_;}
+		inline Real const & getBarycenter(int i, int j) const {return barycenters_(i,j);}
+		inline UInt const & getElementId(Id i) const {return element_ids_(i);}
+
+		inline bool isLocationsByBarycenter() const {return locations_by_barycenter_;}
 		
 		
 };
