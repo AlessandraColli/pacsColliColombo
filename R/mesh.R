@@ -434,10 +434,12 @@ data.projection.2.5D<-function(mesh, locations) {
   ## Set proper type for correct C++ reading
   locations <- as.matrix(locations)
   storage.mode(locations) <- "double"
+  
+  storage.mode(mesh$nnodes) <- "integer"
+  storage.mode(mesh$ntriangles) <- "integer"
   storage.mode(mesh$nodes) <- "double"
   storage.mode(mesh$triangles) <- "integer"
-  storage.mode(mesh$edges) <- "integer"
-  storage.mode(mesh$neighbors) <- "integer"
+  storage.mode(mesh$order) <- "integer"
 
   ## Call C++ function
   evalmat <- .Call("data_projection", mesh, locations, package = "fdaPDE")
