@@ -234,9 +234,9 @@
 #' image(solution$fit.FEM)
 
 
-smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMbasis, lambda, 
+smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda, 
                      covariates = NULL, PDE_parameters=NULL, incidence_matrix = NULL, 
-                     BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100, search = "tree")
+                     BC = NULL, GCV = FALSE, GCVmethod = "Stochastic", nrealizations = 100, search = "tree", bary.locations = NULL)
 {
   if(class(FEMbasis$mesh) == "mesh.2D"){
     ndim = 2
@@ -287,13 +287,22 @@ smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMb
   
   # Check whether the locations coincide with the mesh nodes
   if (!is.null(locations)) {
-    if(dim(locations)[1]==dim(FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEMbasis$mesh$nodes)[2] & sum(abs(locations[,1]))==sum(abs(FEMbasis$mesh$nodes[,1])) & sum(abs(locations[,2]))==sum(abs(FEMbasis$mesh$nodes[,2])) ) {
-      message("No search algorithm is used because the location coincides with the nodes.")
-      locations = NULL #In principle R uses pass-by-value semantics in its function calls. So put ouside of checkSmoothingParameters function.
+    if(dim(locations)[1]==dim(FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEMbasis$mesh$nodes)[2]) {
+      sum1=0
+      sum2=0
+      for (i in 1:nrow(locations)) {
+      sum1 = sum1 + abs(locations[i,1]-FEMbasis$mesh$nodes[i,1])
+      sum2 = sum2 + abs(locations[i,2]-FEMbasis$mesh$nodes[i,2])
+      }
+      if (sum1==0 & sum2==0) {
+        message("No search algorithm is used because the locations coincide with the nodes.")
+        locations = NULL #In principle, R uses pass-by-value semantics in its function calls. So put ouside of checkSmoothingParameters function.
+      }
     }
   }
 
-  space_varying=checkSmoothingParameters(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, covariates=covariates, incidence_matrix=incidence_matrix, BC=BC, GCV=GCV, PDE_parameters=PDE_parameters, GCVmethod=GCVMETHOD , nrealizations=nrealizations, search=search)
+  space_varying=checkSmoothingParameters(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, covariates=covariates, incidence_matrix=incidence_matrix, 
+    BC=BC, GCV=GCV, PDE_parameters=PDE_parameters, GCVmethod=GCVMETHOD , nrealizations=nrealizations, search=search, bary.locations=bary.locations)
   
   # if I have PDE non-sv case I need (constant) matrices as parameters
   
@@ -305,7 +314,8 @@ smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMb
   }
   
   
-  checkSmoothingParametersSize(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, covariates=covariates, incidence_matrix=incidence_matrix, BC=BC, GCV=GCV, space_varying=space_varying, PDE_parameters=PDE_parameters, ndim=ndim, mydim=mydim)
+  checkSmoothingParametersSize(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, covariates=covariates, incidence_matrix=incidence_matrix, 
+    BC=BC, GCV=GCV, space_varying=space_varying, PDE_parameters=PDE_parameters, ndim=ndim, mydim=mydim)
   
   ################## End checking parameters, sizes and conversion #############################
   
@@ -313,29 +323,27 @@ smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMb
     
     bigsol = NULL
     print('C++ Code Execution')
-    bigsol = CPP_smooth.FEM.basis(locations=locations, bary.locations=bary.locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda,
+    bigsol = CPP_smooth.FEM.basis(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda,
                                   covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim,
-                                  BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
+                                  BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search, bary.locations=bary.locations)
   
     numnodes = nrow(FEMbasis$mesh$nodes) 
   } else if(class(FEMbasis$mesh) == 'mesh.2D' & !is.null(PDE_parameters) & space_varying==FALSE){
     
     bigsol = NULL
     print('C++ Code Execution')
-    bigsol = CPP_smooth.FEM.PDE.basis(locations=locations, bary.locations=bary.locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda,
-                                      PDE_parameters = PDE_parameters,
+    bigsol = CPP_smooth.FEM.PDE.basis(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, PDE_parameters = PDE_parameters,
                                       covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim,
-                                      BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
+                                      BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search, bary.locations=bary.locations)
     
     numnodes = nrow(FEMbasis$mesh$nodes)
   } else if(class(FEMbasis$mesh) == 'mesh.2D' & !is.null(PDE_parameters) & space_varying==TRUE){  
     
     bigsol = NULL
     print('C++ Code Execution')
-    bigsol = CPP_smooth.FEM.PDE.sv.basis(locations=locations, bary.locations=bary.locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda,
-                                         PDE_parameters = PDE_parameters,
+    bigsol = CPP_smooth.FEM.PDE.sv.basis(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, PDE_parameters = PDE_parameters,
                                          covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim,
-                                         BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
+                                         BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search, bary.locations=bary.locations)
   
     numnodes = nrow(FEMbasis$mesh$nodes) 
   }else if(class(FEMbasis$mesh) == 'mesh.2.5D'){
@@ -345,78 +353,56 @@ smooth.FEM<-function(locations = NULL, bary.locations = NULL, observations, FEMb
     ################# CHECK
     #if(!is.null(locations))
     #  stop("The option locations!=NULL for manifold domains is currently not implemented")
-    bigsol = CPP_smooth.manifold.FEM.basis(locations=locations, bary.locations=bary.locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, 
+    bigsol = CPP_smooth.manifold.FEM.basis(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, 
                                           covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim, 
-                                          BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
+                                          BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search, bary.locations=bary.locations)
     
     numnodes = FEMbasis$mesh$nnodes
   }else if(class(FEMbasis$mesh) == 'mesh.3D'){
     
     bigsol = NULL  
     print('C++ Code Execution')
-    bigsol = CPP_smooth.volume.FEM.basis(locations=locations, bary.locations=bary.locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, 
+    bigsol = CPP_smooth.volume.FEM.basis(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, 
                                         covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim, 
-                                        BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search)
+                                        BC=BC, GCV=GCV, GCVMETHOD=GCVMETHOD, nrealizations=nrealizations, search=search, bary.locations=bary.locations)
     
     numnodes = FEMbasis$mesh$nnodes
   }
   
   f = bigsol[[1]][1:numnodes,]
   g = bigsol[[1]][(numnodes+1):(2*numnodes),]
-  
-  # Make Functional objects
-  fit.FEM  = FEM(f, FEMbasis)
-  PDEmisfit.FEM = FEM(g, FEMbasis)
 
   # Save information of Tree Mesh
-  tree_mesh = list(
-    treeloc = bigsol[[3]][1],
-    treelev = bigsol[[3]][2],
-    ndimp = bigsol[[3]][3],
-    ndimt = bigsol[[3]][4],
-    nele = bigsol[[3]][5],
-    iava = bigsol[[3]][6],
-    iend =bigsol[[3]][7],
+    tree_mesh = list(
+    treelev = bigsol[[3]][1],
     header_orig= bigsol[[4]], 
     header_scale = bigsol[[5]],
     node_id = bigsol[[6]][,1],
     node_left_child = bigsol[[6]][,2],
     node_right_child = bigsol[[6]][,3],
     node_box= bigsol[[7]])
+  
+  # Make Functional objects
+  mesh.class= class(FEMbasis$mesh)
+  FEMbasis$mesh = append(FEMbasis$mesh, tree_mesh)
+  class(FEMbasis$mesh) = mesh.class
+  
+  fit.FEM  = FEM(f, FEMbasis)
+  PDEmisfit.FEM = FEM(g, FEMbasis)
 
-  if (class(FEMbasis) != "treeFEMbasis") {
-    treeFEMbasis = FEMbasis
-    treeFEMbasis$mesh = append(FEMbasis$mesh, tree_mesh)
-    class(treeFEMbasis$mesh) = class(FEMbasis$mesh)
-    class(treeFEMbasis) = "treeFEMbasis"
-  }
 
   # Save information of Barycenter
-  bary.locations = list(barycenters = bigsol[[8]], element_ids = bigsol[[9]])
+  bary.locations = list(locations=locations, element_ids = bigsol[[8]], barycenters = bigsol[[9]])
   class(bary.locations) = "bary.locations"
   
   reslist = NULL
   beta = getBetaCoefficients(locations=locations, observations=observations, fit.FEM=fit.FEM, covariates=covariates, incidence_matrix=incidence_matrix, ndim=ndim, mydim=mydim, search=search)
   if(GCV == TRUE) {
     seq=getGCV(locations = locations, observations = observations, fit.FEM = fit.FEM, covariates = covariates, incidence_matrix = incidence_matrix, edf = bigsol[[2]], ndim=ndim, mydim=mydim, search=search)
-    
-    if (class(FEMbasis) != "treeFEMbasis") {
-    reslist=list(fit.FEM = fit.FEM, treeFEMbasis = treeFEMbasis, bary.locations = bary.locations,
-      PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV)
-    } else { #already exists treeFEMbasis
-      reslist=list(fit.FEM = fit.FEM, bary.locations = bary.locations,
-        PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV)
-    }
-
+    reslist=list(fit.FEM = fit.FEM, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, edf = bigsol[[2]], stderr = seq$stderr, GCV = seq$GCV, bary.locations = bary.locations)
 
   }else{ #GCV == FALSE
-    if (class(FEMbasis) != "treeFEMbasis") {
-      reslist=list(fit.FEM = fit.FEM, treeFEMbasis = treeFEMbasis, bary.locations = bary.locations,,
-        PDEmisfit.FEM = PDEmisfit.FEM, beta = beta)
-    } else { #already exists treeFEMbasis
-      reslist=list(fit.FEM = fit.FEM, bary.locations = bary.locations,
-        PDEmisfit.FEM = PDEmisfit.FEM, beta = beta)
-    }
+    reslist=list(fit.FEM = fit.FEM, PDEmisfit.FEM = PDEmisfit.FEM, beta = beta, bary.locations = bary.locations)
   }
   
   return(reslist)

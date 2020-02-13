@@ -38,7 +38,31 @@ void Evaluator<ORDER,2,2>::eval(Real* X, Real *Y, UInt length, const Real *coef,
 			result[i] = evaluate_point<Nodes,2,2>(current_element, current_point, coefficients);
 		}
 	} //end of for loop
- 
+}
+
+template <UInt ORDER>
+void Evaluator<ORDER,2,2>::evalWithId(Real* X, Real *Y, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, const std::vector<UInt> & element_id)
+{
+
+	constexpr UInt Nodes = 3*ORDER;
+	Element<Nodes,2,2> current_element;
+	Point current_point;
+	Eigen::Matrix<Real,Nodes,1> coefficients;
+
+	for (int i = 0; i<length; ++i) {
+		current_point = Point(X[i],Y[i]);
+		current_element = mesh_.getElement(element_id[i]);
+		
+		if(current_element.getId() == Identifier::NVAL) {
+			isinside[i]=false;
+		} else {
+			isinside[i]=true;
+			for (int j=0; j<Nodes; ++j) {
+				coefficients[j] = coef[current_element[j].getId()];
+			}
+			result[i] = evaluate_point<Nodes,2,2>(current_element, current_point, coefficients);
+		}
+	} //end of for loop
 }
 
 
@@ -76,6 +100,30 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 
 }
 
+template <UInt ORDER>
+void Evaluator<ORDER,2,3>::evalWithId(Real* X, Real *Y, Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, const std::vector<UInt> & element_id)
+{
+
+	constexpr UInt Nodes = 3*ORDER;
+	Element<Nodes,2,3> current_element;
+	Point current_point;
+	Eigen::Matrix<Real,Nodes,1> coefficients;
+
+	for (int i = 0; i<length; ++i) {
+		current_point = Point(X[i],Y[i],Z[i]);
+		current_element = mesh_.getElement(element_id[i]);
+		
+		if(current_element.getId() == Identifier::NVAL) {
+			isinside[i]=false;
+		} else {
+			isinside[i]=true;
+			for (int j=0; j<Nodes; ++j) {
+				coefficients[j] = coef[current_element[j].getId()];
+			}
+			result[i] = evaluate_point<Nodes,2,3>(current_element, current_point, coefficients);
+		}
+	} //end of for loop
+}
 
 template <UInt ORDER>
 void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, int search)
@@ -111,6 +159,30 @@ void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 
 }
 
+template <UInt ORDER>
+void Evaluator<ORDER,3,3>::evalWithId(Real* X, Real *Y, Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, const std::vector<UInt> & element_id)
+{
+
+	constexpr UInt Nodes = 6*ORDER-2;
+	Element<Nodes,3,3> current_element;
+	Point current_point;
+	Eigen::Matrix<Real,Nodes,1> coefficients;
+
+	for (int i = 0; i<length; ++i) {
+		current_point = Point(X[i],Y[i],Z[i]);
+		current_element = mesh_.getElement(element_id[i]);
+		
+		if(current_element.getId() == Identifier::NVAL) {
+			isinside[i]=false;
+		} else {
+			isinside[i]=true;
+			for (int j=0; j<Nodes; ++j) {
+				coefficients[j] = coef[current_element[j].getId()];
+			}
+			result[i] = evaluate_point<Nodes,3,3>(current_element, current_point, coefficients);
+		}
+	} //end of for loop
+}
 
 template <UInt ORDER>
 void Evaluator<ORDER, 2, 2>::integrate(UInt** incidenceMatrix, UInt nRegions, UInt nElements, const Real *coef, Real* result)

@@ -176,6 +176,7 @@ void RegressionData::setLocations(SEXP Rlocations)
 
 void RegressionData::setBaryLocations(SEXP RbaryLocations)
 {
+	//RECIEVE BARYCENTER INFORMATION FROM R
 	if (TYPEOF(RbaryLocations) != 0) { //TYPEOF(RbaryLocations) == 0 means SEXPTYPE is NILSXP (Description is NULL)
 		Real* bary_ 	= REAL(VECTOR_ELT(RbaryLocations, 0));
 		UInt* id_ 	= INTEGER(VECTOR_ELT(RbaryLocations, 1));

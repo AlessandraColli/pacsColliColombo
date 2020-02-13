@@ -127,8 +127,7 @@ public:
     /*!
      * This method implements a Visibility Walk Algorithm (further details in: Walking in a triangulation, Devillers et al)
      * \param point the point we want to locate
-     * \param starting_elements a vector of points that specifies the poposed starting
-     * points for the walking algorithm
+     * \param starting_element Element that specifies the poposed starting points for the walking algorithm
       \return The element that contains the point
     */
     Element<3*ORDER,2,2> findLocationWalking(const Point& point, const Element<3*ORDER,2,2>& starting_element) const;

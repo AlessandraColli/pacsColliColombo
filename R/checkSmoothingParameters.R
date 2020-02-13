@@ -1,10 +1,10 @@
-checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, PDE_parameters=NULL, GCVmethod = 2, nrealizations = 100, search)
+checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lambda, covariates = NULL, incidence_matrix = NULL, BC = NULL, GCV = FALSE, PDE_parameters=NULL, GCVmethod = 2, nrealizations = 100, search, bary.locations=bary.locations)
 {
   #################### Parameter Check #########################
  
   if (is.null(FEMbasis))
     stop("FEMbasis required;  is NULL.")
-  if(class(FEMbasis)!= "FEMbasis" && class(FEMbasis)!= "treeFEMbasis")
+  if(class(FEMbasis)!= "FEMbasis")
     stop("'FEMbasis' is not class 'FEMbasis'")
   
   if(class(FEMbasis$mesh)!='mesh.2D' & class(FEMbasis$mesh) != "mesh.2.5D" & class(FEMbasis$mesh) != "mesh.3D")
@@ -20,12 +20,6 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
       stop("Missing values not admitted in 'locations'.")
     if(any(is.na(observations)))
       stop("Missing values not admitted in 'observations' when 'locations' are specified.")
-
-    if (search == 1) { #use Naive search
-      print('This is Naive Search')
-    } else if (search == 2)  { #use Tree search (default)
-      print('This is Tree Search')
-    }
   } # end of locations
    
 
@@ -64,7 +58,23 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
     if (is.null(PDE_parameters$c)) 
       stop("'c' required in PDE_parameters;  is NULL.")
   }
-    
+  
+  #Check the locations in 'baty.locations' and 'locations' are the same
+  if(!is.null(bary.locations) & !is.null(locations))
+  {
+    flag=TRUE
+    for (i in 1:nrow(locations)) {
+      if (!(locations[i,1]==bary.locations$locations[i,1] & locations[i,2] == bary.locations$locations[i,2])) {
+        flag = FALSE
+        break
+      }
+    }
+
+    if (flag == FALSE) {
+      stop("Locations are not same as the one in barycenter information.")
+    }
+  }  # end of bary.locations
+
   space_varying=FALSE
   
   if(!is.null(PDE_parameters$u)){
@@ -98,6 +108,16 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
     stop("nrealizations must be a positive integer")
   
   ans=space_varying
+
+  # print the type of the search algorithm
+  if(!is.null(locations))
+  {
+    if (search == 1) { #use Naive search
+      print('This is Naive Search')
+    } else if (search == 2)  { #use Tree search (default)
+      print('This is Tree Search')
+    }
+  }
   
   ans
 }

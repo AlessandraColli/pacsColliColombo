@@ -26,19 +26,21 @@ MeshHandler<ORDER,2,2>::MeshHandler(SEXP mesh)
 	if (mesh_len == 11) { //don't have tree mesh information (length==11)
 		ADTree<Element<3*ORDER,2,2>> tmp(points_, elements_, num_nodes_, num_elements_);
 	    tree_ = tmp;
-	} else { // have tree mesh information (length==24)
+	} else {
+		//RECIEVE TREE INFORMATION FROM R
 		//tree_header information
-		int tree_loc_ = INTEGER(VECTOR_ELT(mesh_, 11))[0];
-	    int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 12))[0];
-	    int ndimp_ = INTEGER(VECTOR_ELT(mesh_, 13))[0];
-	    int ndimt_ = INTEGER(VECTOR_ELT(mesh_, 14))[0];
-	    int nele_ = INTEGER(VECTOR_ELT(mesh_, 15))[0];
-	    int iava_ = INTEGER(VECTOR_ELT(mesh_, 16))[0];
-	    int iend_ = INTEGER(VECTOR_ELT(mesh_, 17))[0];
+		int tree_loc_ = num_elements_;
+	    int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 11))[0];
+	    int ndimp_ = 2;
+	    int ndimt_ = 4;
+	    int nele_ = num_elements_;
+	    int iava_ = num_elements_+1;
+	    int iend_ = num_elements_+1;
+
 		std::vector<Real>  origin_;
-	    origin_.assign(REAL(VECTOR_ELT(mesh_, 18)), REAL(VECTOR_ELT(mesh_, 18))+ndimt_);
+	    origin_.assign(REAL(VECTOR_ELT(mesh_, 12)), REAL(VECTOR_ELT(mesh_, 12))+ndimt_);
 	    std::vector<Real> scalingfactors_;
-	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 19)), REAL(VECTOR_ELT(mesh_, 19))+ndimt_);
+	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 13)), REAL(VECTOR_ELT(mesh_, 13))+ndimt_);
 	    
 	    Domain<Element<3*ORDER, 2, 2>> tree_domain(origin_, scalingfactors_);
 	    Tree_Header<Element<3*ORDER,2, 2>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
@@ -46,12 +48,12 @@ MeshHandler<ORDER,2,2>::MeshHandler(SEXP mesh)
 
 	    //treenode information (number of nodes = number of elements+1)
 	    std::vector<Id> id_;
-	    id_.assign(INTEGER(VECTOR_ELT(mesh_, 20)), INTEGER(VECTOR_ELT(mesh_, 20))+num_elements_+1);
+	    id_.assign(INTEGER(VECTOR_ELT(mesh_, 14)), INTEGER(VECTOR_ELT(mesh_, 14))+num_elements_+1);
 	    std::vector<int> node_left_child_;
-	    node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 21)), INTEGER(VECTOR_ELT(mesh_, 21))+num_elements_+1);
+	    node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 15)), INTEGER(VECTOR_ELT(mesh_, 15))+num_elements_+1);
 	    std::vector<int> node_right_child_;
-	    node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 22)), INTEGER(VECTOR_ELT(mesh_, 22))+num_elements_+1);
-	    Real* box_ = REAL(VECTOR_ELT(mesh_, 23));
+	    node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 16)), INTEGER(VECTOR_ELT(mesh_, 16))+num_elements_+1);
+	    Real* box_ = REAL(VECTOR_ELT(mesh_, 17));
 
 	    UInt num_tree_nodes = id_.size();
 	    std::vector<TreeNode<Element<3*ORDER,2,2>>> tree_nodes;
@@ -274,7 +276,7 @@ void MeshHandler<ORDER,2,2>::printNeighbors(std::ostream & out)
 	for (UInt i = 0; i < num_elements_; ++i )
 	{
 		out<<"-"<< i <<"- ";
-		for( UInt k = 0; k < 3; ++k)
+		for( UInt k = 0; k < 3*ORDER; ++k)
 			out<<neighbors_[k*num_elements_ + i]<<"   ";
 		out<<std::endl;
 	}
@@ -307,25 +309,27 @@ MeshHandler<ORDER,2,3>::MeshHandler(SEXP mesh)
 	points_ = REAL(VECTOR_ELT(mesh_, 2));
 	elements_ = INTEGER(VECTOR_ELT(mesh_, 3));
 	
-    // Rprintf("mesh LENGTH: %d \n",XLENGTH(mesh_));
+    //Rprintf("mesh LENGTH: %d \n", XLENGTH(mesh_));
 
 	int mesh_len = XLENGTH(mesh_);
 	if (mesh_len == 5) { //don't have tree mesh information (length==5)
 		ADTree<Element<3*ORDER,2,3>> tmp(points_, elements_, num_nodes_, num_elements_);
     	tree_ = tmp;
-	} else { // have tree mesh information (length==18)
+	} else {
+		//RECIEVE TREE INFORMATION FROM R
 		//tree_header information
-		int tree_loc_ = INTEGER(VECTOR_ELT(mesh_, 5))[0];
-	    int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 6))[0];
-	    int ndimp_ = INTEGER(VECTOR_ELT(mesh_, 7))[0];
-	    int ndimt_ = INTEGER(VECTOR_ELT(mesh_, 8))[0];
-	    int nele_ = INTEGER(VECTOR_ELT(mesh_, 9))[0];
-	    int iava_ = INTEGER(VECTOR_ELT(mesh_, 10))[0];
-	    int iend_ = INTEGER(VECTOR_ELT(mesh_, 11))[0];
+		int tree_loc_ = num_elements_;
+	    int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 5))[0];
+	    int ndimp_ = 3;
+	    int ndimt_ = 6;
+	    int nele_ = num_elements_;
+	    int iava_ = num_elements_+1;
+	    int iend_ = num_elements_+1;
+
 		std::vector<Real>  origin_;
-	    origin_.assign(REAL(VECTOR_ELT(mesh_, 12)), REAL(VECTOR_ELT(mesh_, 12))+ndimt_);
+	    origin_.assign(REAL(VECTOR_ELT(mesh_, 6)), REAL(VECTOR_ELT(mesh_, 6))+ndimt_);
 	    std::vector<Real> scalingfactors_;
-	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 13)), REAL(VECTOR_ELT(mesh_, 13))+ndimt_);
+	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 7)), REAL(VECTOR_ELT(mesh_, 7))+ndimt_);
 	    
 	    Domain<Element<3*ORDER, 2, 3>> tree_domain(origin_, scalingfactors_);
 	    Tree_Header<Element<3*ORDER,2, 3>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
@@ -333,12 +337,12 @@ MeshHandler<ORDER,2,3>::MeshHandler(SEXP mesh)
 
 	    //treenode information (number of nodes = number of elements+1)
 	    std::vector<Id> id_;
-	    id_.assign(INTEGER(VECTOR_ELT(mesh_, 14)), INTEGER(VECTOR_ELT(mesh_, 14))+num_elements_+1);
+	    id_.assign(INTEGER(VECTOR_ELT(mesh_, 8)), INTEGER(VECTOR_ELT(mesh_, 8))+num_elements_+1);
 	    std::vector<int> node_left_child_;
-	    node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 15)), INTEGER(VECTOR_ELT(mesh_, 15))+num_elements_+1);
+	    node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 9)), INTEGER(VECTOR_ELT(mesh_, 9))+num_elements_+1);
 	    std::vector<int> node_right_child_;
-	    node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 16)), INTEGER(VECTOR_ELT(mesh_, 16))+num_elements_+1);
-	    Real* box_ = REAL(VECTOR_ELT(mesh_, 17));
+	    node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 10)), INTEGER(VECTOR_ELT(mesh_, 10))+num_elements_+1);
+	    Real* box_ = REAL(VECTOR_ELT(mesh_, 11));
 
 	    UInt num_tree_nodes = id_.size();
 	    std::vector<TreeNode<Element<3*ORDER,2,3>>> tree_nodes;
@@ -434,7 +438,7 @@ void MeshHandler<ORDER,2,3>::importfromCSV(std::string &filename){
 template <UInt ORDER>
 Point MeshHandler<ORDER,2,3>::getPoint(Id id)
 {
-	Point point(id, Identifier::NVAL, points_[id], points_[id+1], points_[id+2]);
+	Point point(id, Identifier::NVAL, points_[3*id], points_[3*id+1], points_[3*id+2]);
 	return point;
 }
 
@@ -572,19 +576,21 @@ MeshHandler<ORDER,3,3>::MeshHandler(SEXP mesh)
 	if (mesh_len == 5) { //don't have tree mesh information (length==5)
 		ADTree<Element<6*ORDER-2,3,3>> tmp(points_, elements_, num_nodes_, num_elements_);
     	tree_ = tmp;
-	} else { // have tree mesh information (length==18)
+	} else {
+		//RECIEVE TREE INFORMATION FROM R
 		//tree_header information
-		int tree_loc_ = INTEGER(VECTOR_ELT(mesh_, 5))[0];
-	    int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 6))[0];
-	    int ndimp_ = INTEGER(VECTOR_ELT(mesh_, 7))[0];
-	    int ndimt_ = INTEGER(VECTOR_ELT(mesh_, 8))[0];
-	    int nele_ = INTEGER(VECTOR_ELT(mesh_, 9))[0];
-	    int iava_ = INTEGER(VECTOR_ELT(mesh_, 10))[0];
-	    int iend_ = INTEGER(VECTOR_ELT(mesh_, 11))[0];
+		int tree_loc_ = num_elements_;
+	    int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 5))[0];
+	    int ndimp_ = 3;
+	    int ndimt_ = 6;
+	    int nele_ = num_elements_;
+	    int iava_ = num_elements_+1;
+	    int iend_ = num_elements_+1;
+
 		std::vector<Real>  origin_;
-	    origin_.assign(REAL(VECTOR_ELT(mesh_, 12)), REAL(VECTOR_ELT(mesh_, 12))+ndimt_);
+	    origin_.assign(REAL(VECTOR_ELT(mesh_, 6)), REAL(VECTOR_ELT(mesh_, 6))+ndimt_);
 	    std::vector<Real> scalingfactors_;
-	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 13)), REAL(VECTOR_ELT(mesh_, 13))+ndimt_);
+	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 7)), REAL(VECTOR_ELT(mesh_, 7))+ndimt_);
 	    
 	    Domain<Element<6*ORDER-2,3,3>> tree_domain(origin_, scalingfactors_);
 	    Tree_Header<Element<6*ORDER-2,3,3>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
@@ -592,12 +598,12 @@ MeshHandler<ORDER,3,3>::MeshHandler(SEXP mesh)
 
 	    //treenode information (number of nodes = number of elements+1)
 	    std::vector<Id> id_;
-	    id_.assign(INTEGER(VECTOR_ELT(mesh_, 14)), INTEGER(VECTOR_ELT(mesh_, 14))+num_elements_+1);
+	    id_.assign(INTEGER(VECTOR_ELT(mesh_, 8)), INTEGER(VECTOR_ELT(mesh_, 8))+num_elements_+1);
 	    std::vector<int> node_left_child_;
-	    node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 15)), INTEGER(VECTOR_ELT(mesh_, 15))+num_elements_+1);
+	    node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 9)), INTEGER(VECTOR_ELT(mesh_, 9))+num_elements_+1);
 	    std::vector<int> node_right_child_;
-	    node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 16)), INTEGER(VECTOR_ELT(mesh_, 16))+num_elements_+1);
-	    Real* box_ = REAL(VECTOR_ELT(mesh_, 17));
+	    node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 10)), INTEGER(VECTOR_ELT(mesh_, 10))+num_elements_+1);
+	    Real* box_ = REAL(VECTOR_ELT(mesh_, 11));
 
 	    UInt num_tree_nodes = id_.size();
 	    std::vector<TreeNode<Element<6*ORDER-2,3,3>>> tree_nodes;
@@ -621,7 +627,7 @@ MeshHandler<ORDER,3,3>::MeshHandler(SEXP mesh)
 template <UInt ORDER>
 Point MeshHandler<ORDER,3,3>::getPoint(Id id)
 {
-	Point point(id, Identifier::NVAL, points_[id], points_[id+1],points_[id+2],points_[id+3]);
+	Point point(id, Identifier::NVAL, points_[3*id], points_[3*id+1], points_[3*id+2]);
 	return point;
 }
 
@@ -726,7 +732,7 @@ void MeshHandler<ORDER,3,3>::printElements(std::ostream & out)
 	{
 		out<<"-"<< i <<"- ";
 		for( UInt k = 0; k < (6*ORDER-2); ++k)
-			out<<elements_[i*6*ORDER-2 + k]<<"   ";
+			out<<elements_[i*(6*ORDER-2) + k]<<"   ";
 		out<<std::endl;
 	}
 

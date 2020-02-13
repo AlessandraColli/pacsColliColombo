@@ -76,7 +76,7 @@ CPP_smooth.manifold.FEM.basis<-function(locations, bary.locations, observations,
   return(bigsol)
 }
 
-CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, ndim, mydim, search)
+CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, ndim, mydim, search, bary.locations)
 {
   FEMbasis = FEM$FEMbasis
   
@@ -104,6 +104,11 @@ CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, n
   storage.mode(locations) <- "double"
   storage.mode(redundancy) <- "integer"
   storage.mode(search) <- "integer"
+
+  storage.mode(bary.locations$element_ids) <- "integer"
+  element_ids <- as.matrix(bary.locations$element_ids)
+  # storage.mode(bary.locations$barycenters) <- "double"
+  # barycenters <- as.matrix(bary.locations$barycenters)
   
   if (search == 1) { #use Naive search
     print('This is Naive Search')
@@ -115,7 +120,7 @@ CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, n
   evalmat = matrix(0,max(nrow(locations),nrow(incidence_matrix)),ncol(coeff))
   for (i in 1:ncol(coeff)){
     evalmat[,i] <- .Call("eval_FEM_fd", FEMbasis$mesh, locations, incidence_matrix, coeff[,i],
-                         FEMbasis$order, redundancy, mydim, ndim, search, PACKAGE = "fdaPDE")
+                         FEMbasis$order, redundancy, mydim, ndim, search, element_ids, PACKAGE = "fdaPDE")
   }
   
   #Returning the evaluation matrix

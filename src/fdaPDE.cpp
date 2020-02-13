@@ -20,7 +20,7 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 {
 	MeshHandler<ORDER, mydim, ndim> mesh(Rmesh);
 
-	MixedFERegression<InputHandler, Integrator,ORDER, mydim, ndim> regression(mesh,regressionData);
+	MixedFERegression<InputHandler, Integrator,ORDER, mydim, ndim> regression(mesh, regressionData);
 	regression.apply();
 
 	const std::vector<VectorXr>& solution = regression.getSolution();
@@ -31,7 +31,6 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 
 	//Copy result in R memory                
 	SEXP result = NILSXP;
-	//result = PROTECT(Rf_allocVector(VECSXP, 2)); //**************will be divided to if/ else if there is saveTreeFlag option
 	result = PROTECT(Rf_allocVector(VECSXP, 2+5+2));
 	SET_VECTOR_ELT(result, 0, Rf_allocMatrix(REALSXP, solution[0].size(), solution.size()));
 	SET_VECTOR_ELT(result, 1, Rf_allocVector(REALSXP, solution.size()));
@@ -48,16 +47,10 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 		rans1[i] = dof[i];
 	}
 
-	//TREE INFORMATION
-	SET_VECTOR_ELT(result, 2, Rf_allocVector(INTSXP, 7)); //tree_header information
+	//SEND TREE INFORMATION TO R
+	SET_VECTOR_ELT(result, 2, Rf_allocVector(INTSXP, 1)); //tree_header information
 	int *rans2 = INTEGER(VECTOR_ELT(result, 2));
-	rans2[0] = mesh.getTree().gettreeheader().gettreeloc();
-	rans2[1] = mesh.getTree().gettreeheader().gettreelev();
-	rans2[2] = mesh.getTree().gettreeheader().getndimp();
-	rans2[3] = mesh.getTree().gettreeheader().getndimt();
-	rans2[4] = mesh.getTree().gettreeheader().getnele();
-	rans2[5] = mesh.getTree().gettreeheader().getiava();
-	rans2[6] = mesh.getTree().gettreeheader().getiend();
+	rans2[0] = mesh.getTree().gettreeheader().gettreelev();
 
 	SET_VECTOR_ELT(result, 3, Rf_allocVector(REALSXP, ndim*2)); //tree_header domain origin
 	Real *rans3 = REAL(VECTOR_ELT(result, 3));
@@ -90,19 +83,21 @@ SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 			rans6[i + num_tree_nodes*j] = mesh.getTree().gettreenode(i).getbox().get()[j];
 	}
 	
-	//BARYCENTER INFORMATION
-	SET_VECTOR_ELT(result, 7, Rf_allocMatrix(REALSXP, barycenters.rows(), barycenters.cols())); //barycenter information (matrix)
-	Real *rans7 = REAL(VECTOR_ELT(result, 7));
+	//SEND BARYCENTER INFORMATION TO R
+	SET_VECTOR_ELT(result, 7, Rf_allocVector(INTSXP, elementIds.rows())); //element id of the locations point (vector)
+	int *rans7 = INTEGER(VECTOR_ELT(result, 7));
+	for(UInt i = 0; i < elementIds.rows(); i++)
+		rans7[i] = elementIds(i);
+
+	SET_VECTOR_ELT(result, 8, Rf_allocMatrix(REALSXP, barycenters.rows(), barycenters.cols())); //barycenter information (matrix)
+	Real *rans8 = REAL(VECTOR_ELT(result, 8));
 	for(UInt j = 0; j < barycenters.cols(); j++)
 	{
 		for(UInt i = 0; i < barycenters.rows(); i++)
-			rans7[i + barycenters.rows()*j] = barycenters(i,j);
+			rans8[i + barycenters.rows()*j] = barycenters(i,j);
 	}
 
-	SET_VECTOR_ELT(result, 8, Rf_allocVector(INTSXP, elementIds.rows())); //element id of the locations point (vector)
-	int *rans8 = INTEGER(VECTOR_ELT(result, 8));
-	for(UInt i = 0; i < elementIds.rows(); i++)
-		rans8[i] = elementIds(i);
+
 
 	UNPROTECT(1);
 	return(result);
