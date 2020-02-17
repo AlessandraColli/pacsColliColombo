@@ -30,7 +30,7 @@ protected:
    *
    *  It contains general information about the tree.
    */
-  Tree_Header<Shape> header_;
+  TreeHeader<Shape> header_;
   /// Vector of tree nodes.
   std::vector<TreeNode<Shape>> data_;
   /** \brief Adds a point to the tree.
@@ -89,10 +89,10 @@ public:
    *	It initializes the tree header and reserve a suitable number of memory
    *	locations to store tree nodes. It doesn't fill the tree.
    */
-  ADTree(Tree_Header<Shape> const & header);
+  ADTree(TreeHeader<Shape> const & header);
 
   // constructor in case there is already tree information
-  ADTree(Tree_Header<Shape> const & header, std::vector<TreeNode<Shape>> const & data):header_(header), data_(data) {};
+  ADTree(TreeHeader<Shape> const & header, std::vector<TreeNode<Shape>> const & data):header_(header), data_(data) {};
   
   /** It fills all the locations of the tree. Object's coordinates are stored to perform searching operations. 
    * 	See mesh_handler to verify what points and triangle must contain.
@@ -100,7 +100,7 @@ public:
   ADTree(Real const * const points, UInt const * const triangle, UInt num_nodes, UInt num_triangle);
 
   /// Returns a reference to the tree header.
-  inline Tree_Header<Shape> gettreeheader() const { return header_; }
+  inline TreeHeader<Shape> gettreeheader() const { return header_; }
   /** Adds a node to the tree.
    * 	It calls the handlers of the exceptions that can be thrown by adtrb().
    *

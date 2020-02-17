@@ -29,21 +29,21 @@
  * 	Default copy constructor and default destructor work fine.
  */
 template<class T>
-class Tree_Header {
+class TreeHeader {
 protected:
-	/// Tree memory locations.
+	// Tree memory locations.
 	int tree_loc_;
 
-	/// Tree levels.
+	// Tree levels.
 	int tree_lev_;
 
-	/// Number of physical space dimensions (typically 2 or 3).
+	// Number of physical space dimensions (typically 2 or 3).
 	int ndimp_;
 
-	/// Number of dimensions used for the search (2*ndimp because we use box).
+	// Number of dimensions used for the search (2*ndimp because we use box).
 	int ndimt_;
 
-	///	Number of logical locations currently used in the tree. Initialized to 0.
+	//	Number of logical locations currently used in the tree. Initialized to 0.
 	int nele_;
 
 	/**	@name Tree indices
@@ -66,8 +66,10 @@ protected:
 	 */
 	int iend_;
 	//@}
-	/// Tree's domain.
+
+	// Tree's domain.
 	Domain<T> tree_domain_;
+	
 	/**	A protected constructor.
 	 *
 	 *	\param[in] ntree Tree dimension needed.
@@ -76,7 +78,7 @@ protected:
 	 *	Public function createtreeheader must be used to create an object of Header class.
 	 *	This avoids the creation of a tree with more memory locations than a fixed limit.
 	 */
-	Tree_Header(int const & ntree, Domain<T> const & d);
+	TreeHeader(int const & ntree, Domain<T> const & d);
 	/// Tries to set the number of tree memory locations (throws a LocLengthError exception if nt is out of range).
 	void stml(int const & nt);
 public:
@@ -84,10 +86,10 @@ public:
 	 *
 	 * 	It's fundamental in creating an ADTree object from a MeshFile::ff2dmesh or a MeshFile::ff3dmesh object.
 	 */
-	Tree_Header():tree_loc_(0), tree_lev_(0), ndimp_(T::dp()), ndimt_(T::dt()), nele_(0), iava_(1), iend_(1), tree_domain_(){}
+	TreeHeader():tree_loc_(0), tree_lev_(0), ndimp_(T::dp()), ndimt_(T::dt()), nele_(0), iava_(1), iend_(1), tree_domain_(){}
 	
 	// constructor in case there is already tree information
-	Tree_Header(int const & tree_loc, int const & tree_lev, int const & ndimp, int const & ndimt, 
+	TreeHeader(int const & tree_loc, int const & tree_lev, int const & ndimp, int const & ndimt, 
 		int const & nele, int const & iava, int const & iend, Domain<T> const & tree_domain):
 			tree_loc_(tree_loc), tree_lev_(tree_lev), ndimp_(ndimp), ndimt_(ndimt), 
 			nele_(nele), iava_(iava), iend_(iend), tree_domain_(tree_domain){}
@@ -132,7 +134,7 @@ public:
 	 *	- tree domain.
 	 */
 	template<class S>
-	friend std::ostream & operator<<(std::ostream &, Tree_Header<S> const &);
+	friend std::ostream & operator<<(std::ostream &, TreeHeader<S> const &);
 
 	/**	\fn Header<S> createtreeheader(int const & nt, int const & nk, Domain<S> const & d)
 	 *	\brief Creates a tree header handling the exception condition in which tree maximum dimension is exceeded.
@@ -141,7 +143,7 @@ public:
 	 *	\param[in] d Tree's domain.
 	 */
 	template<class S>
-	friend Tree_Header<S> createtreeheader(int const & nt, Domain<S> const & d);
+	friend TreeHeader<S> createtreeheader(int const & nt, Domain<S> const & d);
 };
 
 #include "tree_header_imp.h"

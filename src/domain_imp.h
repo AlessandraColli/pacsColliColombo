@@ -82,29 +82,6 @@ Domain<T>::Domain(std::vector<std::vector<Real> > const & coord) {
 					scalingfactors_[i] = 1./std::max(delta, getmindiff());
 			}
 		}
-
-		// for(int i = 0; i < ndimp; ++i) {
-		// 	origin_[i] = *(std::min_element(coord[i].begin(), coord[i].end()));
-
-		// 	/* This statement is necessary when representing a rectangle with the corner having
-		// 	 * minimum coordinates and the opposite one.
-		// 	 */
-		// 	scalingfactors_[i] = *(std::max_element(coord[i+ndimp].begin(), coord[i+ndimp].end()));
-
-		// 	// Add the tolerance.
-		// 	double delta = scalingfactors_[i] - origin_[i];
-		// 	origin_[i] -= delta*gettolerance();
-		// 	scalingfactors_[i] += delta*gettolerance();
-
-		// 	delta = scalingfactors_[i] - origin_[i];
-		// 	scalingfactors_[i] = 1./std::max(delta, getmindiff());
-
-		// 	/* Repeat the limits because tree dimension is in fact 2 * physical space dimension
-		// 	 * because because a box is defined by two points.
-		// 	 */
-		// 	origin_[i + ndimp] = origin_[i];
-		// 	scalingfactors_[i + ndimp] = scalingfactors_[i];
-		// }
 	}
 }
 

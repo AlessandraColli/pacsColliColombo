@@ -17,6 +17,7 @@ Box<NDIMP>::Box(std::vector<Real> const & coord) {
 		x_[i] = coord[i];
 	}
 }
+
 template<int NDIMP>
 template <UInt NNODES,int NDIME,int NDIMPP>
 Box<NDIMP>::Box(Element<NNODES,NDIME,NDIMPP> const & element) {

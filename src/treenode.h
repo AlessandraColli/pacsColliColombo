@@ -14,22 +14,23 @@
 
 /**	\class TreeNode
  * 	\brief Class defining a tree node.
-* \param Shape: template parameter, is the original shape, in the treenode are stored the bbox of the original object and an index that identify that object
+* \param T: template parameter, is the original shape, in the treenode are stored the bbox of the original object and an index that identify that object
  */
-template<class Shape>
+template<class T>
 class TreeNode{
 protected:
   // Position of the father node. (It's used by the algorithm for deleting a tree node.)
   //`int father_;
+  
   ///Bounding Box of the object to be stored
-  Box<Shape::dp()> box_;
+  Box<T::dp()> box_;
+  
   /// Positions of left and right children.
   int children_[2];
-  /// The id (in the mesh) of the Triangle that create the Box
-  //Be careful! this id is not the id of the Treenode but id of Triangle
+  
+  /// The id of the Element that create the Box
+  //Be careful! This is not the id of the Treenode but id of Element
   Id id_;
-
-
 
   //dò per scontato che ci sia un oggetto mesh che contenga tutte le forme (salvate in qualche modo) e che le identifichi attraverso un id di tipo Uint!
   //generalizzando si potrebbe usare un puntatore a Shape (parametro template della forma generica, può essere un triangolo, o l'id stesso se si vuole tornare al caso precedente), in teoria poi non devo distruggere la memoria perchè la forma è salvata in una struttra mesh che deve rimanere inalterata
@@ -49,16 +50,16 @@ public:
   }
   /**	Another constructor.
    *
-   * 	Shape is the shape from the id, it's need the constructor for box, from shape! it works with Triangle, or Box, it can be extended
+   * 	T is the shape of the id. It is needed for Box constructor. It works with Element or Box.
    */
-  TreeNode(Id const id, Shape shape): box_(shape) { //father_(0), 
+  TreeNode(Id const id, T shape): box_(shape) { //father_(0), 
     children_[0] = 0;
     children_[1] = 0;
     id_ = id;
   }
 
   // constructor in case there is already tree information
-  TreeNode(Box<Shape::dp()> const & box, Id const & id, int const & left_child, int const & right_child): 
+  TreeNode(Box<T::dp()> const & box, Id const & id, int const & left_child, int const & right_child): 
     box_(box), id_(id) { 
     children_[0] = left_child;
     children_[1] = right_child;
@@ -100,7 +101,7 @@ public:
   /// Gets id stored in the node.
   inline Id getid() const { return id_; }
   /// Returns a reference to box_.
-  inline Box<Shape::dp()> & getbox() { return box_; }
+  inline Box<T::dp()> & getbox() { return box_; }
   ///print information about the treenode
   void print(std::ostream & out) const;
 };

@@ -43,7 +43,7 @@ MeshHandler<ORDER,2,2>::MeshHandler(SEXP mesh)
 	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 13)), REAL(VECTOR_ELT(mesh_, 13))+ndimt_);
 	    
 	    Domain<Element<3*ORDER, 2, 2>> tree_domain(origin_, scalingfactors_);
-	    Tree_Header<Element<3*ORDER,2, 2>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
+	    TreeHeader<Element<3*ORDER,2, 2>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
 	    
 
 	    //treenode information (number of nodes = number of elements+1)
@@ -332,7 +332,7 @@ MeshHandler<ORDER,2,3>::MeshHandler(SEXP mesh)
 	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 7)), REAL(VECTOR_ELT(mesh_, 7))+ndimt_);
 	    
 	    Domain<Element<3*ORDER, 2, 3>> tree_domain(origin_, scalingfactors_);
-	    Tree_Header<Element<3*ORDER,2, 3>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
+	    TreeHeader<Element<3*ORDER,2, 3>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
 	    
 
 	    //treenode information (number of nodes = number of elements+1)
@@ -593,7 +593,7 @@ MeshHandler<ORDER,3,3>::MeshHandler(SEXP mesh)
 	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 7)), REAL(VECTOR_ELT(mesh_, 7))+ndimt_);
 	    
 	    Domain<Element<6*ORDER-2,3,3>> tree_domain(origin_, scalingfactors_);
-	    Tree_Header<Element<6*ORDER-2,3,3>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
+	    TreeHeader<Element<6*ORDER-2,3,3>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
 	    
 
 	    //treenode information (number of nodes = number of elements+1)

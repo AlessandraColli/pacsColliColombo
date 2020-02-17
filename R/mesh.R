@@ -419,7 +419,7 @@ create.mesh.2.5D<- function(nodes, triangles, order = 1)
   return(out)
 }
 
-data.projection.2.5D<-function(mesh, locations) {
+points.projection.2.5D<-function(mesh, locations) {
   if(class(mesh) !="mesh.2.5D")
   stop("Data projection is only available for 2.5D mesh ")
 
@@ -442,7 +442,7 @@ data.projection.2.5D<-function(mesh, locations) {
   storage.mode(mesh$order) <- "integer"
 
   ## Call C++ function
-  evalmat <- .Call("data_projection", mesh, locations, package = "fdaPDE")
+  evalmat <- .Call("points_projection", mesh, locations, package = "fdaPDE")
   
   #Returning the evaluation matrix
   return(evalmat)

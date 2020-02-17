@@ -279,7 +279,7 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 }
 
 
-SEXP data_projection(SEXP Rmesh, SEXP Rlocations)
+SEXP points_projection(SEXP Rmesh, SEXP Rlocations)
 {
 	int n_X = INTEGER(Rf_getAttrib(Rlocations, R_DimSymbol))[0];
 	//Declare pointer to access data from C++
@@ -304,19 +304,19 @@ SEXP data_projection(SEXP Rmesh, SEXP Rlocations)
 	if (n_X>0) //pointwise data
 	{
 		PROTECT(result = Rf_allocMatrix(REALSXP, n_X, 3));
-		UInt order = INTEGER(VECTOR_ELT(Rmesh,4))[0];
+		// UInt order = INTEGER(VECTOR_ELT(Rmesh,4))[0];
 
-		if (order == 1) {
+		// if (order == 1) {
 		MeshHandler<1,2,3> mesh(Rmesh);
 		projection<1,2,3> projector(mesh, deData_);
 		prjData_ = projector.computeProjection();
-		}
+		// }
 
-		if (order == 2) {
-		MeshHandler<2,2,3> mesh(Rmesh);
-		projection<2,2,3> projector(mesh, deData_);
-		prjData_ = projector.computeProjection();
-		}
+		// if (order == 2) {
+		// MeshHandler<2,2,3> mesh(Rmesh);
+		// projection<2,2,3> projector(mesh, deData_);
+		// prjData_ = projector.computeProjection();
+		// }
 	}
 
 	for (int i=0; i<n_X; ++i)

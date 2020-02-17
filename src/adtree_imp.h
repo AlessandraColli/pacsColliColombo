@@ -3,7 +3,7 @@
 
 template<class Shape>
 // Initialize header_ and data_
-ADTree<Shape>::ADTree(Tree_Header<Shape> const & header): header_(header) {
+ADTree<Shape>::ADTree(TreeHeader<Shape> const & header): header_(header) {
   /*
    * The first element in the tree nodes vector is the head.
    * It stores the address of the tree root (i.e. the first node in the tree).
@@ -26,7 +26,8 @@ ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, co
     int nvertex = Shape::numVertices; //number of nodes at each Element (not total number of nodes!)
 
     // Build the tree.
-    // step1: Construct Tree_Header
+
+    // step1: Construct TreeHeader
     std::vector<std::vector<Real> > vcoord;
     vcoord.resize(ndimp);
 
@@ -46,19 +47,12 @@ ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, co
          }
       }
     }
-
-    // for (int i = 0; i < ndimp; i++) {
-    //   vcoord[i].resize(num_nodes);
-    //   for(int j = 0; j < num_nodes; j++) {
-    //   vcoord[i][j] = points[i*num_nodes + j]; 
-    //    }
-    // }
   
     Domain<Shape> mydom(vcoord);
     
     //expect to have 'num_triangle' number of TreeNode
     //domain is extracted from 'points' array
-    Tree_Header<Shape> myhead = createtreeheader<Shape>(num_triangle, mydom); 
+    TreeHeader<Shape> myhead = createtreeheader<Shape>(num_triangle, mydom); 
 
 
 
@@ -70,25 +64,22 @@ ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, co
      */
     header_ = myhead;
     data_.reserve(header_.gettreeloc()+1);
-    // Id, obj are arbitrary parameters. Remember that data_[0] is the head, not a tree node.
+    
     Shape obj;
     Id id = std::numeric_limits<UInt>::max();
-    data_.push_back(TreeNode<Shape>(id, obj)); //uso costruttore di default
+    data_.push_back(TreeNode<Shape>(id, obj)); // Id, obj are arbitrary parameters. Remember that data_[0] is the head, not a tree node.
     
 
-    // Fill the tree.
+    // Step 3: Fill the tree: Add each element to the Treenode
     UInt idpt;
 
-    //point is single Element, composed of vector of points
-    std::vector<Real> point(nvertex*ndimp); //6
+    std::vector<Real> elem(nvertex*ndimp); //'elem' is a single Element, composed of vector of points
     for ( int i = 0; i < num_triangle; i++ ) {
-
-
       if (ndimp == 2) { //when ndimp==2, existing logic
         for (int j = 0; j < nvertex ; j++) {
           for (int l = 0; l < ndimp ; l++) {
             idpt = triangle[j*num_triangle + i];
-            point[j*ndimp + l] =  points[idpt + l*num_nodes];
+            elem[j*ndimp + l] =  points[idpt + l*num_nodes];
           }
         }
       }else { //when ndimp==3
@@ -96,32 +87,21 @@ ADTree<Shape>::ADTree(Real const * const points, UInt const * const triangle, co
         for (int j=0; j< nvertex; j++) {
           for (int l=0; l < ndimp; l++) {
             idpt = triangle[j + i*nvertex];
-            point[j*ndimp + l] =  points[idpt*ndimp + l];
+            elem[j*ndimp + l] =  points[idpt*ndimp + l];
           }
         }
       }
 
-      // idpt = triangle[0*num_triangle + i];
-      // point[0] = points[idpt];
-      // point[1] = points[idpt+num_nodes];
-      // idpt = triangle[1*num_triangle + i];
-      // point[2] = points[idpt];
-      // point[3] = points[idpt+num_nodes];
-      // idpt = triangle[2*num_triangle + i];
-      // point[4] = points[idpt];
-      // point[5] = points[idpt+num_nodes];
-
       //insert Element into tree
-      this -> addtreenode(i ,point);
-     } //end of for loop
-     
+      this -> addtreenode(i, elem);
+     } //end of for loop 
   }
 
 
 template<class Shape>
 int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords) {
   /*
-   * We will trasverse the tree in preorder fashion.
+   * We will traverse the tree in preorder fashion.
    * ipoi and ifth will store the location of the current node
    * and that of the father node.
    *
@@ -133,9 +113,11 @@ int ADTree<Shape>::adtrb(Id shapeid, std::vector<Real> const & coords) {
    * reached a void sibling, where we can add a new node.
    */
   int nele = header_.getnele();
+  int dimt = header_.getndimt();
+
   int iava = header_.getiava();
   int iend = header_.getiend();
-  int dimt = header_.getndimt();
+  
 
   std::vector<Real> x;
   x.reserve(dimt);

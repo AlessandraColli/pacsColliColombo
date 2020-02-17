@@ -3,7 +3,7 @@
 
 
 template<class T>
-Tree_Header<T>::Tree_Header(int const & ntree,Domain<T> const & d):
+TreeHeader<T>::TreeHeader(int const & ntree, Domain<T> const & d):
 	tree_loc_(ntree), tree_lev_(0), ndimp_(T::dp()), ndimt_(T::dt()), nele_(0), iava_(1), iend_(1), tree_domain_(d) {
 
 	std::vector<TreeNode<T> > foo;
@@ -15,7 +15,7 @@ Tree_Header<T>::Tree_Header(int const & ntree,Domain<T> const & d):
 }
 
 template<class T>
-void Tree_Header<T>::stml(int const & nt) {
+void TreeHeader<T>::stml(int const & nt) {
 	std::vector<TreeNode<T> > foo;
 	if(foo.max_size() < unsigned(nt + 1))
 		/* If there is no enough space to store the requested nodes and
@@ -26,7 +26,7 @@ void Tree_Header<T>::stml(int const & nt) {
 }
 
 template<class T>
-std::ostream & operator<<(std::ostream & ostr, Tree_Header<T> const & head) {
+std::ostream & operator<<(std::ostream & ostr, TreeHeader<T> const & head) {
 	ostr << "General informations about the tree" << std::endl;
 	ostr << "----------------------------------" << std::endl;
 	ostr << "Tree memory locations: " << head.tree_loc_ << std::endl;
@@ -41,9 +41,9 @@ std::ostream & operator<<(std::ostream & ostr, Tree_Header<T> const & head) {
 }
 
 template<class T>
-Tree_Header<T> createtreeheader(int const & nt, Domain<T> const & d) {
+TreeHeader<T> createtreeheader(int const & nt, Domain<T> const & d) {
 	try {
-		Tree_Header<T> hd(nt, d);
+		TreeHeader<T> hd(nt, d);
 		return hd;
 	}
 	catch(LocLengthError<T> lo) {
@@ -56,7 +56,7 @@ Tree_Header<T> createtreeheader(int const & nt, Domain<T> const & d) {
 }
 
 template<class T>
-void Tree_Header<T>::settreeloc(int const & nt) {
+void TreeHeader<T>::settreeloc(int const & nt) {
 	try {
 		stml(nt);
 	}

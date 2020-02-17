@@ -17,7 +17,7 @@ class Box {
 protected:
 	/** A vector of rectangle corner coordinates.
 	 * 	First NDIMP values are the coordinates of the rectangle corner with minimum coordinates,
-	 *  followed by the coordinates of the opposite corner. (2D: xmin, xmax, ymin, ymax)
+	 *  followed by the coordinates of the opposite corner. (2D: xmin, ymin, xmax, ymax)
 	 */
 	std::vector<Real> x_;
 
@@ -34,6 +34,7 @@ public:
 	 *	\param[in] coord A vector of input coordinates.
 	 *					 Make sure that its size is equal to the size of protected member x_.
 	 */
+	// constructor in case there is already tree information
 	Box(std::vector<Real> const & coord);
 
 	/**	Another constructor.

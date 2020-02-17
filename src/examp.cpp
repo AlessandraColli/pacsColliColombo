@@ -1109,18 +1109,18 @@ void Test_TreeHeader_c(int *n){
 	Domain<Box<3>> mydomf(coord2);
 
 	//Default consturctor
-	Tree_Header<Element<3,2,2>> THa; //1st
-	Tree_Header<Element<3,2,3>> THb; //2nd
-	Tree_Header<Element<3,3,3>> THc; //3rd
-	Tree_Header<Box<2>> THd; //4th
-	Tree_Header<Box<3>> THe; //5th
+	TreeHeader<Element<3,2,2>> THa; //1st
+	TreeHeader<Element<3,2,3>> THb; //2nd
+	TreeHeader<Element<3,3,3>> THc; //3rd
+	TreeHeader<Box<2>> THd; //4th
+	TreeHeader<Box<3>> THe; //5th
 	
 	//Default consturctor with createtreeheader function
-	Tree_Header<Element<3,2,2>> THf = createtreeheader(1, mydomb); //6th
-	Tree_Header<Element<3,2,3>> THg = createtreeheader(2, mydomc); //7th
-	Tree_Header<Element<3,3,3>> THh = createtreeheader(3, mydomd); //8th
-	Tree_Header<Box<2>> THi = createtreeheader(4, mydome); //9th
-	Tree_Header<Box<3>> THj = createtreeheader(5, mydomf); //10th
+	TreeHeader<Element<3,2,2>> THf = createtreeheader(1, mydomb); //6th
+	TreeHeader<Element<3,2,3>> THg = createtreeheader(2, mydomc); //7th
+	TreeHeader<Element<3,3,3>> THh = createtreeheader(3, mydomd); //8th
+	TreeHeader<Box<2>> THi = createtreeheader(4, mydome); //9th
+	TreeHeader<Box<3>> THj = createtreeheader(5, mydomf); //10th
 
 	std::cout << "Print the 1st tree_header (constructor default, shape = Triangle, NDIMP=2):  " <<std::endl;
 	std::cout << THa <<std::endl;
@@ -1522,11 +1522,11 @@ void Test_ADTree1_c(int *n){
 
 
 	//default tree_header
-	// Tree_Header<Element<3,2,2>> THa;
-	// Tree_Header<Element<3,2,3>> THb;
-	// Tree_Header<Element<3,3,3>> THc;
-	// Tree_Header<Box<2>> THd;
-	// Tree_Header<Box<3>> THe;
+	// TreeHeader<Element<3,2,2>> THa;
+	// TreeHeader<Element<3,2,3>> THb;
+	// TreeHeader<Element<3,3,3>> THc;
+	// TreeHeader<Box<2>> THd;
+	// TreeHeader<Box<3>> THe;
 	
 
 	//default constructor
@@ -1558,7 +1558,7 @@ void Test_ADTree1_c(int *n){
 		std::cout << std::endl << std::endl;
 	std::cout << "Print the 11th ADTree (construct from 2D mesh, Shape = Triangle, NDIMP = 2):  " <<std::endl;
 	std::cout << ADTk <<std::endl;
-	std::cout << "Print Tree_Header:  " <<std::endl;
+	std::cout << "Print TreeHeader:  " <<std::endl;
 	std::cout << ADTk.gettreeheader() <<std::endl;
 
 	std::cout << std::endl;
@@ -1689,11 +1689,11 @@ void Test_ADTree2_c(int *n){
 
 	
 	//default tree_header
-	// Tree_Header<Element<3,2,2>> THa;
-	// Tree_Header<Element<3,2,3>> THb;
-	// Tree_Header<Element<3,3,3>> THc;
-	// Tree_Header<Box<2>> THd;
-	// Tree_Header<Box<3>> THe;
+	// TreeHeader<Element<3,2,2>> THa;
+	// TreeHeader<Element<3,2,3>> THb;
+	// TreeHeader<Element<3,3,3>> THc;
+	// TreeHeader<Box<2>> THd;
+	// TreeHeader<Box<3>> THe;
 	
 
 	//default constructor
@@ -1725,7 +1725,7 @@ void Test_ADTree2_c(int *n){
 	std::cout << std::endl << std::endl;
 	std::cout << "Print the 11th ADTree (construct from 2D mesh, Shape = Triangle, NDIMP = 2):  " <<std::endl;
 	std::cout << ADTk <<std::endl;
-	std::cout << "Print Tree_Header:  " <<std::endl;
+	std::cout << "Print TreeHeader:  " <<std::endl;
 	std::cout << ADTk.gettreeheader() <<std::endl;
 
 	std::cout << std::endl;
