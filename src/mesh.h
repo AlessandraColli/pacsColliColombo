@@ -37,12 +37,13 @@ public:
   MeshHandler(Real* points, UInt* edges, UInt* triangles, UInt* neighbors, UInt num_nodes, UInt num_edges, UInt num_triangles):
     points_(points), edges_(edges), elements_(triangles), neighbors_(neighbors), num_nodes_(num_nodes), num_edges_(num_edges), num_elements_(num_triangles) 
     {
+      search_=2;
       ADTree<Element<3*ORDER,2,2>> tmp(points_, elements_, num_nodes_, num_elements_);
       tree_ = tmp;  
     };
 
   #ifdef R_VERSION_
-  MeshHandler(SEXP Rmesh);
+  MeshHandler(SEXP Rmesh, UInt search_=2); //default search_=tree
   #endif
 
   ~MeshHandler(){};
@@ -147,6 +148,7 @@ public:
       \return The volume of the element with the given id
     */
     Real elementMeasure(Id id) const;
+	UInt getSearch() const {return search_;};										 
 
 private:
   #ifdef R_VERSION_
@@ -159,6 +161,7 @@ private:
 
   UInt *border_edges; //contains the list of edge_id at the border
   UInt num_nodes_, num_edges_, num_elements_;
+  UInt search_;
   ADTree<Element<3*ORDER,2,2>> tree_; // adtree associated to the mesh
 
 };
@@ -177,6 +180,7 @@ public:
     
     MeshHandler(Real* points, UInt* triangles, UInt num_nodes, UInt num_triangles):
       points_(points), elements_(triangles), num_nodes_(num_nodes), num_elements_(num_triangles) {
+        search_=2;
         ADTree<Element<3*ORDER,2,3>> tmp(points_, elements_, num_nodes_, num_elements_);
         tree_ = tmp;  
       };
@@ -201,7 +205,7 @@ public:
       * The constructor permits the initialization of the mesh from an R object
     */
     #ifdef R_VERSION_
-  MeshHandler(SEXP Rmesh);
+  MeshHandler(SEXP Rmesh, UInt search_=2); //default search_=tree
   #endif
 
   ~MeshHandler(){};
@@ -264,6 +268,7 @@ public:
       \return The volume of the element with the given id
     */
     Real elementMeasure(Id id) const;
+	UInt getSearch() const {return search_;};										 
 
 
 private:
@@ -276,6 +281,7 @@ private:
     
 
   UInt num_nodes_, num_elements_;
+  UInt search_;
   ADTree<Element<3*ORDER,2,3>> tree_; //adtree associated to the mesh
 
 };
@@ -294,6 +300,7 @@ public:
     
     MeshHandler(Real* points, UInt* tetrahedrons, UInt num_nodes, UInt num_tetrahedrons):
       points_(points), elements_(tetrahedrons), num_nodes_(num_nodes), num_elements_(num_tetrahedrons) {
+        search_=2;
         ADTree<Element<6*ORDER-2,3,3>> tmp(points_, elements_, num_nodes_, num_elements_);
         tree_ = tmp;  
        };
@@ -303,7 +310,7 @@ public:
       * The constructor permits the initialization of the mesh from an R object
     */
     #ifdef R_VERSION_
-  MeshHandler(SEXP Rmesh);
+  MeshHandler(SEXP Rmesh, UInt search_=2); //default search_=tree
   #endif
 
   ~MeshHandler(){};
@@ -366,6 +373,7 @@ public:
       \return The volume of the element with the given id
     */
     Real elementMeasure(Id id) const;
+	UInt getSearch() const {return search_;};										 
 
 
 private:
@@ -377,6 +385,7 @@ private:
   UInt *elements_;
 
   UInt num_nodes_, num_elements_;
+  UInt search_;		   
   ADTree<Element<6*ORDER-2,3,3>> tree_; //adtree associated to the mesh
 };
 

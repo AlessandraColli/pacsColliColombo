@@ -270,7 +270,7 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
   }
   
   
-  ## Coverting to format for internal usage
+  ## Converting to format for internal usage
   if(!is.null(locations))
     locations = as.matrix(locations)
     observations = as.matrix(observations)
@@ -382,7 +382,7 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
     node_right_child = bigsol[[6]][,3],
     node_box= bigsol[[7]])
   
-  # Make Functional objects
+  # Reconstruct FEMbasis with tree mesh
   mesh.class= class(FEMbasis$mesh)
   FEMbasis$mesh = append(FEMbasis$mesh, tree_mesh)
   class(FEMbasis$mesh) = mesh.class

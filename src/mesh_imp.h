@@ -7,7 +7,7 @@
 
 #ifdef R_VERSION_
 template <UInt ORDER>
-MeshHandler<ORDER,2,2>::MeshHandler(SEXP mesh)
+MeshHandler<ORDER,2,2>::MeshHandler(SEXP mesh, UInt search)
 {
 	mesh_ 		= mesh;
 	points_ 	= REAL(VECTOR_ELT(mesh_, 0));
@@ -18,59 +18,62 @@ MeshHandler<ORDER,2,2>::MeshHandler(SEXP mesh)
 	num_nodes_ = INTEGER(Rf_getAttrib(VECTOR_ELT(mesh_, 0), R_DimSymbol))[0];
 	num_elements_ = INTEGER(Rf_getAttrib(VECTOR_ELT(mesh_, 3), R_DimSymbol))[0];
 	num_edges_ = INTEGER(Rf_getAttrib(VECTOR_ELT(mesh_, 6), R_DimSymbol))[0];
+	search_ = search;
 	
-	// Rprintf("mesh TYPE: %d \n",TYPEOF(mesh_)); //VECSXP, list (generic vector), 19
-	// Rprsintf("mesh LENGTH: %d \n",XLENGTH(mesh_));
-	
-	int mesh_len = XLENGTH(mesh_);
-	if (mesh_len == 11) { //don't have tree mesh information (length==11)
-		ADTree<Element<3*ORDER,2,2>> tmp(points_, elements_, num_nodes_, num_elements_);
-	    tree_ = tmp;
-	} else {
-		//RECIEVE TREE INFORMATION FROM R
-		//tree_header information
-		int tree_loc_ = num_elements_;
-	    int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 11))[0];
-	    int ndimp_ = 2;
-	    int ndimt_ = 4;
-	    int nele_ = num_elements_;
-	    int iava_ = num_elements_+1;
-	    int iend_ = num_elements_+1;
+	if (search == 2) { //if tree search, construct a tree mesh
+		// Rprintf("mesh TYPE: %d \n",TYPEOF(mesh_)); //VECSXP, list (generic vector), 19
+		// Rprintf("mesh LENGTH: %d \n",XLENGTH(mesh_));
+		
+		int mesh_len = XLENGTH(mesh_);
+		if (mesh_len == 11) { //don't have tree mesh information (length==11)
+			ADTree<Element<3*ORDER,2,2>> tmp(points_, elements_, num_nodes_, num_elements_);
+			tree_ = tmp;
+		} else {
+			//RECIEVE TREE INFORMATION FROM R
+			//tree_header information
+			int tree_loc_ = num_elements_;
+			int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 11))[0];
+			int ndimp_ = 2;
+			int ndimt_ = 4;
+			int nele_ = num_elements_;
+			int iava_ = num_elements_+1;
+			int iend_ = num_elements_+1;
 
-		std::vector<Real>  origin_;
-	    origin_.assign(REAL(VECTOR_ELT(mesh_, 12)), REAL(VECTOR_ELT(mesh_, 12))+ndimt_);
-	    std::vector<Real> scalingfactors_;
-	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 13)), REAL(VECTOR_ELT(mesh_, 13))+ndimt_);
-	    
-	    Domain<Element<3*ORDER, 2, 2>> tree_domain(origin_, scalingfactors_);
-	    TreeHeader<Element<3*ORDER,2, 2>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
-	    
+			std::vector<Real>  origin_;
+			origin_.assign(REAL(VECTOR_ELT(mesh_, 12)), REAL(VECTOR_ELT(mesh_, 12))+ndimt_);
+			std::vector<Real> scalingfactors_;
+			scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 13)), REAL(VECTOR_ELT(mesh_, 13))+ndimt_);
+			
+			Domain<Element<3*ORDER, 2, 2>> tree_domain(origin_, scalingfactors_);
+			TreeHeader<Element<3*ORDER,2, 2>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
+			
 
-	    //treenode information (number of nodes = number of elements+1)
-	    std::vector<Id> id_;
-	    id_.assign(INTEGER(VECTOR_ELT(mesh_, 14)), INTEGER(VECTOR_ELT(mesh_, 14))+num_elements_+1);
-	    std::vector<int> node_left_child_;
-	    node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 15)), INTEGER(VECTOR_ELT(mesh_, 15))+num_elements_+1);
-	    std::vector<int> node_right_child_;
-	    node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 16)), INTEGER(VECTOR_ELT(mesh_, 16))+num_elements_+1);
-	    Real* box_ = REAL(VECTOR_ELT(mesh_, 17));
+			//treenode information (number of nodes = number of elements+1)
+			std::vector<Id> id_;
+			id_.assign(INTEGER(VECTOR_ELT(mesh_, 14)), INTEGER(VECTOR_ELT(mesh_, 14))+num_elements_+1);
+			std::vector<int> node_left_child_;
+			node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 15)), INTEGER(VECTOR_ELT(mesh_, 15))+num_elements_+1);
+			std::vector<int> node_right_child_;
+			node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 16)), INTEGER(VECTOR_ELT(mesh_, 16))+num_elements_+1);
+			Real* box_ = REAL(VECTOR_ELT(mesh_, 17));
 
-	    UInt num_tree_nodes = id_.size();
-	    std::vector<TreeNode<Element<3*ORDER,2,2>>> tree_nodes;
-	    for (UInt i=0; i<num_tree_nodes; i++) {
-	    	std::vector<Real> coord;
-	    	for (UInt j=0; j<ndimt_; j++) {
-	    		coord.push_back(box_[i + num_tree_nodes*j]);
-    		}
-	    	Box<2> box (coord);
-	    	TreeNode<Element<3*ORDER,2,2>> tree_node(box, id_[i], node_left_child_[i], node_right_child_[i]);
-	    	tree_nodes.push_back(tree_node);
-    	}
-	    
+			UInt num_tree_nodes = id_.size();
+			std::vector<TreeNode<Element<3*ORDER,2,2>>> tree_nodes;
+			for (UInt i=0; i<num_tree_nodes; i++) {
+				std::vector<Real> coord;
+				for (UInt j=0; j<ndimt_; j++) {
+					coord.push_back(box_[i + num_tree_nodes*j]);
+				}
+				Box<2> box (coord);
+				TreeNode<Element<3*ORDER,2,2>> tree_node(box, id_[i], node_left_child_[i], node_right_child_[i]);
+				tree_nodes.push_back(tree_node);
+			}
+			
 
-	    ADTree<Element<3*ORDER,2,2>> tmp(tree_header, tree_nodes);
-	    tree_ = tmp;
-	}
+			ADTree<Element<3*ORDER,2,2>> tmp(tree_header, tree_nodes);
+			tree_ = tmp;
+		}
+	} //if tree search, construct a tree mesh
 }
 #endif
 
@@ -300,7 +303,7 @@ void MeshHandler<ORDER,2,2>::printTree(std::ostream & out)
 
 #ifdef R_VERSION_
 template <UInt ORDER>
-MeshHandler<ORDER,2,3>::MeshHandler(SEXP mesh)
+MeshHandler<ORDER,2,3>::MeshHandler(SEXP mesh, UInt search)
 {
 
 	mesh_ = mesh;
@@ -308,56 +311,58 @@ MeshHandler<ORDER,2,3>::MeshHandler(SEXP mesh)
 	num_elements_ = INTEGER(VECTOR_ELT(mesh_,1))[0];
 	points_ = REAL(VECTOR_ELT(mesh_, 2));
 	elements_ = INTEGER(VECTOR_ELT(mesh_, 3));
+	search_ = search;			  
 	
-    //Rprintf("mesh LENGTH: %d \n", XLENGTH(mesh_));
+	if (search == 2) { //if tree search, construct a tree mesh	
+		//Rprintf("mesh LENGTH: %d \n", XLENGTH(mesh_));
+		int mesh_len = XLENGTH(mesh_);
+		if (mesh_len == 5) { //don't have tree mesh information (length==5)
+			ADTree<Element<3*ORDER,2,3>> tmp(points_, elements_, num_nodes_, num_elements_);
+			tree_ = tmp;
+		} else {
+			//RECIEVE TREE INFORMATION FROM R
+			//tree_header information
+			int tree_loc_ = num_elements_;
+			int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 5))[0];
+			int ndimp_ = 3;
+			int ndimt_ = 6;
+			int nele_ = num_elements_;
+			int iava_ = num_elements_+1;
+			int iend_ = num_elements_+1;
 
-	int mesh_len = XLENGTH(mesh_);
-	if (mesh_len == 5) { //don't have tree mesh information (length==5)
-		ADTree<Element<3*ORDER,2,3>> tmp(points_, elements_, num_nodes_, num_elements_);
-    	tree_ = tmp;
-	} else {
-		//RECIEVE TREE INFORMATION FROM R
-		//tree_header information
-		int tree_loc_ = num_elements_;
-	    int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 5))[0];
-	    int ndimp_ = 3;
-	    int ndimt_ = 6;
-	    int nele_ = num_elements_;
-	    int iava_ = num_elements_+1;
-	    int iend_ = num_elements_+1;
+			std::vector<Real>  origin_;
+			origin_.assign(REAL(VECTOR_ELT(mesh_, 6)), REAL(VECTOR_ELT(mesh_, 6))+ndimt_);
+			std::vector<Real> scalingfactors_;
+			scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 7)), REAL(VECTOR_ELT(mesh_, 7))+ndimt_);
+			
+			Domain<Element<3*ORDER, 2, 3>> tree_domain(origin_, scalingfactors_);
+			TreeHeader<Element<3*ORDER,2, 3>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
+			
 
-		std::vector<Real>  origin_;
-	    origin_.assign(REAL(VECTOR_ELT(mesh_, 6)), REAL(VECTOR_ELT(mesh_, 6))+ndimt_);
-	    std::vector<Real> scalingfactors_;
-	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 7)), REAL(VECTOR_ELT(mesh_, 7))+ndimt_);
-	    
-	    Domain<Element<3*ORDER, 2, 3>> tree_domain(origin_, scalingfactors_);
-	    TreeHeader<Element<3*ORDER,2, 3>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
-	    
+			//treenode information (number of nodes = number of elements+1)
+			std::vector<Id> id_;
+			id_.assign(INTEGER(VECTOR_ELT(mesh_, 8)), INTEGER(VECTOR_ELT(mesh_, 8))+num_elements_+1);
+			std::vector<int> node_left_child_;
+			node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 9)), INTEGER(VECTOR_ELT(mesh_, 9))+num_elements_+1);
+			std::vector<int> node_right_child_;
+			node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 10)), INTEGER(VECTOR_ELT(mesh_, 10))+num_elements_+1);
+			Real* box_ = REAL(VECTOR_ELT(mesh_, 11));
 
-	    //treenode information (number of nodes = number of elements+1)
-	    std::vector<Id> id_;
-	    id_.assign(INTEGER(VECTOR_ELT(mesh_, 8)), INTEGER(VECTOR_ELT(mesh_, 8))+num_elements_+1);
-	    std::vector<int> node_left_child_;
-	    node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 9)), INTEGER(VECTOR_ELT(mesh_, 9))+num_elements_+1);
-	    std::vector<int> node_right_child_;
-	    node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 10)), INTEGER(VECTOR_ELT(mesh_, 10))+num_elements_+1);
-	    Real* box_ = REAL(VECTOR_ELT(mesh_, 11));
-
-	    UInt num_tree_nodes = id_.size();
-	    std::vector<TreeNode<Element<3*ORDER,2,3>>> tree_nodes;
-	    for (UInt i=0; i<num_tree_nodes; i++) {
-	    	std::vector<Real> coord;
-	    	for (UInt j=0; j<ndimt_; j++) {
-	    		coord.push_back(box_[i + num_tree_nodes*j]);
-    		}
-	    	Box<3> box (coord);
-	    	TreeNode<Element<3*ORDER,2,3>> tree_node(box, id_[i], node_left_child_[i], node_right_child_[i]);
-	    	tree_nodes.push_back(tree_node);
-    	}
-	    
-	    ADTree<Element<3*ORDER,2,3>> tmp(tree_header, tree_nodes);
-	    tree_ = tmp;
+			UInt num_tree_nodes = id_.size();
+			std::vector<TreeNode<Element<3*ORDER,2,3>>> tree_nodes;
+			for (UInt i=0; i<num_tree_nodes; i++) {
+				std::vector<Real> coord;
+				for (UInt j=0; j<ndimt_; j++) {
+					coord.push_back(box_[i + num_tree_nodes*j]);
+				}
+				Box<3> box (coord);
+				TreeNode<Element<3*ORDER,2,3>> tree_node(box, id_[i], node_left_child_[i], node_right_child_[i]);
+				tree_nodes.push_back(tree_node);
+			}
+			
+			ADTree<Element<3*ORDER,2,3>> tmp(tree_header, tree_nodes);
+			tree_ = tmp;
+		}
 	}
 
 }
@@ -561,7 +566,7 @@ void MeshHandler<ORDER,2,3>::printElements(std::ostream & out)
 
 #ifdef R_VERSION_
 template <UInt ORDER>
-MeshHandler<ORDER,3,3>::MeshHandler(SEXP mesh)
+MeshHandler<ORDER,3,3>::MeshHandler(SEXP mesh, UInt search)
 {
 
 	mesh_ = mesh;
@@ -569,56 +574,58 @@ MeshHandler<ORDER,3,3>::MeshHandler(SEXP mesh)
 	num_elements_ = INTEGER(VECTOR_ELT(mesh_,1))[0];
 	points_ = REAL(VECTOR_ELT(mesh_, 2));
 	elements_ = INTEGER(VECTOR_ELT(mesh_, 3));
+	search_ = search;
+	
+	if (search == 2) { //if tree search, construct a tree mesh
+		// Rprintf("mesh LENGTH: %d \n",XLENGTH(mesh_));
+		int mesh_len = XLENGTH(mesh_);
+		if (mesh_len == 5) { //don't have tree mesh information (length==5)
+			ADTree<Element<6*ORDER-2,3,3>> tmp(points_, elements_, num_nodes_, num_elements_);
+			tree_ = tmp;
+		} else {
+			//RECIEVE TREE INFORMATION FROM R
+			//tree_header information
+			int tree_loc_ = num_elements_;
+			int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 5))[0];
+			int ndimp_ = 3;
+			int ndimt_ = 6;
+			int nele_ = num_elements_;
+			int iava_ = num_elements_+1;
+			int iend_ = num_elements_+1;
 
-    // Rprintf("mesh LENGTH: %d \n",XLENGTH(mesh_));
+			std::vector<Real>  origin_;
+			origin_.assign(REAL(VECTOR_ELT(mesh_, 6)), REAL(VECTOR_ELT(mesh_, 6))+ndimt_);
+			std::vector<Real> scalingfactors_;
+			scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 7)), REAL(VECTOR_ELT(mesh_, 7))+ndimt_);
+			
+			Domain<Element<6*ORDER-2,3,3>> tree_domain(origin_, scalingfactors_);
+			TreeHeader<Element<6*ORDER-2,3,3>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
+			
 
-	int mesh_len = XLENGTH(mesh_);
-	if (mesh_len == 5) { //don't have tree mesh information (length==5)
-		ADTree<Element<6*ORDER-2,3,3>> tmp(points_, elements_, num_nodes_, num_elements_);
-    	tree_ = tmp;
-	} else {
-		//RECIEVE TREE INFORMATION FROM R
-		//tree_header information
-		int tree_loc_ = num_elements_;
-	    int tree_lev_ = INTEGER(VECTOR_ELT(mesh_, 5))[0];
-	    int ndimp_ = 3;
-	    int ndimt_ = 6;
-	    int nele_ = num_elements_;
-	    int iava_ = num_elements_+1;
-	    int iend_ = num_elements_+1;
+			//treenode information (number of nodes = number of elements+1)
+			std::vector<Id> id_;
+			id_.assign(INTEGER(VECTOR_ELT(mesh_, 8)), INTEGER(VECTOR_ELT(mesh_, 8))+num_elements_+1);
+			std::vector<int> node_left_child_;
+			node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 9)), INTEGER(VECTOR_ELT(mesh_, 9))+num_elements_+1);
+			std::vector<int> node_right_child_;
+			node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 10)), INTEGER(VECTOR_ELT(mesh_, 10))+num_elements_+1);
+			Real* box_ = REAL(VECTOR_ELT(mesh_, 11));
 
-		std::vector<Real>  origin_;
-	    origin_.assign(REAL(VECTOR_ELT(mesh_, 6)), REAL(VECTOR_ELT(mesh_, 6))+ndimt_);
-	    std::vector<Real> scalingfactors_;
-	    scalingfactors_.assign(REAL(VECTOR_ELT(mesh_, 7)), REAL(VECTOR_ELT(mesh_, 7))+ndimt_);
-	    
-	    Domain<Element<6*ORDER-2,3,3>> tree_domain(origin_, scalingfactors_);
-	    TreeHeader<Element<6*ORDER-2,3,3>> tree_header(tree_loc_, tree_lev_, ndimp_, ndimt_, nele_, iava_, iend_, tree_domain);
-	    
-
-	    //treenode information (number of nodes = number of elements+1)
-	    std::vector<Id> id_;
-	    id_.assign(INTEGER(VECTOR_ELT(mesh_, 8)), INTEGER(VECTOR_ELT(mesh_, 8))+num_elements_+1);
-	    std::vector<int> node_left_child_;
-	    node_left_child_.assign(INTEGER(VECTOR_ELT(mesh_, 9)), INTEGER(VECTOR_ELT(mesh_, 9))+num_elements_+1);
-	    std::vector<int> node_right_child_;
-	    node_right_child_.assign(INTEGER(VECTOR_ELT(mesh_, 10)), INTEGER(VECTOR_ELT(mesh_, 10))+num_elements_+1);
-	    Real* box_ = REAL(VECTOR_ELT(mesh_, 11));
-
-	    UInt num_tree_nodes = id_.size();
-	    std::vector<TreeNode<Element<6*ORDER-2,3,3>>> tree_nodes;
-	    for (UInt i=0; i<num_tree_nodes; i++) {
-	    	std::vector<Real> coord;
-	    	for (UInt j=0; j<ndimt_; j++) {
-	    		coord.push_back(box_[i + num_tree_nodes*j]);
-    		}
-	    	Box<3> box (coord);
-	    	TreeNode<Element<6*ORDER-2,3,3>> tree_node(box, id_[i], node_left_child_[i], node_right_child_[i]);
-	    	tree_nodes.push_back(tree_node);
-    	}
-	    
-	    ADTree<Element<6*ORDER-2,3,3>> tmp(tree_header, tree_nodes);
-	    tree_ = tmp;
+			UInt num_tree_nodes = id_.size();
+			std::vector<TreeNode<Element<6*ORDER-2,3,3>>> tree_nodes;
+			for (UInt i=0; i<num_tree_nodes; i++) {
+				std::vector<Real> coord;
+				for (UInt j=0; j<ndimt_; j++) {
+					coord.push_back(box_[i + num_tree_nodes*j]);
+				}
+				Box<3> box (coord);
+				TreeNode<Element<6*ORDER-2,3,3>> tree_node(box, id_[i], node_left_child_[i], node_right_child_[i]);
+				tree_nodes.push_back(tree_node);
+			}
+			
+			ADTree<Element<6*ORDER-2,3,3>> tmp(tree_header, tree_nodes);
+			tree_ = tmp;
+		}
 	}
 }
 #endif

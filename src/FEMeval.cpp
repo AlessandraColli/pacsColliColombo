@@ -31,12 +31,32 @@ extern "C" {
 */
 
 
-SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef, SEXP Rorder, SEXP Rfast, SEXP Rmydim, SEXP Rndim, SEXP Rsearch, SEXP RelementIds)
+SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef, SEXP Rorder, SEXP Rfast, SEXP Rmydim, SEXP Rndim, SEXP Rsearch, SEXP RbaryLocations)
 {
 	int n_X = INTEGER(Rf_getAttrib(Rlocations, R_DimSymbol))[0];
 	int nRegions = INTEGER(Rf_getAttrib(RincidenceMatrix, R_DimSymbol))[0];
 	int nElements = INTEGER(Rf_getAttrib(RincidenceMatrix, R_DimSymbol))[1]; //number of triangles/tetrahedron if areal data
-	int nBary = INTEGER(Rf_getAttrib(RelementIds, R_DimSymbol))[0]; //if there is no elementIds, nBary==0
+	
+	std::vector<UInt> element_id;	
+	Real **barycenters;
+
+	//RECIEVE BARYCENTER INFORMATION FROM R
+	if (TYPEOF(RbaryLocations) != 0) { //have location information
+		element_id.assign(INTEGER(VECTOR_ELT(RbaryLocations, 1)), INTEGER(VECTOR_ELT(RbaryLocations, 1))+n_X);
+		UInt n_ = INTEGER(Rf_getAttrib(VECTOR_ELT(RbaryLocations, 2), R_DimSymbol))[0]; //barycenter rows (number of locations)
+		UInt p_ = INTEGER(Rf_getAttrib(VECTOR_ELT(RbaryLocations, 2), R_DimSymbol))[1]; //barycenter columns (number of vertices)
+
+		barycenters = (Real**) malloc(sizeof(Real*)*n_);
+		for (int i=0; i<n_; i++)
+		{
+			barycenters[i] = (Real*) malloc(sizeof(Real)*p_);
+			for (int j=0; j<p_; j++)
+			{
+				barycenters[i][j] = REAL(VECTOR_ELT(RbaryLocations, 2))[i+n_*j];
+			}
+		}
+	}
+
 
 	//Declare pointer to access data from C++
 	double *X, *Y, *Z;
@@ -94,131 +114,54 @@ SEXP eval_FEM_fd(SEXP Rmesh, SEXP Rlocations, SEXP RincidenceMatrix, SEXP Rcoef,
 		//Set the mesh
 		if(order==1 && mydim==2 && ndim==2)
 		{
-			MeshHandler<1,2,2> mesh(Rmesh);
+			MeshHandler<1,2,2> mesh(Rmesh, search);
 			Evaluator<1,2,2> evaluator(mesh);
-			if(nBary == 0) { //doesn't have element id information
-				evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside, search);
-			} else { //have element id information
-				std::vector<UInt>  element_id;
-	    		element_id.assign(INTEGER(RelementIds), INTEGER(RelementIds)+n_X);
-				evaluator.evalWithId(X, Y, n_X, coef, fast, REAL(result), isinside, element_id);
+			if (TYPEOF(RbaryLocations) == 0) { //doesn't have location information
+				evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside);
+			} else { //have location information
+				evaluator.evalWithInfo(X, Y, n_X, coef, fast, REAL(result), isinside, element_id, barycenters);
 			}
-
-			// int iteration = 30;						
-			// double time = 0;						
-			// for (int i=0; i<iteration; i++) {						
-			// 	auto start = std::chrono::high_resolution_clock::now();					
-			// 	MeshHandler<1,2,2> mesh(Rmesh);		// CHANGE		
-			// 	auto finish = std::chrono::high_resolution_clock::now();					
-									
-			// 	std::chrono::duration<double> elapsed = finish - start;					
-			// 	time += elapsed.count();										
-			// }						
-			// std::cout<< "tree construction time: " << time/iteration << std::endl;						
-									
-			// time = 0;						
-			// for (int i=0; i<iteration; i++) {						
-			// 	auto start = std::chrono::high_resolution_clock::now();					
-			// 	evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside, search);	 // CHANGE		
-			// 	auto finish = std::chrono::high_resolution_clock::now();					
-			// 	std::chrono::duration<double> elapsed = finish - start;					
-			// 	time += elapsed.count();					
-			// }						
-			// std::cout<< "search time: " << time/iteration << std::endl;						
-		
 		}
 		else if(order==2 && mydim==2 && ndim==2)
 		{
-			MeshHandler<2,2,2> mesh(Rmesh);
+			MeshHandler<2,2,2> mesh(Rmesh, search);
 			Evaluator<2,2,2> evaluator(mesh);
-			if(nBary == 0) { //doesn't have element id information	
-				evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside, search);
-			} else { //have element id information
-				std::vector<UInt>  element_id;
-	    		element_id.assign(INTEGER(RelementIds), INTEGER(RelementIds)+n_X);
-				evaluator.evalWithId(X, Y, n_X, coef, fast, REAL(result), isinside, element_id);
+			if (TYPEOF(RbaryLocations) == 0) { //doesn't have location information	
+				evaluator.eval(X, Y, n_X, coef, fast, REAL(result), isinside);
+			} else { //have location information
+				evaluator.evalWithInfo(X, Y, n_X, coef, fast, REAL(result), isinside, element_id, barycenters);
 			}
 		}
 		else if(order==1 && mydim==2 && ndim==3)
 		{ 
-			MeshHandler<1,2,3> mesh(Rmesh);
+			MeshHandler<1,2,3> mesh(Rmesh, search);
 			Evaluator<1,2,3> evaluator(mesh);
-			if(nBary == 0) { //doesn't have element id information
-				evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside, search);
-			} else { //have element id information
-				std::vector<UInt>  element_id;
-	    		element_id.assign(INTEGER(RelementIds), INTEGER(RelementIds)+n_X);
-				evaluator.evalWithId(X, Y, Z, n_X, coef, fast, REAL(result), isinside, element_id);
+			if (TYPEOF(RbaryLocations) == 0) { //doesn't have location information
+				evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside);
+			} else { //have location information
+				evaluator.evalWithInfo(X, Y, Z, n_X, coef, fast, REAL(result), isinside, element_id, barycenters);
 			}
 
-
-			// int iteration = 30;						
-			// double time = 0;						
-			// for (int i=0; i<iteration; i++) {						
-			// 	auto start = std::chrono::high_resolution_clock::now();					
-			// 	MeshHandler<1,2,3> mesh(Rmesh);		// CHANGE		
-			// 	auto finish = std::chrono::high_resolution_clock::now();					
-									
-			// 	std::chrono::duration<double> elapsed = finish - start;					
-			// 	time += elapsed.count();										
-			// }						
-			// std::cout<< "tree construction time: " << time/iteration << std::endl;						
-									
-			// time = 0;						
-			// for (int i=0; i<iteration; i++) {						
-			// 	auto start = std::chrono::high_resolution_clock::now();					
-			// 	evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside, search);	 // CHANGE		
-			// 	auto finish = std::chrono::high_resolution_clock::now();					
-			// 	std::chrono::duration<double> elapsed = finish - start;					
-			// 	time += elapsed.count();					
-			// }						
-			// std::cout<< "search time: " << time/iteration << std::endl;	
 		}
 		else if(order==2 && mydim==2 && ndim==3)
 		{
-			MeshHandler<2,2,3> mesh(Rmesh);
+			MeshHandler<2,2,3> mesh(Rmesh, search);
 			Evaluator<2,2,3> evaluator(mesh);
-			if(nBary == 0) { //doesn't have element id information
-				evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside, search);
-			} else { //have element id information
-				std::vector<UInt>  element_id;
-	    		element_id.assign(INTEGER(RelementIds), INTEGER(RelementIds)+n_X);
-				evaluator.evalWithId(X, Y, Z, n_X, coef, fast, REAL(result), isinside, element_id);
+			if (TYPEOF(RbaryLocations) == 0) { //doesn't have location information
+				evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside);
+			} else { //have location information
+				evaluator.evalWithInfo(X, Y, Z, n_X, coef, fast, REAL(result), isinside, element_id, barycenters);
 			}
 		}
 		else if(order==1 && mydim==3 && ndim==3)
 		{ 
-			MeshHandler<1,3,3> mesh(Rmesh);
+			MeshHandler<1,3,3> mesh(Rmesh, search);
 			Evaluator<1,3,3> evaluator(mesh);
-			if(nBary == 0) { //doesn't have element id information	
-				evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside, search);
-			} else { //have element id information
-				std::vector<UInt>  element_id;
-	    		element_id.assign(INTEGER(RelementIds), INTEGER(RelementIds)+n_X);
-				evaluator.evalWithId(X, Y, Z, n_X, coef, fast, REAL(result), isinside, element_id);
+			if (TYPEOF(RbaryLocations) == 0) { //doesn't have location information	
+				evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside);
+			} else { //have location information
+				evaluator.evalWithInfo(X, Y, Z, n_X, coef, fast, REAL(result), isinside, element_id, barycenters);
 			}
-
-			// int iteration = 30;						
-			// double time = 0;						
-			// for (int i=0; i<iteration; i++) {						
-			// 	auto start = std::chrono::high_resolution_clock::now();					
-			// 	MeshHandler<1,3,3> mesh(Rmesh);	// CHANGE		
-			// 	auto finish = std::chrono::high_resolution_clock::now();					
-									
-			// 	std::chrono::duration<double> elapsed = finish - start;					
-			// 	time += elapsed.count();										
-			// }						
-			// std::cout<< "tree construction time: " << time/iteration << std::endl;						
-									
-			// time = 0;						
-			// for (int i=0; i<iteration; i++) {						
-			// 	auto start = std::chrono::high_resolution_clock::now();					
-			// 	evaluator.eval(X, Y, Z, n_X, coef, fast, REAL(result), isinside, search);	 // CHANGE		
-			// 	auto finish = std::chrono::high_resolution_clock::now();					
-			// 	std::chrono::duration<double> elapsed = finish - start;					
-			// 	time += elapsed.count();					
-			// }						
-			// std::cout<< "search time: " << time/iteration << std::endl;	
 		}
 
 		for (int i=0; i<n_X; ++i)

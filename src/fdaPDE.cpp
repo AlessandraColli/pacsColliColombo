@@ -19,7 +19,6 @@ template<typename InputHandler, typename Integrator, UInt ORDER, UInt mydim, UIn
 SEXP regression_skeleton(InputHandler &regressionData, SEXP Rmesh)
 {
 	MeshHandler<ORDER, mydim, ndim> mesh(Rmesh);
-
 	MixedFERegression<InputHandler, Integrator,ORDER, mydim, ndim> regression(mesh, regressionData);
 	regression.apply();
 
@@ -107,7 +106,7 @@ template<typename Integrator,UInt ORDER, UInt mydim, UInt ndim>
 SEXP FPCA_skeleton(FPCAData &fPCAData, SEXP Rmesh, std::string validation)
 {
 
-	MeshHandler<ORDER, mydim, ndim> mesh(Rmesh);
+	MeshHandler<ORDER, mydim, ndim> mesh(Rmesh); //, fPCAData.getSearch());
 	std::unique_ptr<MixedFEFPCABase<Integrator, ORDER, mydim, ndim>> fpca = MixedFEFPCAfactory<Integrator, ORDER, mydim, ndim>::createFPCAsolver(validation, mesh, fPCAData);
 	fpca->apply();
 

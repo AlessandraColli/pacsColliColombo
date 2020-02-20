@@ -82,7 +82,7 @@ eval.FEM <- function(FEM, locations = NULL, incidence_matrix = NULL, search = "t
   if (search != 1 & search != 2 & search != 3)
     stop("search must be either tree or naive or walking.")
 
-  #Check the locations in 'baty.locations' and 'locations' are the same
+  #Check the locations in 'bary.locations' and 'locations' are the same
   if(!is.null(bary.locations) & !is.null(locations))
   {
     flag=TRUE

@@ -59,7 +59,7 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
       stop("'c' required in PDE_parameters;  is NULL.")
   }
   
-  #Check the locations in 'baty.locations' and 'locations' are the same
+  #Check the locations in 'bary.locations' and 'locations' are the same
   if(!is.null(bary.locations) & !is.null(locations))
   {
     flag=TRUE

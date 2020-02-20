@@ -2,13 +2,14 @@
 #define __EVALUATOR_IMP_HPP__
 
 template <UInt ORDER>
-void Evaluator<ORDER,2,2>::eval(Real* X, Real *Y, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, int search)
+void Evaluator<ORDER,2,2>::eval(Real* X, Real *Y, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside)
 {
 
 	constexpr UInt Nodes = 3*ORDER;
 	Element<Nodes,2,2> current_element;
 	Point current_point;
 	Eigen::Matrix<Real,Nodes,1> coefficients;
+	UInt search = mesh_.getSearch();						 
 
 	for (int i = 0; i<length; ++i) {
 		current_point = Point(X[i],Y[i]);
@@ -41,13 +42,14 @@ void Evaluator<ORDER,2,2>::eval(Real* X, Real *Y, UInt length, const Real *coef,
 }
 
 template <UInt ORDER>
-void Evaluator<ORDER,2,2>::evalWithId(Real* X, Real *Y, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, const std::vector<UInt> & element_id)
+void Evaluator<ORDER,2,2>::evalWithInfo(Real* X, Real *Y, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, const std::vector<UInt> & element_id, Real **barycenters)
 {
 
 	constexpr UInt Nodes = 3*ORDER;
 	Element<Nodes,2,2> current_element;
 	Point current_point;
 	Eigen::Matrix<Real,Nodes,1> coefficients;
+	Eigen::Matrix<Real,Nodes,1> bary_coeff;							  
 
 	for (int i = 0; i<length; ++i) {
 		current_point = Point(X[i],Y[i]);
@@ -59,8 +61,19 @@ void Evaluator<ORDER,2,2>::evalWithId(Real* X, Real *Y, UInt length, const Real 
 			isinside[i]=true;
 			for (int j=0; j<Nodes; ++j) {
 				coefficients[j] = coef[current_element[j].getId()];
+				bary_coeff[j]=barycenters[i][j];							  
 			}
-			result[i] = evaluate_point<Nodes,2,2>(current_element, current_point, coefficients);
+
+			if (Nodes == 3) {
+				result[i] = coefficients.dot(bary_coeff);
+			} else if (Nodes == 6) {
+				result[i] = coefficients[0]*(2*bary_coeff[0]*bary_coeff[0] - bary_coeff[0]) +
+				            coefficients[1]*(2*bary_coeff[1]*bary_coeff[1] - bary_coeff[1]) +
+				            coefficients[2]*(2*bary_coeff[2]*bary_coeff[2] - bary_coeff[2]) +
+				            coefficients[3]*(4*bary_coeff[1]* bary_coeff[2]) +
+				            coefficients[4]*(4*bary_coeff[2]* bary_coeff[0]) +
+				            coefficients[5]*(4*bary_coeff[0]* bary_coeff[1]);
+			}
 		}
 	} //end of for loop
 }
@@ -68,14 +81,14 @@ void Evaluator<ORDER,2,2>::evalWithId(Real* X, Real *Y, UInt length, const Real 
 
 
 template <UInt ORDER>
-void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, int search)
+void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside)
 {
 
 	constexpr UInt Nodes = 3*ORDER;
 	Element<Nodes,2,3> current_element;
 	Point current_point;
-
 	Eigen::Matrix<Real,Nodes,1> coefficients;
+	UInt search = mesh_.getSearch();							 
 	
 	for (int i = 0; i<length; ++i) {
 		current_point = Point(X[i],Y[i],Z[i]);
@@ -101,13 +114,14 @@ void Evaluator<ORDER,2,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 }
 
 template <UInt ORDER>
-void Evaluator<ORDER,2,3>::evalWithId(Real* X, Real *Y, Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, const std::vector<UInt> & element_id)
+void Evaluator<ORDER,2,3>::evalWithInfo(Real* X, Real *Y, Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, const std::vector<UInt> & element_id, Real **barycenters)
 {
 
 	constexpr UInt Nodes = 3*ORDER;
 	Element<Nodes,2,3> current_element;
 	Point current_point;
 	Eigen::Matrix<Real,Nodes,1> coefficients;
+	Eigen::Matrix<Real,Nodes,1> bary_coeff;							  
 
 	for (int i = 0; i<length; ++i) {
 		current_point = Point(X[i],Y[i],Z[i]);
@@ -119,21 +133,34 @@ void Evaluator<ORDER,2,3>::evalWithId(Real* X, Real *Y, Real *Z, UInt length, co
 			isinside[i]=true;
 			for (int j=0; j<Nodes; ++j) {
 				coefficients[j] = coef[current_element[j].getId()];
+				bary_coeff[j]=barycenters[i][j];			  
 			}
-			result[i] = evaluate_point<Nodes,2,3>(current_element, current_point, coefficients);
+
+			if (Nodes == 3) {
+				result[i] = coefficients.dot(bary_coeff);
+			} else if (Nodes == 6) {
+				result[i] = coefficients[0]*(2*bary_coeff[0]*bary_coeff[0] - bary_coeff[0]) +
+				            coefficients[1]*(2*bary_coeff[1]*bary_coeff[1] - bary_coeff[1]) +
+				            coefficients[2]*(2*bary_coeff[2]*bary_coeff[2] - bary_coeff[2]) +
+				            coefficients[3]*(4*bary_coeff[1]*bary_coeff[2]) +
+				            coefficients[4]*(4*bary_coeff[2]*bary_coeff[0]) +
+				            coefficients[5]*(4*bary_coeff[0]*bary_coeff[1]);
+			}
+
 		}
 	} //end of for loop
 }
 
 template <UInt ORDER>
-void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, int search)
+void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside)
 {
 
 	constexpr UInt Nodes = 6*ORDER-2;
 	Element<Nodes,3,3> current_element;
 	Point current_point;
-
 	Eigen::Matrix<Real,Nodes,1> coefficients;
+	UInt search = mesh_.getSearch();
+							 
 
 	for (int i = 0; i<length; ++i) {
 		current_point = Point(X[i],Y[i],Z[i]);
@@ -160,13 +187,14 @@ void Evaluator<ORDER,3,3>::eval(Real* X, Real *Y,  Real *Z, UInt length, const R
 }
 
 template <UInt ORDER>
-void Evaluator<ORDER,3,3>::evalWithId(Real* X, Real *Y, Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, const std::vector<UInt> & element_id)
+void Evaluator<ORDER,3,3>::evalWithInfo(Real* X, Real *Y, Real *Z, UInt length, const Real *coef, bool redundancy, Real* result, std::vector<bool>& isinside, const std::vector<UInt> & element_id, Real **barycenters)
 {
 
 	constexpr UInt Nodes = 6*ORDER-2;
 	Element<Nodes,3,3> current_element;
 	Point current_point;
 	Eigen::Matrix<Real,Nodes,1> coefficients;
+	Eigen::Matrix<Real,Nodes,1> bary_coeff;							  
 
 	for (int i = 0; i<length; ++i) {
 		current_point = Point(X[i],Y[i],Z[i]);
@@ -178,8 +206,10 @@ void Evaluator<ORDER,3,3>::evalWithId(Real* X, Real *Y, Real *Z, UInt length, co
 			isinside[i]=true;
 			for (int j=0; j<Nodes; ++j) {
 				coefficients[j] = coef[current_element[j].getId()];
+				bary_coeff[j]=barycenters[i][j];
 			}
-			result[i] = evaluate_point<Nodes,3,3>(current_element, current_point, coefficients);
+
+			result[i] = coefficients.dot(bary_coeff);
 		}
 	} //end of for loop
 }

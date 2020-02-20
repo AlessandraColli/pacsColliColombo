@@ -22,8 +22,8 @@ class  RegressionData{
 		bool locations_by_nodes_;
 
 		//barycenter information
-		MatrixXr barycenters_; //barycenter information
 		VectorXi element_ids_; //elements id information
+		MatrixXr barycenters_; //barycenter information
 		bool locations_by_barycenter_;
 
 
