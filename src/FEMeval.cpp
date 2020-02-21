@@ -16,6 +16,56 @@
 #include "projection.h"
 #include <chrono>  // for high_resolution_clock
 
+template<UInt ORDER, UInt mydim, UInt ndim>
+SEXP tree_mesh_skeleton(SEXP Rmesh) {  
+	MeshHandler<ORDER, mydim, ndim> mesh(Rmesh);
+
+	//Copy result in R memory                
+	SEXP result = NILSXP;
+	result = PROTECT(Rf_allocVector(VECSXP, 5));
+	
+
+	//SEND TREE INFORMATION TO R
+	SET_VECTOR_ELT(result, 0, Rf_allocVector(INTSXP, 1)); //tree_header information
+	int *rans = INTEGER(VECTOR_ELT(result, 0));
+	rans[0] = mesh.getTree().gettreeheader().gettreelev();
+
+	SET_VECTOR_ELT(result, 1, Rf_allocVector(REALSXP, ndim*2)); //tree_header domain origin
+	Real *rans1 = REAL(VECTOR_ELT(result, 1));
+	for(UInt i = 0; i < ndim*2; i++)
+		rans1[i] = mesh.getTree().gettreeheader().domainorig(i);
+
+	SET_VECTOR_ELT(result, 2, Rf_allocVector(REALSXP, ndim*2)); //tree_header domain scale
+	Real *rans2 = REAL(VECTOR_ELT(result, 2));
+	for(UInt i = 0; i < ndim*2; i++)
+		rans2[i] = mesh.getTree().gettreeheader().domainscal(i);
+
+
+	UInt num_tree_nodes = mesh.num_elements()+1; //Be careful! This is not equal to number of elements
+	SET_VECTOR_ELT(result, 3, Rf_allocMatrix(INTSXP, num_tree_nodes, 3)); //treenode information
+	int *rans3 = INTEGER(VECTOR_ELT(result, 3));
+	for(UInt i = 0; i < num_tree_nodes; i++)
+			rans3[i] = mesh.getTree().gettreenode(i).getid();
+
+	for(UInt i = 0; i < num_tree_nodes; i++)
+			rans3[i + num_tree_nodes*1] = mesh.getTree().gettreenode(i).getchild(0);
+
+	for(UInt i = 0; i < num_tree_nodes; i++)
+			rans3[i + num_tree_nodes*2] = mesh.getTree().gettreenode(i).getchild(1);
+
+	SET_VECTOR_ELT(result, 4, Rf_allocMatrix(REALSXP, num_tree_nodes, ndim*2)); //treenode box coordinate
+	Real *rans4 = REAL(VECTOR_ELT(result, 4));
+	for(UInt j = 0; j < ndim*2; j++)
+	{
+		for(UInt i = 0; i < num_tree_nodes; i++)
+			rans4[i + num_tree_nodes*j] = mesh.getTree().gettreenode(i).getbox().get()[j];
+	}
+	
+
+	UNPROTECT(1);
+	return(result);
+}
+
 extern "C" {
 //! This function manages the various option for the solution evaluation.
 /*!
@@ -236,7 +286,6 @@ SEXP points_projection(SEXP Rmesh, SEXP Rlocations)
     for (int i=0; i<n_X; i++)
 	{
 		X = REAL(Rlocations)[i + n_X*0];
-		//Rprintf("X[%i]= %d", i, X[i]);
 		Y = REAL(Rlocations)[i + n_X*1];
 		Z = REAL(Rlocations)[i + n_X*2];
 		deData_[i]=Point(X,Y,Z);
@@ -247,13 +296,13 @@ SEXP points_projection(SEXP Rmesh, SEXP Rlocations)
 	if (n_X>0) //pointwise data
 	{
 		PROTECT(result = Rf_allocMatrix(REALSXP, n_X, 3));
-		// UInt order = INTEGER(VECTOR_ELT(Rmesh,4))[0];
+		UInt order = INTEGER(VECTOR_ELT(Rmesh,4))[0];
 
-		// if (order == 1) {
+		if (order == 1) {
 		MeshHandler<1,2,3> mesh(Rmesh);
 		projection<1,2,3> projector(mesh, deData_);
 		prjData_ = projector.computeProjection();
-		// }
+		}
 
 		// if (order == 2) {
 		// MeshHandler<2,2,3> mesh(Rmesh);
@@ -273,6 +322,24 @@ SEXP points_projection(SEXP Rmesh, SEXP Rlocations)
     // result matrix
     return(result);
 }
+
+SEXP tree_mesh_construction(SEXP Rmesh, SEXP Rorder, SEXP Rmydim, SEXP Rndim) {
+	UInt ORDER=INTEGER(Rorder)[0];
+	UInt mydim=INTEGER(Rmydim)[0];
+	UInt ndim=INTEGER(Rndim)[0];
+
+	if(ORDER == 1 && mydim==2 && ndim==2)
+		return(tree_mesh_skeleton<1, 2, 2>(Rmesh));
+	else if(ORDER == 2 && mydim==2 && ndim==2)
+		return(tree_mesh_skeleton<2, 2, 2>(Rmesh));
+	else if(ORDER == 1 && mydim==2 && ndim==3)
+		return(tree_mesh_skeleton<1, 2, 3>(Rmesh));
+	else if(ORDER == 2 && mydim==2 && ndim==3)
+		return(tree_mesh_skeleton<2, 2, 3>(Rmesh));
+	else if(ORDER == 1 && mydim==3 && ndim==3)
+		return(tree_mesh_skeleton<1, 3, 3>(Rmesh));
+	return(NILSXP);
+ }
 
 }
 

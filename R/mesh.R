@@ -423,6 +423,9 @@ points.projection.2.5D<-function(mesh, locations) {
   if(class(mesh) !="mesh.2.5D")
   stop("Data projection is only available for 2.5D mesh ")
 
+  if (mesh$order == 2)
+    stop("Data projection is only available for order 1 ")
+
   # C++ function for 2.5D works with vectors not with matrices
   mesh$triangles=c(t(mesh$triangles))
   mesh$nodes=c(t(mesh$nodes))
@@ -434,7 +437,6 @@ points.projection.2.5D<-function(mesh, locations) {
   ## Set proper type for correct C++ reading
   locations <- as.matrix(locations)
   storage.mode(locations) <- "double"
-  
   storage.mode(mesh$nnodes) <- "integer"
   storage.mode(mesh$ntriangles) <- "integer"
   storage.mode(mesh$nodes) <- "double"
