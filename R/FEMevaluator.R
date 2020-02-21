@@ -54,6 +54,13 @@ eval.FEM <- function(FEM, locations = NULL, incidence_matrix = NULL, search = "t
     stop("FEM required;  is NULL.")
   if(class(FEM) != "FEM")
     stop("'FEM' is not of class 'FEM'")
+
+   #if locations is null but bary.locations is not null, use the locations in bary.locations
+  if(is.null(locations) & !is.null(bary.locations)) {
+    locations = bary.locations$locations
+    locations = as.matrix(locations)
+  }  
+  
   if (is.null(locations) && is.null(incidence_matrix)) 
     stop("'locations' NOR 'incidence_matrix' required;  both are NULL.")
   if (!is.null(locations) && !is.null(incidence_matrix))

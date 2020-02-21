@@ -268,7 +268,13 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
   else{
     stop("search must be either tree or naive.")
   }
-  
+
+
+  #if locations is null but bary.locations is not null, use the locations in bary.locations
+  if(is.null(locations) & !is.null(bary.locations)) {
+    locations = bary.locations$locations
+    locations = as.matrix(locations)
+  }
   
   ## Converting to format for internal usage
   if(!is.null(locations))
