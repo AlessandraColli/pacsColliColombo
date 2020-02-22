@@ -8,11 +8,11 @@ checkSmoothingParametersFPCA<-function(locations = NULL, datamatrix, FEMbasis, i
     if(any(is.na(datamatrix)))
       stop("Missing values not admitted in 'datamatrix' when 'locations' are specified.")
 
-    if (search == 1) { #use Naive search
-      print('This is Naive Search')
-    } else if (search == 2)  { #use Tree search (default)
-      print('This is Tree Search')
-    }
+    # if (search == 1) { #use Naive search
+    #   print('This is Naive Search')
+    # } else if (search == 2)  { #use Tree search (default)
+    #   print('This is Tree Search')
+    # }
   } # end of locations
 
   if (is.null(datamatrix)) 

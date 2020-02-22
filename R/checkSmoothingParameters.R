@@ -109,15 +109,15 @@ checkSmoothingParameters<-function(locations = NULL, observations, FEMbasis, lam
   
   ans=space_varying
 
-  # print the type of the search algorithm
-  if(!is.null(locations))
-  {
-    if (search == 1) { #use Naive search
-      print('This is Naive Search')
-    } else if (search == 2)  { #use Tree search (default)
-      print('This is Tree Search')
-    }
-  }
+  # # print the type of the search algorithm
+  # if(!is.null(locations))
+  # {
+  #   if (search == 1) { #use Naive search
+  #     print('This is Naive Search')
+  #   } else if (search == 2)  { #use Tree search (default)
+  #     print('This is Tree Search')
+  #   }
+  # }
   
   ans
 }

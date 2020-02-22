@@ -291,21 +291,6 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
     BC$BC_values = as.matrix(BC$BC_values)
   }
   
-  # Check whether the locations coincide with the mesh nodes
-  if (!is.null(locations)) {
-    if(dim(locations)[1]==dim(FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEMbasis$mesh$nodes)[2]) {
-      sum1=0
-      sum2=0
-      for (i in 1:nrow(locations)) {
-      sum1 = sum1 + abs(locations[i,1]-FEMbasis$mesh$nodes[i,1])
-      sum2 = sum2 + abs(locations[i,2]-FEMbasis$mesh$nodes[i,2])
-      }
-      if (sum1==0 & sum2==0) {
-        message("No search algorithm is used because the locations coincide with the nodes.")
-        locations = NULL #In principle, R uses pass-by-value semantics in its function calls. So put ouside of checkSmoothingParameters function.
-      }
-    }
-  }
 
   space_varying=checkSmoothingParameters(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, covariates=covariates, incidence_matrix=incidence_matrix, 
     BC=BC, GCV=GCV, PDE_parameters=PDE_parameters, GCVmethod=GCVMETHOD , nrealizations=nrealizations, search=search, bary.locations=bary.locations)
@@ -323,6 +308,23 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
   checkSmoothingParametersSize(locations=locations, observations=observations, FEMbasis=FEMbasis, lambda=lambda, covariates=covariates, incidence_matrix=incidence_matrix, 
     BC=BC, GCV=GCV, space_varying=space_varying, PDE_parameters=PDE_parameters, ndim=ndim, mydim=mydim)
   
+
+  # Check whether the locations coincide with the mesh nodes (should be put after all the validations)
+  if (!is.null(locations)) {
+    if(dim(locations)[1]==dim(FEMbasis$mesh$nodes)[1] & dim(locations)[2]==dim(FEMbasis$mesh$nodes)[2]) {
+      sum1=0
+      sum2=0
+      for (i in 1:nrow(locations)) {
+      sum1 = sum1 + abs(locations[i,1]-FEMbasis$mesh$nodes[i,1])
+      sum2 = sum2 + abs(locations[i,2]-FEMbasis$mesh$nodes[i,2])
+      }
+      if (sum1==0 & sum2==0) {
+        message("No search algorithm is used because the locations coincide with the nodes.")
+        locations = NULL #In principle, R uses pass-by-value semantics in its function calls. So put ouside of checkSmoothingParameters function.
+      }
+    }
+  }
+
   ################## End checking parameters, sizes and conversion #############################
   
   if(class(FEMbasis$mesh) == 'mesh.2D' & is.null(PDE_parameters)){  
@@ -390,7 +392,10 @@ smooth.FEM<-function(locations = NULL, observations, FEMbasis, lambda,
   
   # Reconstruct FEMbasis with tree mesh
   mesh.class= class(FEMbasis$mesh)
-  FEMbasis$mesh = append(FEMbasis$mesh, tree_mesh)
+  if (is.null(FEMbasis$mesh$treelev)) { #if doesn't exist the tree information
+    FEMbasis$mesh = append(FEMbasis$mesh, tree_mesh)
+  } #if already exist the tree information, don't append
+
   class(FEMbasis$mesh) = mesh.class
   
   fit.FEM  = FEM(f, FEMbasis)
