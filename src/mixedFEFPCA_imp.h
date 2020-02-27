@@ -14,10 +14,10 @@
 #include "R_ext/Print.h"
 
 //#include <libseq/mpi.h>
-#include "../inst/include/dmumps_c.h"
-#define JOB_INIT -1
-#define JOB_END -2
-#define USE_COMM_WORLD -987654
+//#include "../inst/include/dmumps_c.h"
+//#define JOB_INIT -1
+//#define JOB_END -2
+//#define USE_COMM_WORLD -987654
 
 template<typename Integrator, UInt ORDER, UInt mydim, UInt ndim>
 void MixedFEFPCABase<Integrator, ORDER, mydim, ndim>::computeDelta()
@@ -397,96 +397,97 @@ void MixedFEFPCAGCV<Integrator,ORDER, mydim, ndim>::computeDegreesOfFreedomExact
 	UInt nlocations = this->fpcaData_.getNumberofObservations();
 	Real degrees=0;
 
-	// Case 1: MUMPS
-	if (this->fpcaData_.isLocationsByNodes())
-	{
-		auto k = this->fpcaData_.getObservationsIndices();
-		DMUMPS_STRUC_C id;
-		//int myid, ierr;
-        //int argc=0;
-        //char ** argv= NULL;
-        //MPI_Init(&argc,&argv);
-		//ierr = MPI_Comm_rank(MPI_COMM_WORLD, &myid);
-
-		id.sym=0;
-		id.par=1;
-		id.job=JOB_INIT;
-		id.comm_fortran=USE_COMM_WORLD;
-		dmumps_c(&id);
-
-		std::vector<int> irn;
-		std::vector<int> jcn;
-		std::vector<double> a;
-		std::vector<int> irhs_ptr;
-		std::vector<int> irhs_sparse;
-		double* rhs_sparse= (double*)malloc(nlocations*sizeof(double));
+//	// Case 1: MUMPS
+//	if (this->fpcaData_.isLocationsByNodes())
+//	{
+//		auto k = this->fpcaData_.getObservationsIndices();
+//		DMUMPS_STRUC_C id;
+//		//int myid, ierr;
+//        //int argc=0;
+//        //char ** argv= NULL;
+//        //MPI_Init(&argc,&argv);
+//		//ierr = MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+//
+//		id.sym=0;
+//		id.par=1;
+//		id.job=JOB_INIT;
+//		id.comm_fortran=USE_COMM_WORLD;
+//		dmumps_c(&id);
+//
+//		std::vector<int> irn;
+//		std::vector<int> jcn;
+//		std::vector<double> a;
+//		std::vector<int> irhs_ptr;
+//		std::vector<int> irhs_sparse;
+//		double* rhs_sparse= (double*)malloc(nlocations*sizeof(double));
+//		
+//		//if( myid==0){
+//			id.n=2*nnodes;
+//			for (int j=0; j<this->coeffmatrix_.outerSize(); ++j){
+//				for (SpMat::InnerIterator it(this->coeffmatrix_,j); it; ++it){
+//					irn.push_back(it.row()+1);
+//					jcn.push_back(it.col()+1);
+//					a.push_back(it.value());
+//				}
+//			}
+//		//}
+//		id.nz=irn.size();
+//		id.irn=irn.data();
+//		id.jcn=jcn.data();
+//		id.a=a.data();
+//		id.nz_rhs=nlocations;
+//		id.nrhs=2*nnodes;
+//		int j = 1;
+//		irhs_ptr.push_back(j);
+//		for (int l=0; l<k[0]-1; ++l) {
+//			irhs_ptr.push_back(j);
+//		}
+//		for (int i=0; i<k.size()-1; ++i) {
+//			++j;
+//			for (int l=0; l<k[i+1]-k[i]; ++l) {
+//				irhs_ptr.push_back(j);
+//			}
+//			
+//		}
+//		++j;
+//		for (int i=k[k.size()-1]; i < id.nrhs; ++i) {
+//			irhs_ptr.push_back(j);
+//		}
+//		for (int i=0; i<nlocations; ++i){
+//			irhs_sparse.push_back(k[i]+1);
+//		}
+//		id.irhs_sparse=irhs_sparse.data();
+//		id.irhs_ptr=irhs_ptr.data();
+//		id.rhs_sparse=rhs_sparse;
+//
+//		#define ICNTL(I) icntl[(I)-1]
+//		//Output messages suppressed
+//		id.ICNTL(1)=-1;
+//		id.ICNTL(2)=-1;
+//		id.ICNTL(3)=-1;
+//		id.ICNTL(4)=0;
+//		id.ICNTL(20)=1;
+//		id.ICNTL(30)=1;
+//		id.ICNTL(14)=200;
+//
+//		id.job=6;
+//		dmumps_c(&id);
+//		id.job=JOB_END;
+//		dmumps_c(&id);
+//
+//		//if (myid==0){
+//			for (int i=0; i< nlocations; ++i){
+//				//std::cout << "rhs_sparse" << rhs_sparse[i] << std::endl;
+//				degrees+=rhs_sparse[i];
+//			}
+//		//}
+//		free(rhs_sparse);
+//
+//		//MPI_Finalize();
+//	}
+//	// Case 2: Eigen
+//	else{
 		
-		//if( myid==0){
-			id.n=2*nnodes;
-			for (int j=0; j<this->coeffmatrix_.outerSize(); ++j){
-				for (SpMat::InnerIterator it(this->coeffmatrix_,j); it; ++it){
-					irn.push_back(it.row()+1);
-					jcn.push_back(it.col()+1);
-					a.push_back(it.value());
-				}
-			}
-		//}
-		id.nz=irn.size();
-		id.irn=irn.data();
-		id.jcn=jcn.data();
-		id.a=a.data();
-		id.nz_rhs=nlocations;
-		id.nrhs=2*nnodes;
-		int j = 1;
-		irhs_ptr.push_back(j);
-		for (int l=0; l<k[0]-1; ++l) {
-			irhs_ptr.push_back(j);
-		}
-		for (int i=0; i<k.size()-1; ++i) {
-			++j;
-			for (int l=0; l<k[i+1]-k[i]; ++l) {
-				irhs_ptr.push_back(j);
-			}
-			
-		}
-		++j;
-		for (int i=k[k.size()-1]; i < id.nrhs; ++i) {
-			irhs_ptr.push_back(j);
-		}
-		for (int i=0; i<nlocations; ++i){
-			irhs_sparse.push_back(k[i]+1);
-		}
-		id.irhs_sparse=irhs_sparse.data();
-		id.irhs_ptr=irhs_ptr.data();
-		id.rhs_sparse=rhs_sparse;
-
-		#define ICNTL(I) icntl[(I)-1]
-		//Output messages suppressed
-		id.ICNTL(1)=-1;
-		id.ICNTL(2)=-1;
-		id.ICNTL(3)=-1;
-		id.ICNTL(4)=0;
-		id.ICNTL(20)=1;
-		id.ICNTL(30)=1;
-		id.ICNTL(14)=200;
-
-		id.job=6;
-		dmumps_c(&id);
-		id.job=JOB_END;
-		dmumps_c(&id);
-
-		//if (myid==0){
-			for (int i=0; i< nlocations; ++i){
-				//std::cout << "rhs_sparse" << rhs_sparse[i] << std::endl;
-				degrees+=rhs_sparse[i];
-			}
-		//}
-		free(rhs_sparse);
-
-		//MPI_Finalize();
-	}
-	// Case 2: Eigen
-	else{
 		MatrixXr X1 = this->Psi_.transpose() * this->Psi_;
 
 		if (this->isRcomputed_ == false ){
@@ -509,7 +510,7 @@ void MixedFEFPCAGCV<Integrator,ORDER, mydim, ndim>::computeDegreesOfFreedomExact
 				degrees += X(i,i);
 			}
 		}
-	}
+//	}
 	dof_[output_index] = degrees;
 	this->var_[output_index] = 0;
 }
@@ -757,7 +758,7 @@ void MixedFEFPCAKFold<Integrator,ORDER, mydim, ndim>::computeKFolds(MatrixXr & d
 
 	for(auto k=0; k<nFolds; k++)
 	{
-		UInt length_chunk=floor(datamatrixResiduals_.rows()/nFolds);
+		UInt length_chunk = floor(static_cast<double>(datamatrixResiduals_.rows()/nFolds));
 		indices_valid.resize(datamatrixResiduals_.rows());
 
 		std::iota(indices_valid.begin(),indices_valid.begin()+length_chunk,k*length_chunk);
