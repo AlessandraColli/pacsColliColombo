@@ -1,4 +1,4 @@
-CPP_smooth.manifold.FEM.basis<-function(locations, observations, FEMbasis, lambda, covariates = NULL, incidence_matrix = NULL, ndim, mydim, BC = NULL, GCV,GCVMETHOD = 2, nrealizations = 100)
+CPP_smooth.manifold.FEM.basis<-function(locations, bary.locations, observations, FEMbasis, lambda, covariates = NULL, incidence_matrix = NULL, ndim, mydim, BC = NULL, GCV,GCVMETHOD = 2, nrealizations = 100, search)
 {
   
   # C++ function for manifold works with vectors not with matrices
@@ -46,7 +46,7 @@ CPP_smooth.manifold.FEM.basis<-function(locations, observations, FEMbasis, lambd
   ## Set propr type for correct C++ reading
   locations <- as.matrix(locations)
   storage.mode(locations) <- "double"
-  data <- as.vector(observations)
+  observations <- as.vector(observations)
   storage.mode(observations) <- "double"
   storage.mode(FEMbasis$mesh$order) <- "integer"
   storage.mode(FEMbasis$mesh$nnodes) <- "integer"
@@ -67,15 +67,16 @@ CPP_smooth.manifold.FEM.basis<-function(locations, observations, FEMbasis, lambd
   
   storage.mode(nrealizations) <- "integer"
   storage.mode(GCVMETHOD) <- "integer"
+  storage.mode(search) <- "integer"
   
   ## Call C++ function
-  bigsol <- .Call("regression_Laplace", locations, data, FEMbasis$mesh, FEMbasis$mesh$order, mydim, ndim, lambda, covariates,
-                  incidence_matrix, BC$BC_indices, BC$BC_values, GCV, GCVMETHOD, nrealizations, PACKAGE = "fdaPDE")
+  bigsol <- .Call("regression_Laplace", locations, bary.locations, observations, FEMbasis$mesh, FEMbasis$mesh$order, mydim, ndim, lambda, covariates,
+                  incidence_matrix, BC$BC_indices, BC$BC_values, GCV, GCVMETHOD, nrealizations, search, PACKAGE = "fdaPDE")
   
   return(bigsol)
 }
 
-CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, ndim, mydim)
+CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, ndim, mydim, search, bary.locations)
 {
   FEMbasis = FEM$FEMbasis
   
@@ -102,15 +103,29 @@ CPP_eval.manifold.FEM = function(FEM, locations, incidence_matrix, redundancy, n
   storage.mode(mydim) <- "integer"
   storage.mode(locations) <- "double"
   storage.mode(redundancy) <- "integer"
+  storage.mode(search) <- "integer"
+
+  if(!is.null(bary.locations))
+  {
+    storage.mode(bary.locations$element_ids) <- "integer"
+    element_ids <- as.matrix(bary.locations$element_ids)
+    storage.mode(bary.locations$barycenters) <- "double"
+    barycenters <- as.matrix(bary.locations$barycenters)
+  }
   
+  # if (search == 1) { #use Naive search
+  #   print('This is Naive Search')
+  # } else if (search == 2)  { #use Tree search (default)
+  #   print('This is Tree Search')
+  # }
+
   #Calling the C++ function "eval_FEM_fd" in RPDE_interface.cpp
   evalmat = matrix(0,max(nrow(locations),nrow(incidence_matrix)),ncol(coeff))
   for (i in 1:ncol(coeff)){
     evalmat[,i] <- .Call("eval_FEM_fd", FEMbasis$mesh, locations, incidence_matrix, coeff[,i],
-                         FEMbasis$order, redundancy, mydim, ndim, PACKAGE = "fdaPDE")
+                         FEMbasis$order, redundancy, mydim, ndim, search, bary.locations, PACKAGE = "fdaPDE")
   }
   
   #Returning the evaluation matrix
   evalmat
 }
-
